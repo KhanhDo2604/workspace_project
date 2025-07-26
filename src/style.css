@@ -1,0 +1,49 @@
+@import "tailwindcss";
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 63%;
+}
+
+body {
+    /* font-family: 'TikTokText', 'TikTokDisplay', sans-serif; */
+    font-size: 1.6rem;
+    line-height: 1.5;
+    text-rendering: optimizeSpeed;
+}
+
+a[href] {
+    color: var(--text-color);
+    text-decoration: none;
+}
+
+button {
+    cursor: pointer;
+}
+
+/* .main_theme {
+    --color-primary: "#004643";
+    --color-secondary: "#abd1c6";
+    --color-button: "#f9bc60";
+    --color-buttonText: "#001e1d";
+    --color-tertiary: "#e16162";
+    --color-headline: "#fffffe";
+    --color-subHeadline: "#0f3433";
+    --color-main: "#e8e4e6";
+    --color-stroke: "#001e1d";
+} */
+
+@theme{
+    --color-primary: #004643;
+    --color-secondary: #abd1c6;
+    --color-button: #f9bc60;
+    --color-buttonText: #001e1d;
+    --color-tertiary: #e16162;
+    --color-headline: #fffffe;
+    --color-subHeadline: #0f3433;
+    --color-main: #e8e4e6;
+    --color-stroke: #001e1d;
+}
