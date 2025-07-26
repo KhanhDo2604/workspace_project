@@ -13,6 +13,7 @@ import lock from '../assets/icons/lock.svg';
 import eyeOff from '../assets/icons/eye_off.svg';
 import userTemp from '../assets/icons/user_temp.svg';
 import eyeOpen from '../assets/icons/show.png';
+import login_bg from '../assets/images/login_bg.svg';
 
 const icon = {
     chat: chat,
@@ -33,6 +34,7 @@ const icon = {
 
 const image = {
     userTemp: userTemp,
+    login_bg: login_bg,
 };
 
 export default { icon, image };

@@ -16,8 +16,8 @@ function Sidebar() {
             <div className="mb-10">
                 <h5 className="text-headline font-medium">Workspace</h5>
                 <div className="mb-2">
-                    <SidebarBtn icon={assets.icon.myTask} label="My tasks" />
-                    <SidebarBtn icon={assets.icon.calendar} label="Calendar" />
+                    <SidebarBtn icon={assets.icon.myTask} label="My tasks" to="/my-task" />
+                    <SidebarBtn icon={assets.icon.calendar} label="Calendar" to="/calendar" />
                 </div>
             </div>
 
@@ -35,8 +35,8 @@ function Sidebar() {
                     </div>
                     <div className="pl-7">
                         <div className="pl-4 border-l-2 border-black/20">
-                            <SidebarBtn icon={assets.icon.chat} label="Chat" />
-                            <SidebarBtn icon={assets.icon.group} label="Task board" />
+                            <SidebarBtn icon={assets.icon.chat} label="Chat" to="/chat" />
+                            <SidebarBtn icon={assets.icon.group} label="Task board" to="/task-board" />
                         </div>
                     </div>
                 </div>
