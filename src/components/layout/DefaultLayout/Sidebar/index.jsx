@@ -1,7 +1,11 @@
+import { useDispatch } from 'react-redux';
 import assets from '../../../../constants/icon';
 import SidebarBtn from './SidebarBtn';
+import { dialogActions } from '../../../../store/slices/index';
 
 function Sidebar() {
+    const dispatch = useDispatch();
+
     return (
         <aside className="w-1/5 bg-primary py-9 px-7">
             <div className="flex items-center">
@@ -9,15 +13,23 @@ function Sidebar() {
                 <h4 className="text-headline font-medium text-3xl">User</h4>
             </div>
             <div className="my-10">
-                <SidebarBtn icon={assets.icon.notification} label="Notification" />
-                <SidebarBtn icon={assets.icon.setting} label="Settings" />
+                <SidebarBtn
+                    icon={assets.icon.notification}
+                    label="Notification"
+                    onClick={() => dispatch(dialogActions.openNotification())}
+                />
+                <SidebarBtn
+                    icon={assets.icon.setting}
+                    label="Settings"
+                    onClick={() => dispatch(dialogActions.openSetting())}
+                />
             </div>
 
             <div className="mb-10">
                 <h5 className="text-headline font-medium">Workspace</h5>
                 <div className="mb-2">
-                    <SidebarBtn icon={assets.icon.myTask} label="My tasks" />
-                    <SidebarBtn icon={assets.icon.calendar} label="Calendar" />
+                    <SidebarBtn icon={assets.icon.myTask} label="My tasks" to="/my-task" />
+                    <SidebarBtn icon={assets.icon.calendar} label="Calendar" to="/calendar" />
                 </div>
             </div>
 
@@ -35,8 +47,8 @@ function Sidebar() {
                     </div>
                     <div className="pl-7">
                         <div className="pl-4 border-l-2 border-black/20">
-                            <SidebarBtn icon={assets.icon.chat} label="Chat" />
-                            <SidebarBtn icon={assets.icon.group} label="Task board" />
+                            <SidebarBtn icon={assets.icon.chat} label="Chat" to="/chat" />
+                            <SidebarBtn icon={assets.icon.group} label="Task board" to="/task-board" />
                         </div>
                     </div>
                 </div>

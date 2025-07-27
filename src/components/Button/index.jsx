@@ -1,18 +1,6 @@
-// function Button({ children, onClick, className, isSecondary }) {
-//     const primaryStyle = 'bg-button text-headline ';
-//     const secondaryStyle = 'border-button border-2 ';
-
-//     return (
-//         <button onClick={onClick} className={`${isSecondary ? secondaryStyle : primaryStyle} ${className}`}>
-//             {children}
-//         </button>
-//     );
-// }
-
-// export default Button;
-
 import PropTypes from 'prop-types';
 import assets from '../../constants/icon';
+import { Link } from 'react-router-dom';
 
 const Button = ({
     children,
@@ -26,9 +14,12 @@ const Button = ({
     endIcon,
     isLoading = false,
     className = '',
+    to,
 }) => {
     // Base button classes
     let baseClasses = 'flex items-center justify-center font-medium transition-colors hover:cursor-pointer';
+
+    let Element = to ? Link : 'button';
 
     // Size classes
     const sizeClasses = {
@@ -62,14 +53,14 @@ const Button = ({
     const googleIcon = variant === 'google' && !startIcon ? <img src={assets.icon.google} alt="Google Icon" /> : null;
 
     return (
-        <button type={type} className={classes} onClick={onClick} disabled={disabled || isLoading}>
+        <Element type={type} className={classes} onClick={onClick} disabled={disabled || isLoading} to={to}>
             <>
                 {googleIcon}
                 {startIcon && <span className="mr-2 w-6 h-6 ">{startIcon}</span>}
                 {children}
                 {endIcon && <span className="ml-2 w-6 h-6 bg-amber-50">{endIcon}</span>}
             </>
-        </button>
+        </Element>
     );
 };
 
@@ -85,6 +76,7 @@ Button.propTypes = {
     endIcon: PropTypes.node,
     isLoading: PropTypes.bool,
     className: PropTypes.string,
+    to: PropTypes.string,
 };
 
 export default Button;
