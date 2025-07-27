@@ -4,6 +4,9 @@ import MeetingPage from '../pages/Meeting';
 import PersonalTaskPage from '../pages/PersonalTask';
 import SchedulePage from '../pages/Schedule';
 import TaskBoardPage from '../pages/TaskBoard';
+import SignupPage from '../pages/Register';
+import ForgotPasswordPage from '../pages/ForgotPassword';
+import SetPasswordPage from '../pages/SetPassword';
 
 const privateRoutes = [
     { path: '/', component: HomePage },
@@ -12,6 +15,9 @@ const privateRoutes = [
     { path: '/calendar', component: SchedulePage },
     { path: '/task-board', component: TaskBoardPage },
     { path: '/login', component: LoginPage, thread: 'auth' },
+    { path: '/signup', component: SignupPage, thread: 'auth' },
+    { path: '/forgot-password', component: ForgotPasswordPage, thread: 'auth' },
+    { path: '/set-new-password', component: SetPasswordPage, thread: 'auth' },
 ];
 
 export default privateRoutes;

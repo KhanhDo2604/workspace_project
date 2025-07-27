@@ -2,17 +2,28 @@ import Button from '../../components/Button';
 import FormField from '../../components/FormField';
 import assets from '../../constants/icon';
 
-function LoginPage() {
+function RegisterPage() {
     return (
         <div className="w-full h-screen flex items-center justify-center py-12">
             <form
                 action=""
                 className="w-3/4 h-full bg-main rounded-2xl shadow-md px-32 flex flex-col items-baseline justify-center"
             >
-                <h1 className="text-5xl font-bold text-center mb-2">Welcome Back</h1>
-                <p className="text-2xl text-center mb-12">Sign in to your account</p>
+                <h1 className="text-5xl font-bold text-center mb-2">Get Started Now</h1>
+                <p className="text-2xl text-center mb-12">Let’s create your account</p>
 
                 <div className="w-full">
+                    <FormField
+                        label="Full Name"
+                        name="fullName"
+                        type="text"
+                        value=""
+                        onChange={() => {}}
+                        placeholder="Enter your full name"
+                        icon={assets.icon.user}
+                        borderRadius="rounded-full"
+                    />
+
                     <FormField
                         label="Email"
                         name="email"
@@ -34,20 +45,27 @@ function LoginPage() {
                         icon={assets.icon.lock}
                         borderRadius="rounded-full"
                     />
+                    <FormField
+                        label="Confirm Password"
+                        name="confirmPassword"
+                        type="password"
+                        value=""
+                        onChange={() => {}}
+                        placeholder="Enter your password"
+                        icon={assets.icon.lock}
+                        borderRadius="rounded-full"
+                    />
                 </div>
                 <div className="w-full flex justify-between items-center mb-6">
                     <label className="flex items-center text-lg">
-                        <input type="checkbox" className="mr-2" />
-                        Remember me
+                        <input type="checkbox" className="mr-2" />I agree to
+                        <Button variant="text">the terms and conditions</Button>
                     </label>
-                    <Button variant="text" to="/forgot-password">
-                        Forgot Password
-                    </Button>
                 </div>
 
                 <div className="w-full">
-                    <Button variant="primary" className="mr-4 mb-2 rounded-full px-2 py-4 w-full">
-                        Sign in
+                    <Button variant="primary" className="mr-4 mb-2 rounded-full px-2 py-4  w-full ">
+                        Sign Up
                     </Button>
 
                     <div className="flex items-center justify-center w-full my-4">
@@ -60,14 +78,14 @@ function LoginPage() {
                         startIcon={<img src={assets.icon.google} alt="Secondary Icon" />}
                         className="mr-4 mb-2 rounded-full px-2 py-4  w-full"
                     >
-                        Sign in with Google
+                        Sign Up with Google
                     </Button>
                 </div>
 
                 <div className="w-full flex items-center justify-center mt-6">
-                    <p className="text-center text-lg mr-3">Don't have an account?</p>
-                    <Button variant="text" to="/signup">
-                        Sign Up
+                    <p className="text-center text-lg mr-3">Already have an account?</p>
+                    <Button variant="text" to="/login">
+                        Sign In
                     </Button>
                 </div>
             </form>
@@ -75,4 +93,4 @@ function LoginPage() {
     );
 }
 
-export default LoginPage;
+export default RegisterPage;

@@ -1,7 +1,11 @@
+import { useDispatch } from 'react-redux';
 import assets from '../../../../constants/icon';
 import SidebarBtn from './SidebarBtn';
+import { dialogActions } from '../../../../store/slices/index';
 
 function Sidebar() {
+    const dispatch = useDispatch();
+
     return (
         <aside className="w-1/5 bg-primary py-9 px-7">
             <div className="flex items-center">
@@ -9,8 +13,16 @@ function Sidebar() {
                 <h4 className="text-headline font-medium text-3xl">User</h4>
             </div>
             <div className="my-10">
-                <SidebarBtn icon={assets.icon.notification} label="Notification" />
-                <SidebarBtn icon={assets.icon.setting} label="Settings" />
+                <SidebarBtn
+                    icon={assets.icon.notification}
+                    label="Notification"
+                    onClick={() => dispatch(dialogActions.openNotification())}
+                />
+                <SidebarBtn
+                    icon={assets.icon.setting}
+                    label="Settings"
+                    onClick={() => dispatch(dialogActions.openSetting())}
+                />
             </div>
 
             <div className="mb-10">
