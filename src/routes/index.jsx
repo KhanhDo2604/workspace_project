@@ -10,7 +10,6 @@ import SetPasswordPage from '../pages/SetPassword';
 
 const privateRoutes = [
     { path: '/', component: HomePage },
-    { path: '/meeting', component: MeetingPage },
     { path: '/my-task', component: PersonalTaskPage },
     { path: '/calendar', component: SchedulePage },
     { path: '/task-board', component: TaskBoardPage },
@@ -18,6 +17,7 @@ const privateRoutes = [
     { path: '/signup', component: SignupPage, thread: 'auth' },
     { path: '/forgot-password', component: ForgotPasswordPage, thread: 'auth' },
     { path: '/set-new-password', component: SetPasswordPage, thread: 'auth' },
+    { path: '/meeting', component: MeetingPage, thread: 'none-layout' },
 ];
 
 export default privateRoutes;

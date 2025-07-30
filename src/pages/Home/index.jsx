@@ -2,6 +2,7 @@ import Button from '../../components/Button';
 import FormField from '../../components/FormField';
 import Dropdown from '../../components/Dropdown';
 import assets from '../../constants/icon';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 function HomePage() {
     return (
@@ -19,7 +20,7 @@ function HomePage() {
 
             <Button
                 variant="primary"
-                endIcon={<img src={assets.icon.dropdown} alt="Right Chevron Icon" />}
+                endIcon={<FontAwesomeIcon icon={assets.icon.dropdown} />}
                 className="mr-4 mb-2 rounded-xl"
             >
                 Click Me

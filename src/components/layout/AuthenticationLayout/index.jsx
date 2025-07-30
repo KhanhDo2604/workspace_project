@@ -2,7 +2,7 @@ import assets from '../../../constants/icon';
 
 function AuthenticationLayout({ children }) {
     return (
-        <div className="w-full h-screen grid grid-cols-2 bg-secondary">
+        <div className="grid grid-cols-2 bg-secondary">
             {/* Left side */}
             <div className="col-span-1">{children}</div>
             {/* Right side */}

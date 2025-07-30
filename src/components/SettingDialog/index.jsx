@@ -11,7 +11,7 @@ function SettingDialog() {
     const [language, setLanguage] = useState('English');
 
     return (
-        <div className="w-1/2 mx-auto mt-10 bg-white rounded-xl shadow p-6">
+        <div className="w-full mx-auto mt-10 bg-white rounded-xl shadow p-6">
             {/* Account Section */}
             <div className="mb-6">
                 <div className="flex items-center justify-between mb-4">

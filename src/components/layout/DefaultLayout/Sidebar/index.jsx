@@ -1,10 +1,14 @@
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import assets from '../../../../constants/icon';
 import SidebarBtn from './SidebarBtn';
 import { dialogActions } from '../../../../store/slices/index';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { colors } from '../../../../constants/color';
 
 function Sidebar() {
     const dispatch = useDispatch();
+    const isOpenSetting = useSelector((state) => state.dialog.openSetting);
+    const isOpenNotification = useSelector((state) => state.dialog.openNotification);
 
     return (
         <aside className="w-1/5 bg-primary py-9 px-7">
@@ -16,12 +20,14 @@ function Sidebar() {
                 <SidebarBtn
                     icon={assets.icon.notification}
                     label="Notification"
-                    onClick={() => dispatch(dialogActions.openNotification())}
+                    isActive={isOpenNotification}
+                    onClick={() => dispatch(dialogActions.toggleNotification())}
                 />
                 <SidebarBtn
                     icon={assets.icon.setting}
                     label="Settings"
-                    onClick={() => dispatch(dialogActions.openSetting())}
+                    isActive={isOpenSetting}
+                    onClick={() => dispatch(dialogActions.toggleSetting())}
                 />
             </div>
 
@@ -36,14 +42,14 @@ function Sidebar() {
             <div>
                 <div className="flex items-center mb-2">
                     <h5 className="text-headline font-medium mr-2">Your Projects</h5>
-                    <img src={assets.icon.dropdown} alt="" className="w-6 h-6" />
+                    <FontAwesomeIcon icon={assets.icon.dropdown} color={colors.button} />
                 </div>
                 {/* Team 1 */}
                 <div className="mb-2">
                     <div className="flex items-center mb-2">
-                        <img src={assets.icon.hashtag} alt="" className="mr-3 w-8 h-8" />
+                        <FontAwesomeIcon icon={assets.icon.hashtag} className="mr-3" color={colors.button} />
                         <p className="text-main text-2xl">Team 1</p>
-                        <img src={assets.icon.dropdown} alt="" className="ml-3 w-8 h-8" />
+                        <FontAwesomeIcon icon={assets.icon.dropdown} className="ml-3" color={colors.button} />
                     </div>
                     <div className="pl-7">
                         <div className="pl-4 border-l-2 border-black/20">
@@ -56,9 +62,9 @@ function Sidebar() {
                 {/* Team 2 */}
                 <div className="mb-2">
                     <div className="flex items-center mb-2">
-                        <img src={assets.icon.hashtag} alt="" className="mr-3 w-6 h-6" />
+                        <FontAwesomeIcon icon={assets.icon.hashtag} className="mr-3" color={colors.button} />
                         <p className="text-main text-2xl">Team 2</p>
-                        <img src={assets.icon.rightChevron} alt="" className="ml-3 w-6 h-6" />
+                        <FontAwesomeIcon icon={assets.icon.rightChevron} className="ml-3" color={colors.button} />
                     </div>
                 </div>
             </div>

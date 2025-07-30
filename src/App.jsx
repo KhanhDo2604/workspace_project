@@ -1,7 +1,6 @@
 import { Route, BrowserRouter as Router, Routes } from 'react-router';
 import privateRoutes from './routes';
 import { AuthenticationLayout, DefaultLayout } from './components/layout';
-import { Fragment } from 'react';
 
 function App() {
     return (
@@ -15,6 +14,8 @@ function App() {
                             Layout = route.layout;
                         } else if (route.thread === 'auth') {
                             Layout = AuthenticationLayout;
+                        } else if (route.thread === 'none-layout') {
+                            Layout = 'div';
                         } else {
                             Layout = DefaultLayout;
                         }
@@ -24,7 +25,7 @@ function App() {
                                 key={index}
                                 path={route.path}
                                 element={
-                                    <Layout>
+                                    <Layout className="w-full h-screen">
                                         <route.component />
                                     </Layout>
                                 }

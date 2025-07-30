@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 import assets from '../../constants/icon';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const FormField = ({
     label,
@@ -9,7 +10,7 @@ const FormField = ({
     value,
     onChange,
     placeholder,
-    icon: Icon,
+    icon: icon,
     error,
     borderColor = 'border-button/50',
     borderRadius = 'rounded-lg',
@@ -34,7 +35,11 @@ const FormField = ({
                     error ? 'border-tertiary' : borderColor
                 } focus-within:ring-2 focus-within:ring-button ${isTextarea ? 'items-start' : ''}`}
             >
-                {Icon && <img src={Icon} alt="icon" className="mr-3" />}
+                {icon === assets.icon.lock && icon ? (
+                    <img src={icon} alt="icon" className="mr-3 w-8 h-8 text-gray-400" />
+                ) : (
+                    <FontAwesomeIcon icon={icon} className="mr-3 text-gray-400" />
+                )}
 
                 {isTextarea ? (
                     <textarea
@@ -60,9 +65,9 @@ const FormField = ({
                 {isPassword && (
                     <button type="button" onClick={() => setShowPassword((prev) => !prev)} className="text-gray-400">
                         {showPassword ? (
-                            <img src={assets.icon.eyeOff} alt="Hide Password" />
+                            <FontAwesomeIcon icon={assets.icon.eyeOff} />
                         ) : (
-                            <img src={assets.icon.eyeOpen} alt="Show Password" className="w-6 h-6" />
+                            <FontAwesomeIcon icon={assets.icon.eyeOpen} />
                         )}
                     </button>
                 )}
