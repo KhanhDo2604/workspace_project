@@ -4,6 +4,8 @@ import assets from '../../constants/icon';
 import ParticipantTag from './ParticipantTag';
 import ChatCard from '../../components/ChatCard';
 import FormField from '../../components/FormField';
+import RoomButtonsController from './RoomButtonsController';
+import ParticipantsVideo from './ParticipantsVideo';
 
 function MeetingPage() {
     const chatData = [
@@ -42,38 +44,55 @@ function MeetingPage() {
             timestamp: '10:04 AM',
             isMe: true,
         },
+        {
+            userIcon: assets.image.userTemp,
+            userName: 'John Doe',
+            content: 'Great! Let’s begin with the agenda.',
+            timestamp: '10:05 AM',
+            isMe: false,
+        },
+        {
+            userIcon: assets.image.userTemp,
+            userName: 'Jane Smith',
+            content: 'Sounds good to me.',
+            timestamp: '10:06 AM',
+            isMe: false,
+        },
+        {
+            userIcon: assets.image.userTemp,
+            userName: 'Alice Johnson',
+            content: 'I have some updates to share.',
+            timestamp: '10:07 AM',
+            isMe: false,
+        },
     ];
 
+    const Participants = [
+        { userIcon: assets.image.userTemp, userName: 'John Doe', isHost: true },
+        { userIcon: assets.image.userTemp, userName: 'Jane Smith', isHost: false },
+        { userIcon: assets.image.userTemp, userName: 'Alice Johnson', isHost: false },
+        { userIcon: assets.image.userTemp, userName: 'Bob Brown', isHost: false },
+        { userIcon: assets.image.userTemp, userName: 'Charlie White', isHost: false },
+    ];
+
+    const handleAvailableSpace = Participants.length > 4 ? 'h-1/3' : 'h-fit';
+
     return (
-        <div className="w-full h-full grid grid-cols-20">
+        <div className="w-full h-screen grid grid-cols-20">
             {/* Left Sidebar */}
-            <div className="col-span-15 bg-secondary p-9">
-                <h1 className="font-bold text-3xl">Weekly General Team Meeting</h1>
-                <div className="mt-4 w-full "></div>
-                <div className="flex items-center gap-3">
-                    <Button>
-                        <img src={assets.icon.whiteBoard} alt="" />
-                    </Button>
-                    <Button>
-                        <FontAwesomeIcon icon={assets.icon.mic} />
-                    </Button>
-                    <Button>
-                        <img src={assets.icon.meetingEnd} alt="" />
-                    </Button>
-                    <Button>
-                        <FontAwesomeIcon icon={assets.icon.video} />
-                    </Button>
-                    <Button>
-                        <FontAwesomeIcon icon={assets.icon.setting} />
-                    </Button>
+            <div className="col-span-15 bg-secondary p-12">
+                <h1 className="font-bold text-3xl mb-2">Weekly General Team Meeting</h1>
+                <div className="w-full h-full flex flex-col justify-between">
+                    <ParticipantsVideo participants={Participants} />
+                    <RoomButtonsController />
                 </div>
             </div>
 
-            {/* Left Sidebar */}
-            <div className="col-span-5 rounded-l-3xl h-full border-b border-gray-200">
+            {/* Right Sidebar */}
+            <div className="col-span-5 rounded-l-3xl h-screen flex flex-col">
                 {/* Participants Section */}
-                <div className="h-fit border-b border-gray-200 px-8 pt-8 pb-2">
-                    <div className="mt-2 mb-4 flex justify-between">
+                <div className={`border-b border-gray-200 px-8 pt-8 pb-2 flex flex-col ${handleAvailableSpace}`}>
+                    <div className="mb-4 flex justify-between">
                         <div className="flex gap-2">
                             <h1 className="text-2xl font-bold">Participants</h1>
                             <p className="text-2xl text-gray-500">(5)</p>
@@ -83,21 +102,26 @@ function MeetingPage() {
                         </Button>
                     </div>
 
-                    <div>
-                        <ParticipantTag userIcon={assets.image.userTemp} userName="John Doe" isHost={true} />
-                        <ParticipantTag userIcon={assets.image.userTemp} userName="Jane Smith" isHost={false} />
-                        <ParticipantTag userIcon={assets.image.userTemp} userName="Alice Johnson" isHost={false} />
-                        <ParticipantTag userIcon={assets.image.userTemp} userName="Bob Brown" isHost={false} />
-                        <ParticipantTag userIcon={assets.image.userTemp} userName="Charlie White" isHost={false} />
+                    {/* Danh sách có thể scroll */}
+                    <div className="flex-1 overflow-y-auto pr-1 space-y-2">
+                        {Participants.map((participant, index) => (
+                            <ParticipantTag
+                                key={index}
+                                userIcon={participant.userIcon}
+                                userName={participant.userName}
+                                isHost={participant.isHost}
+                            />
+                        ))}
                     </div>
                 </div>
 
                 {/* Chat Section */}
-                <div className="p-8">
+                <div className="flex-1 p-8 flex flex-col h-4">
                     <div className="mb-4">
                         <h1 className="text-2xl font-bold">Chat</h1>
                     </div>
-                    <div>
+
+                    <div className="flex-1 overflow-y-auto pr-1">
                         {chatData.map((chat, index) => (
                             <ChatCard
                                 key={index}
@@ -109,6 +133,8 @@ function MeetingPage() {
                             />
                         ))}
                     </div>
+
+                    {/* Input message */}
                     <div className="mt-4 flex items-center justify-between gap-2 w-full">
                         <div className="flex-1">
                             <FormField
