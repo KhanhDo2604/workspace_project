@@ -39,6 +39,7 @@ function HomePage() {
                 placeholder="Enter your email"
                 icon={assets.icon.email}
                 borderRadius="rounded-full"
+                className="mb-4"
             />
 
             <FormField
@@ -50,6 +51,7 @@ function HomePage() {
                 placeholder="Enter your password"
                 icon={assets.icon.lock}
                 borderRadius="rounded-full"
+                className="mb-4"
             />
 
             <FormField
@@ -58,6 +60,7 @@ function HomePage() {
                 onChange={() => {}}
                 placeholder="Message #social-media"
                 borderColor="border-black/20"
+                className="mb-4"
             />
 
             <FormField
@@ -67,6 +70,7 @@ function HomePage() {
                 onChange={() => {}}
                 placeholder="something"
                 borderColor="border-black/20"
+                className="mb-4"
             />
 
             <Dropdown

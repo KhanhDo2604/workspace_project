@@ -36,6 +36,7 @@ function SettingDialog() {
                                 icon={assets.icon.user}
                                 borderRadius="rounded-xl"
                                 borderColor="border-stroke"
+                                className="mb-4"
                             />
                         </div>
                     </div>
@@ -47,6 +48,7 @@ function SettingDialog() {
                         icon={assets.icon.email}
                         borderRadius="rounded-xl"
                         borderColor="border-stroke"
+                        className="mb-4"
                     />
                 </div>
             </div>

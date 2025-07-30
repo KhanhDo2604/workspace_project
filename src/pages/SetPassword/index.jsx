@@ -22,6 +22,7 @@ function SetPasswordPage() {
                         placeholder="Enter your new password"
                         icon={assets.icon.lock}
                         borderRadius="rounded-full"
+                        className="mb-4"
                     />
 
                     <FormField
@@ -33,6 +34,7 @@ function SetPasswordPage() {
                         placeholder="Confirm your new password"
                         icon={assets.icon.lock}
                         borderRadius="rounded-full"
+                        className="mb-4"
                     />
                 </div>
 

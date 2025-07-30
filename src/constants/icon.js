@@ -1,6 +1,8 @@
 import google from '../assets/icons/google.svg';
 import lock from '../assets/icons/lock.svg';
 import userTemp from '../assets/icons/user_temp.svg';
+import meetingEnd from '../assets/icons/meeting_end.svg';
+import whiteBoard from '../assets/icons/whiteboard.svg';
 
 import login_bg from '../assets/images/login_bg.svg';
 
@@ -16,6 +18,12 @@ import {
     faChevronRight,
     faEyeSlash,
     faEye,
+    faMicrophone,
+    faMicrophoneSlash,
+    faVideo,
+    faVideoSlash,
+    faEllipsisVertical,
+    faPaperPlane,
 } from '@fortawesome/free-solid-svg-icons';
 import { faEnvelope, faClock } from '@fortawesome/free-regular-svg-icons';
 
@@ -35,6 +43,14 @@ const icon = {
     eyeOff: faEyeSlash,
     eyeOpen: faEye,
     clock: faClock,
+    mic: faMicrophone,
+    micOff: faMicrophoneSlash,
+    video: faVideo,
+    videoOff: faVideoSlash,
+    more: faEllipsisVertical,
+    send: faPaperPlane,
+    meetingEnd: meetingEnd,
+    whiteBoard: whiteBoard,
 };
 
 const image = {

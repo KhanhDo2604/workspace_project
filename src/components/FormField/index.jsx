@@ -14,6 +14,7 @@ const FormField = ({
     error,
     borderColor = 'border-button/50',
     borderRadius = 'rounded-lg',
+    className = '',
 }) => {
     const [showPassword, setShowPassword] = useState(false);
     const isPassword = type === 'password';
@@ -23,7 +24,7 @@ const FormField = ({
     const baseClass = 'flex-1 py-3 outline-none bg-transparent text-lg placeholder-gray-400';
 
     return (
-        <div className="mb-4">
+        <div className={`${className}`}>
             {label && (
                 <label htmlFor={name} className="block text-lg mb-1 text-gray-700">
                     {label}
@@ -89,6 +90,7 @@ FormField.propTypes = {
     error: PropTypes.string,
     borderColor: PropTypes.string,
     borderRadius: PropTypes.string,
+    className: PropTypes.string,
 };
 
 export default FormField;

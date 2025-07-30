@@ -11,7 +11,7 @@ function SidebarBtn({ icon, label, endIcon, to, isActive, onClick }) {
 
     return (
         <Element
-            className={`flex items-center justify-between mb-2 py-2 px-2 text-2xl w-full ${className}`}
+            className={`flex items-center justify-between mb-2 py-2 px-2 text-xl w-full ${className}`}
             to={to}
             onClick={onClick}
         >
