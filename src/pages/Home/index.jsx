@@ -2,6 +2,7 @@ import Button from '../../components/Button';
 import FormField from '../../components/FormField';
 import Dropdown from '../../components/Dropdown';
 import assets from '../../constants/icon';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 function HomePage() {
     return (
@@ -19,7 +20,7 @@ function HomePage() {
 
             <Button
                 variant="primary"
-                endIcon={<img src={assets.icon.dropdown} alt="Right Chevron Icon" />}
+                endIcon={<FontAwesomeIcon icon={assets.icon.dropdown} />}
                 className="mr-4 mb-2 rounded-xl"
             >
                 Click Me
@@ -38,6 +39,7 @@ function HomePage() {
                 placeholder="Enter your email"
                 icon={assets.icon.email}
                 borderRadius="rounded-full"
+                className="mb-4"
             />
 
             <FormField
@@ -49,6 +51,7 @@ function HomePage() {
                 placeholder="Enter your password"
                 icon={assets.icon.lock}
                 borderRadius="rounded-full"
+                className="mb-4"
             />
 
             <FormField
@@ -57,6 +60,7 @@ function HomePage() {
                 onChange={() => {}}
                 placeholder="Message #social-media"
                 borderColor="border-black/20"
+                className="mb-4"
             />
 
             <FormField
@@ -66,6 +70,7 @@ function HomePage() {
                 onChange={() => {}}
                 placeholder="something"
                 borderColor="border-black/20"
+                className="mb-4"
             />
 
             <Dropdown

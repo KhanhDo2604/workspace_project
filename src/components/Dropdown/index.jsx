@@ -2,6 +2,7 @@
 import { useState, useRef, useEffect } from 'react';
 import assets from '../../constants/icon';
 import PropTypes from 'prop-types';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const Dropdown = ({
     label,
@@ -48,7 +49,7 @@ const Dropdown = ({
                 className={`flex items-center justify-between px-4 py-2 rounded-lg min-w-[150px] text-lg transition ${selectedStyle}`}
             >
                 <span>{selected?.label || placeholder}</span>
-                <img src={assets.icon.dropdown} alt="Dropdown Icon" className="w-6 h-6 text-gray-500" />
+                <FontAwesomeIcon icon={assets.icon.dropdown} className="w-6 h-6" />
             </button>
 
             {isOpen && (

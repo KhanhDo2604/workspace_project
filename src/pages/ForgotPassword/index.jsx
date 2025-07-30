@@ -25,6 +25,7 @@ function ForgotPasswordPage() {
                         placeholder="Enter your email"
                         icon={assets.icon.email}
                         borderRadius="rounded-full"
+                        className="mb-4"
                     />
                 </div>
 

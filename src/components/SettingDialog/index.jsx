@@ -11,7 +11,7 @@ function SettingDialog() {
     const [language, setLanguage] = useState('English');
 
     return (
-        <div className="w-1/2 mx-auto mt-10 bg-white rounded-xl shadow p-6">
+        <div className="w-full mx-auto mt-10 bg-white rounded-xl shadow p-6">
             {/* Account Section */}
             <div className="mb-6">
                 <div className="flex items-center justify-between mb-4">
@@ -36,6 +36,7 @@ function SettingDialog() {
                                 icon={assets.icon.user}
                                 borderRadius="rounded-xl"
                                 borderColor="border-stroke"
+                                className="mb-4"
                             />
                         </div>
                     </div>
@@ -47,6 +48,7 @@ function SettingDialog() {
                         icon={assets.icon.email}
                         borderRadius="rounded-xl"
                         borderColor="border-stroke"
+                        className="mb-4"
                     />
                 </div>
             </div>

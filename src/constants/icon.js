@@ -1,35 +1,56 @@
-import chat from '../assets/icons/chat.svg';
-import notification from '../assets/icons/notification.svg';
-import setting from '../assets/icons/setting.svg';
-import calendar from '../assets/icons/calendar.svg';
-import dropdown from '../assets/icons/dropdown.svg';
-import group from '../assets/icons/group.svg';
-import hashtag from '../assets/icons/hashtag.svg';
-import myTask from '../assets/icons/my_task.svg';
-import rightChevron from '../assets/icons/right_chevron.svg';
 import google from '../assets/icons/google.svg';
-import email from '../assets/icons/email.svg';
 import lock from '../assets/icons/lock.svg';
-import eyeOff from '../assets/icons/eye_off.svg';
 import userTemp from '../assets/icons/user_temp.svg';
-import eyeOpen from '../assets/icons/show.png';
+import meetingEnd from '../assets/icons/meeting_end.svg';
+import whiteBoard from '../assets/icons/whiteboard.svg';
+
 import login_bg from '../assets/images/login_bg.svg';
 
+import {
+    faMessage,
+    faBell,
+    faGear,
+    faCalendarWeek,
+    faChevronDown,
+    faUserGroup,
+    faHashtag,
+    faClipboardCheck,
+    faChevronRight,
+    faEyeSlash,
+    faEye,
+    faMicrophone,
+    faMicrophoneSlash,
+    faVideo,
+    faVideoSlash,
+    faEllipsisVertical,
+    faPaperPlane,
+} from '@fortawesome/free-solid-svg-icons';
+import { faEnvelope, faClock } from '@fortawesome/free-regular-svg-icons';
+
 const icon = {
-    chat: chat,
-    notification: notification,
-    setting: setting,
-    calendar: calendar,
-    dropdown: dropdown,
-    group: group,
-    hashtag: hashtag,
-    myTask: myTask,
-    rightChevron: rightChevron,
+    chat: faMessage,
+    notification: faBell,
+    setting: faGear,
+    calendar: faCalendarWeek,
+    dropdown: faChevronDown,
+    group: faUserGroup,
+    hashtag: faHashtag,
+    myTask: faClipboardCheck,
+    rightChevron: faChevronRight,
     google: google,
-    email: email,
+    email: faEnvelope,
     lock: lock,
-    eyeOff: eyeOff,
-    eyeOpen: eyeOpen,
+    eyeOff: faEyeSlash,
+    eyeOpen: faEye,
+    clock: faClock,
+    mic: faMicrophone,
+    micOff: faMicrophoneSlash,
+    video: faVideo,
+    videoOff: faVideoSlash,
+    more: faEllipsisVertical,
+    send: faPaperPlane,
+    meetingEnd: meetingEnd,
+    whiteBoard: whiteBoard,
 };
 
 const image = {

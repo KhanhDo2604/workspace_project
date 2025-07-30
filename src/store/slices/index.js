@@ -7,17 +7,24 @@ const dialogSlice = createSlice({
         openNotification: false,
     },
     reducers: {
-        openSetting: (state) => {
-            state.openSetting = true;
+        toggleSetting: (state) => {
+            state.openSetting = !state.openSetting;
+            if (state.openSetting) {
+                state.openNotification = false;
+            }
         },
         closeSetting: (state) => {
             state.openSetting = false;
         },
-        openNotification: (state) => {
-            state.openNotification = true;
-        },
-        closeNotification: (state) => {
+        closeAllDialogs: (state) => {
+            state.openSetting = false;
             state.openNotification = false;
+        },
+        toggleNotification: (state) => {
+            state.openNotification = !state.openNotification;
+            if (state.openNotification) {
+                state.openSetting = false;
+            }
         },
     },
 });

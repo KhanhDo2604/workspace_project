@@ -22,6 +22,7 @@ function LoginPage() {
                         placeholder="Enter your email"
                         icon={assets.icon.email}
                         borderRadius="rounded-full"
+                        className="mb-4"
                     />
 
                     <FormField
@@ -33,6 +34,7 @@ function LoginPage() {
                         placeholder="Enter your password"
                         icon={assets.icon.lock}
                         borderRadius="rounded-full"
+                        className="mb-4"
                     />
                 </div>
                 <div className="w-full flex justify-between items-center mb-6">

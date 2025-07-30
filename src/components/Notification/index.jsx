@@ -33,7 +33,7 @@ function NotificationDialog() {
 
     return (
         <div
-            className="bg-white rounded-xl shadow-lg w-[500px] p-4 max-h-[600px] overflow-y-auto"
+            className="bg-white rounded-xl shadow-lg w-full p-4 max-h-[600rem] overflow-y-auto"
             style={{ boxShadow: '-5px 2px 15px rgba(0, 0, 0, 0.2)' }}
         >
             <div className="flex items-center justify-between border-b pb-2 mb-4">
