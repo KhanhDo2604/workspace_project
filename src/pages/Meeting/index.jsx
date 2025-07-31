@@ -6,8 +6,12 @@ import ChatCard from '../../components/ChatCard';
 import FormField from '../../components/FormField';
 import RoomButtonsController from './RoomButtonsController';
 import ParticipantsVideo from './ParticipantsVideo';
+import { useSelector } from 'react-redux';
+import Whiteboard from './Whiteboard';
 
 function MeetingPage() {
+    const whiteBoardMode = useSelector((state) => state.meeting.whiteBoardMode);
+
     const chatData = [
         {
             userIcon: assets.image.userTemp,
@@ -83,7 +87,7 @@ function MeetingPage() {
             <div className="col-span-15 bg-secondary p-12">
                 <h1 className="font-bold text-3xl mb-2">Weekly General Team Meeting</h1>
                 <div className="w-full h-full flex flex-col justify-between">
-                    <ParticipantsVideo participants={Participants} />
+                    {whiteBoardMode ? <Whiteboard /> : <ParticipantsVideo participants={Participants} />}
                     <RoomButtonsController />
                 </div>
             </div>
