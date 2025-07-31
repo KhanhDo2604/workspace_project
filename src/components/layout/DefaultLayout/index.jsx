@@ -1,4 +1,4 @@
-import { dialogActions } from '../../../store/slices';
+import { dialogActions } from '../../../store/slices/DialogSlice';
 import NotificationDialog from '../../Notification';
 import SettingDialog from '../../SettingDialog';
 import Sidebar from './Sidebar';

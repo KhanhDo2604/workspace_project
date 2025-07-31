@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from 'react-redux';
 import assets from '../../../../constants/icon';
 import SidebarBtn from './SidebarBtn';
-import { dialogActions } from '../../../../store/slices/index';
+import { dialogActions } from '../../../../store/slices/DialogSlice';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { colors } from '../../../../constants/color';
 

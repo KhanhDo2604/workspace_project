@@ -3,7 +3,7 @@ import assets from '../../constants/icon'; // Assuming assets is imported from a
 import FormField from '../FormField';
 import Button from '../Button';
 import { useDispatch } from 'react-redux';
-import { dialogActions } from '../../store/slices';
+import { dialogActions } from '../../store/slices/DialogSlice';
 
 function SettingDialog() {
     const dispatch = useDispatch();
