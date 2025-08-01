@@ -7,12 +7,14 @@ import TaskBoardPage from '../pages/TaskBoard';
 import SignupPage from '../pages/Register';
 import ForgotPasswordPage from '../pages/ForgotPassword';
 import SetPasswordPage from '../pages/SetPassword';
+import ChatScreen from '../pages/Chat';
 
 const privateRoutes = [
     { path: '/', component: HomePage },
     { path: '/my-task', component: PersonalTaskPage },
     { path: '/calendar', component: SchedulePage },
     { path: '/task-board', component: TaskBoardPage },
+    { path: '/chat', component: ChatScreen },
     { path: '/login', component: LoginPage, thread: 'auth' },
     { path: '/signup', component: SignupPage, thread: 'auth' },
     { path: '/forgot-password', component: ForgotPasswordPage, thread: 'auth' },

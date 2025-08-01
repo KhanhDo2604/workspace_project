@@ -26,7 +26,8 @@ import {
     faEllipsisVertical,
     faPaperPlane,
 } from '@fortawesome/free-solid-svg-icons';
-import { faEnvelope, faClock } from '@fortawesome/free-regular-svg-icons';
+import { faJira, faTrello } from '@fortawesome/free-brands-svg-icons';
+import { faEnvelope, faClock, faCalendarDays } from '@fortawesome/free-regular-svg-icons';
 
 const icon = {
     chat: faMessage,
@@ -53,6 +54,9 @@ const icon = {
     send: faPaperPlane,
     meetingEnd: meetingEnd,
     whiteBoard: whiteBoard,
+    jira: faJira,
+    trello: faTrello,
+    calendarOutline: faCalendarDays,
 };
 
 const image = {

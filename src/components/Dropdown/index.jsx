@@ -40,20 +40,20 @@ const Dropdown = ({
     const selectedStyle = `${variantClasses[variant]} ${borderClasses[variant]}`;
 
     return (
-        <div className={`relative inline-block text-left ${className}`} ref={dropdownRef}>
+        <div className={`relative inline-block ${className}`} ref={dropdownRef}>
             {label && <label className="block text-lg mb-1 text-gray-600">{label}</label>}
 
             <button
                 type="button"
                 onClick={() => setIsOpen((prev) => !prev)}
-                className={`flex items-center justify-between px-4 py-2 rounded-lg min-w-[150px] text-lg transition ${selectedStyle}`}
+                className={`flex items-center justify-between gap-2 px-4 py-2 rounded-lg min-w-[100px] text-lg transition ${selectedStyle} w-full`}
             >
-                <span>{selected?.label || placeholder}</span>
+                <span>{selected || placeholder}</span>
                 <FontAwesomeIcon icon={assets.icon.dropdown} className="w-6 h-6" />
             </button>
 
             {isOpen && (
-                <div className="absolute z-10 mt-2 w-full rounded-lg bg-white ring-1 ring-black ring-opacity-5">
+                <div className="absolute z-10 mt-3 inline-block min-w-max rounded-xl bg-white shadow-lg right-0">
                     {options.map((option) => (
                         <button
                             key={option.value}
@@ -61,9 +61,11 @@ const Dropdown = ({
                                 onSelect(option);
                                 setIsOpen(false);
                             }}
-                            className="flex w-full px-4 py-2 text-left hover:bg-gray-100 text-lg text-gray-800"
+                            className="flex w-full px-4 py-2 text-left hover:bg-gray-100 text-lg hover:rounded-xl text-gray-800 items-center"
                         >
-                            {option.icon && <option.icon className="w-6 h-6 mr-2 text-gray-500" />}
+                            {option.icon && (
+                                <FontAwesomeIcon icon={option.icon} className="w-6 h-6 mr-2 text-gray-500" />
+                            )}
                             {option.label}
                         </button>
                     ))}

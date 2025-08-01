@@ -3,11 +3,11 @@ import Button from '../../components/Button';
 import assets from '../../constants/icon';
 import ParticipantTag from './ParticipantTag';
 import ChatCard from '../../components/ChatCard';
-import FormField from '../../components/FormField';
 import RoomButtonsController from './RoomButtonsController';
 import ParticipantsVideo from './ParticipantsVideo';
 import { useSelector } from 'react-redux';
 import Whiteboard from './Whiteboard';
+import ChatEditor from '../../components/ChatEditor';
 
 function MeetingPage() {
     const whiteBoardMode = useSelector((state) => state.meeting.whiteBoardMode);
@@ -139,18 +139,12 @@ function MeetingPage() {
                     </div>
 
                     {/* Input message */}
-                    <div className="mt-4 flex items-center justify-between gap-2 w-full">
-                        <div className="flex-1">
-                            <FormField
-                                placeholder="Message..."
-                                borderColor="border-gray-300"
-                                borderRadius="rounded-full"
-                            />
-                        </div>
-                        <Button variant="primary" className="rounded-full w-12 h-12">
-                            <FontAwesomeIcon icon={assets.icon.send} />
-                        </Button>
-                    </div>
+                    <ChatEditor
+                        placeholder="Message..."
+                        onSend={() => console.log('Sent!')}
+                        onChange={(val) => console.log('Typing:', val)}
+                        className={'border-gray-300 border rounded-full w-full mt-4'}
+                    />
                 </div>
             </div>
         </div>
