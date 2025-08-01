@@ -13,7 +13,7 @@ function ChatCard({ userIcon, userName, content, timestamp, isMe }) {
                 <div className={`${isMe ? 'bg-button/30' : 'bg-gray-100'} px-4 py-2 rounded-xl`}>
                     <p className="text-lg">{content}</p>
                 </div>
-                <span className="text-sm">{timestamp}</span>
+                <span className="text-sm mt-2">{timestamp}</span>
             </div>
         </div>
     );

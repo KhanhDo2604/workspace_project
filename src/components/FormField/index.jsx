@@ -19,6 +19,7 @@ const FormField = ({
     const [showPassword, setShowPassword] = useState(false);
     const isPassword = type === 'password';
     const isTextarea = type === 'textarea';
+    const isDate = type === 'date';
     const inputType = isPassword ? (showPassword ? 'text' : 'password') : type;
 
     const baseClass = 'flex-1 py-3 outline-none bg-transparent text-lg placeholder-gray-400';
@@ -59,7 +60,7 @@ const FormField = ({
                         placeholder={placeholder}
                         value={value}
                         onChange={onChange}
-                        className={baseClass}
+                        className={`${baseClass} ${isDate ? 'cursor-pointer' : ''}`}
                     />
                 )}
 
@@ -82,7 +83,7 @@ const FormField = ({
 FormField.propTypes = {
     label: PropTypes.string,
     name: PropTypes.string.isRequired,
-    type: PropTypes.oneOf(['text', 'password', 'textarea', 'select', 'email', 'number']),
+    type: PropTypes.oneOf(['text', 'password', 'textarea', 'select', 'email', 'number', 'date']),
     value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
     onChange: PropTypes.func.isRequired,
     placeholder: PropTypes.string,

@@ -31,7 +31,7 @@ const Button = ({
     // Variant classes
     const variantClasses = {
         primary: 'text-headline bg-button',
-        secondary: 'text-button border border-2 border-button',
+        secondary: 'text-button border border-1 border-button',
         outline: 'border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 focus:ring-blue-500',
         text: 'text-button p-0 text-lg',
     };
@@ -58,7 +58,7 @@ const Button = ({
                 {googleIcon}
                 {startIcon && <span className="mr-2 w-6 h-6 ">{startIcon}</span>}
                 {children}
-                {endIcon && <span className="ml-2 w-6 h-6 bg-amber-50">{endIcon}</span>}
+                {endIcon && <span className="ml-2 w-6 h-6">{endIcon}</span>}
             </>
         </Element>
     );

@@ -5,6 +5,7 @@ const dialogSlice = createSlice({
     initialState: {
         openSetting: false,
         openNotification: false,
+        openAddScheduleDialog: false,
     },
     reducers: {
         toggleSetting: (state) => {
@@ -25,6 +26,13 @@ const dialogSlice = createSlice({
             if (state.openNotification) {
                 state.openSetting = false;
             }
+        },
+        openAddScheduleDialog: (state) => {
+            state.openAddScheduleDialog = true;
+        },
+
+        closeAddScheduleDialog: (state) => {
+            state.openAddScheduleDialog = false;
         },
     },
 });
