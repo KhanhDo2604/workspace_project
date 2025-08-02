@@ -80,22 +80,35 @@ function ChatScreen() {
     return (
         <div className="bg-secondary h-screen flex flex-col">
             <ProjectHeader {...teamInfo} />
-            <div className="relative">{isOpenAddScheduleDialog && <AddScheduleDialog />}</div>
-            <div className="flex-1 p-6 overflow-y-auto">
-                {/* Chat messages will go here */}
-                <div className="space-y-4">
-                    {chatData.map((message, index) => (
-                        <ChatCard
-                            key={index}
-                            userIcon={message.userIcon}
-                            userName={message.userName}
-                            content={message.content}
-                            timestamp={message.timestamp}
-                            isMe={message.isMe}
-                        />
-                    ))}
+            <div className={`relative ${isOpenAddScheduleDialog ? 'overflow-hidden' : 'overflow-y-auto'} h-full`}>
+                <div className="flex-1 p-6">
+                    {/* Chat messages */}
+                    <div className="space-y-4">
+                        {chatData.map((message, index) => (
+                            <ChatCard
+                                key={index}
+                                userIcon={message.userIcon}
+                                userName={message.userName}
+                                content={message.content}
+                                timestamp={message.timestamp}
+                                isMe={message.isMe}
+                            />
+                        ))}
+                    </div>
                 </div>
+
+                {/* Dialog & Overlay */}
+                {isOpenAddScheduleDialog && (
+                    <div className="absolute inset-0 z-50">
+                        <div className="absolute inset-0 bg-black/30" />
+
+                        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50">
+                            <AddScheduleDialog />
+                        </div>
+                    </div>
+                )}
             </div>
+
             <div className="p-4 w-full">
                 {/* Chat editor will go here */}
                 <ChatEditor

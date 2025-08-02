@@ -15,6 +15,7 @@ const FormField = ({
     borderColor = 'border-button/50',
     borderRadius = 'rounded-lg',
     className = '',
+    isRequired = false,
 }) => {
     const [showPassword, setShowPassword] = useState(false);
     const isPassword = type === 'password';
@@ -40,7 +41,7 @@ const FormField = ({
                 {icon === assets.icon.lock && icon ? (
                     <img src={icon} alt="icon" className="mr-3 w-8 h-8 text-gray-400" />
                 ) : (
-                    <FontAwesomeIcon icon={icon} className="mr-3 text-gray-400" />
+                    <FontAwesomeIcon icon={icon} className={`mr-3 text-gray-400 ${isDate ? 'cursor-pointer' : ''}`} />
                 )}
 
                 {isTextarea ? (
@@ -50,6 +51,7 @@ const FormField = ({
                         placeholder={placeholder}
                         value={value}
                         onChange={onChange}
+                        required={isRequired}
                         className={`${baseClass} resize-none h-24`}
                     />
                 ) : (
@@ -60,6 +62,7 @@ const FormField = ({
                         placeholder={placeholder}
                         value={value}
                         onChange={onChange}
+                        required={isRequired}
                         className={`${baseClass} ${isDate ? 'cursor-pointer' : ''}`}
                     />
                 )}
@@ -92,6 +95,7 @@ FormField.propTypes = {
     borderColor: PropTypes.string,
     borderRadius: PropTypes.string,
     className: PropTypes.string,
+    isRequired: PropTypes.bool,
 };
 
 export default FormField;

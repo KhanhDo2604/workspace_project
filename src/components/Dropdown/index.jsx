@@ -12,6 +12,8 @@ const Dropdown = ({
     placeholder = 'Select an option',
     className = '',
     variant = 'secondary',
+    size = 'md',
+    isRequired = false,
 }) => {
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef();
@@ -46,7 +48,9 @@ const Dropdown = ({
             <button
                 type="button"
                 onClick={() => setIsOpen((prev) => !prev)}
-                className={`flex items-center justify-between gap-2 px-4 py-2 rounded-lg min-w-[100px] text-lg transition ${selectedStyle} w-full`}
+                className={`flex items-center justify-between gap-2 px-4 ${
+                    size === 'lg' ? 'py-5' : 'py-2'
+                } rounded-xl min-w-[100px] text-lg transition ${selectedStyle} w-full`}
             >
                 <span>{selected || placeholder}</span>
                 <FontAwesomeIcon icon={assets.icon.dropdown} className="w-6 h-6" />
@@ -92,6 +96,8 @@ Dropdown.propTypes = {
     placeholder: PropTypes.string,
     className: PropTypes.string,
     variant: PropTypes.oneOf(['primary', 'secondary']),
+    size: PropTypes.oneOf(['md', 'lg']),
+    isRequired: PropTypes.bool,
 };
 
 export default Dropdown;

@@ -1,6 +1,3 @@
-// import { useDispatch } from 'react-redux';
-// import { dialogActions } from '../../store/slices/DialogSlice';
-// import assets from '../../constants/icon';
 import { useState } from 'react';
 import Dropdown from '../../components/Dropdown';
 import FormField from '../../components/FormField';
@@ -19,12 +16,12 @@ function AddScheduleDialog() {
     ];
 
     return (
-        <div className="w-1/2 h-fit mt-10 bg-white rounded-xl shadow-sm mx-auto absolute top-0 left-0 right-0 z-50">
+        <div className="w-full h-full mt-10 bg-white rounded-xl shadow-sm">
             <div className="p-4 flex justify-center items-center">
                 <h1 className="text-2xl font-bold">Add Schedule</h1>
             </div>
 
-            <div className="p-4 border border-gray-300 text-xl space-y-6">
+            <div className="p-4 border-y-1 border-gray-300 text-xl space-y-6">
                 <div className="grid grid-cols-5 items-center gap-4">
                     <p className="col-span-1">Conference Topic *</p>
                     <FormField
@@ -35,6 +32,7 @@ function AddScheduleDialog() {
                         borderRadius="rounded-xl"
                         borderColor="border-stroke"
                         className="col-span-4"
+                        isRequired={true}
                     />
                 </div>
 
@@ -46,7 +44,8 @@ function AddScheduleDialog() {
                         selected={selected}
                         placeholder="Select Host"
                         variant="secondary"
-                        className="col-span-4 w-full"
+                        className="col-span-4 w-full border border-stroke rounded-xl"
+                        size="lg"
                     />
                 </div>
 
@@ -76,6 +75,13 @@ function AddScheduleDialog() {
                             borderColor="border-stroke"
                             className="col-span-4 w-full"
                         />
+                        <FormField
+                            type="hour"
+                            placeholder="hour"
+                            onChange={() => {}}
+                            borderRadius="rounded-xl"
+                            borderColor="border-stroke"
+                        />
                         <Dropdown
                             options={[
                                 { label: 'AM', value: 'am' },
@@ -85,7 +91,8 @@ function AddScheduleDialog() {
                             selected={selected}
                             placeholder="AM"
                             variant="secondary"
-                            className="col-span-4 w-full"
+                            size="lg"
+                            className="border border-stroke rounded-xl"
                         />
                     </div>
                 </div>
@@ -106,7 +113,7 @@ function AddScheduleDialog() {
                 </div>
             </div>
 
-            <div className="flex gap-4 justify-center items-center mb-4">
+            <div className="flex gap-4 justify-center items-center pb-4">
                 <Button
                     variant="secondary"
                     onClick={() => dispatch(dialogActions.closeAddScheduleDialog())}
