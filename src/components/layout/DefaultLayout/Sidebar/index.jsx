@@ -9,6 +9,12 @@ function Sidebar() {
     const dispatch = useDispatch();
     const isOpenSetting = useSelector((state) => state.dialog.openSetting);
     const isOpenNotification = useSelector((state) => state.dialog.openNotification);
+    const sidebarState = useSelector((state) => state.sideBar.currentTab);
+
+    const handleSidebarClick = (path) => {
+        dispatch(dialogActions.closeAllDialogs());
+        dispatch({ type: 'sideBar/setCurrentTab', payload: path });
+    };
 
     return (
         <aside className="w-1/5 bg-primary py-9 px-7">
@@ -34,8 +40,20 @@ function Sidebar() {
             <div className="mb-10">
                 <h5 className="text-headline font-medium">Workspace</h5>
                 <div className="mb-2">
-                    <SidebarBtn icon={assets.icon.myTask} label="My tasks" to="/my-task" />
-                    <SidebarBtn icon={assets.icon.calendar} label="Calendar" to="/calendar" />
+                    <SidebarBtn
+                        icon={assets.icon.myTask}
+                        label="My tasks"
+                        to="/my-task"
+                        isActive={sidebarState === '/my-task'}
+                        onClick={() => handleSidebarClick('/my-task')}
+                    />
+                    <SidebarBtn
+                        icon={assets.icon.calendar}
+                        label="Calendar"
+                        to="/calendar"
+                        isActive={sidebarState === '/calendar'}
+                        onClick={() => handleSidebarClick('/calendar')}
+                    />
                 </div>
             </div>
 
@@ -53,8 +71,20 @@ function Sidebar() {
                     </div>
                     <div className="pl-7">
                         <div className="pl-4 border-l-2 border-black/20">
-                            <SidebarBtn icon={assets.icon.chat} label="Chat" to="/chat" />
-                            <SidebarBtn icon={assets.icon.group} label="Task board" to="/task-board" />
+                            <SidebarBtn
+                                icon={assets.icon.chat}
+                                label="Chat"
+                                to="/chat"
+                                isActive={sidebarState === '/chat'}
+                                onClick={() => handleSidebarClick('/chat')}
+                            />
+                            <SidebarBtn
+                                icon={assets.icon.group}
+                                label="Task board"
+                                to="/task-board"
+                                isActive={sidebarState === '/task-board'}
+                                onClick={() => handleSidebarClick('/task-board')}
+                            />
                         </div>
                     </div>
                 </div>
