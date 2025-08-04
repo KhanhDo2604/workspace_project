@@ -30,9 +30,9 @@ const Button = ({
 
     // Variant classes
     const variantClasses = {
-        primary: 'text-headline bg-button',
+        primary: ' bg-button', //text-headline
         secondary: 'text-button border border-1 border-button',
-        outline: 'border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 focus:ring-blue-500',
+        outline: '',
         text: 'text-button p-0 text-lg',
     };
 

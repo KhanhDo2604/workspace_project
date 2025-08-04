@@ -21,7 +21,7 @@ function PersonalTaskPage() {
             name: 'Task 1',
             subTasks: ['Sub Task 1'],
             types: ['Design', 'Research', 'Q&A', 'Development', 'Development2', 'Development3'],
-            assignee: 'Khanh Do, member 2',
+            assignee: 'Khanh Do',
             startDate: '19 Jul 2025',
             dueDate: '31 Oct 2025',
         },
