@@ -13,7 +13,7 @@ function DefaultLayout({ children }) {
         <div>
             <div className="flex h-screen">
                 <Sidebar />
-                <div className="size-full relative">
+                <div className="size-full relative overflow-hidden">
                     {children}
 
                     {(isOpenSetting || isOpenNotification) && (
