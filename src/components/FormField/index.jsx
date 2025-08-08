@@ -16,6 +16,7 @@ const FormField = ({
     borderRadius = 'rounded-lg',
     className = '',
     isRequired = false,
+    widthFull = false,
 }) => {
     const [showPassword, setShowPassword] = useState(false);
     const isPassword = type === 'password';
@@ -26,7 +27,7 @@ const FormField = ({
     const baseClass = 'flex-1 py-3 outline-none bg-transparent text-lg placeholder-gray-400';
 
     return (
-        <div className={`${className}`}>
+        <div className={`${widthFull ? 'w-full' : 'w-fit'}`}>
             {label && (
                 <label htmlFor={name} className="block text-lg mb-1 text-gray-700">
                     {label}
@@ -34,14 +35,14 @@ const FormField = ({
             )}
 
             <div
-                className={`flex items-center gap-2 px-3 py-2 border ${borderRadius} ${
+                className={`flex items-center gap-2 ${className} border ${borderRadius} ${
                     error ? 'border-tertiary' : borderColor
                 } focus-within:ring-2 focus-within:ring-button ${isTextarea ? 'items-start' : ''}`}
             >
                 {icon === assets.icon.lock && icon ? (
-                    <img src={icon} alt="icon" className="mr-3 w-8 h-8 text-gray-400" />
+                    <img src={icon} alt="icon" className="mr-1 w-8 h-8 text-gray-400" />
                 ) : (
-                    <FontAwesomeIcon icon={icon} className={`mr-3 text-gray-400 ${isDate ? 'cursor-pointer' : ''}`} />
+                    <FontAwesomeIcon icon={icon} className={`mr-1 text-gray-400 ${isDate ? 'cursor-pointer' : ''}`} />
                 )}
 
                 {isTextarea ? (

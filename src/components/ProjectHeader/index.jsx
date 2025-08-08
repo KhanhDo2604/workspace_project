@@ -32,10 +32,18 @@ function ProjectHeader({ teamName, teamDescription, teamMembers }) {
             {/* Middle: App icons */}
             <div className="flex items-center justify-between px-4 p-2">
                 <div className="flex items-center gap-3">
-                    <Button variant="text" startIcon={<FontAwesomeIcon icon={assets.icon.trello} size="lg" />}>
+                    <Button
+                        variant="text"
+                        startIcon={<FontAwesomeIcon icon={assets.icon.trello} size="lg" />}
+                        to={'task-board'}
+                    >
                         <span className="text-base text-gray-600">To do</span>
                     </Button>
-                    <Button variant="text" startIcon={<FontAwesomeIcon icon={assets.icon.jira} size="lg" />}>
+                    <Button
+                        variant="text"
+                        startIcon={<FontAwesomeIcon icon={assets.icon.jira} size="lg" />}
+                        to={'time-line'}
+                    >
                         <span className="text-base text-gray-600">Jira board</span>
                     </Button>
                 </div>

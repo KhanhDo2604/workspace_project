@@ -8,6 +8,7 @@ import SignupPage from '../pages/Register';
 import ForgotPasswordPage from '../pages/ForgotPassword';
 import SetPasswordPage from '../pages/SetPassword';
 import ChatScreen from '../pages/Chat';
+import TimelinePage from '../pages/TaskBoard/TimeLinePage';
 
 const privateRoutes = [
     { path: '/', component: HomePage },
@@ -15,6 +16,7 @@ const privateRoutes = [
     { path: '/calendar', component: SchedulePage },
     { path: '/task-board', component: TaskBoardPage },
     { path: '/chat', component: ChatScreen },
+    { path: '/task-board/time-line', component: TimelinePage },
     { path: '/login', component: LoginPage, thread: 'auth' },
     { path: '/signup', component: SignupPage, thread: 'auth' },
     { path: '/forgot-password', component: ForgotPasswordPage, thread: 'auth' },

@@ -1,3 +1,3 @@
-const APP_STANDARD_DATE_FORMAT = 'dd-MM-yyyy';
+const APP_STANDARD_DATE_FORMAT = 'dd-MMM-yyyy';
 
 export { APP_STANDARD_DATE_FORMAT };

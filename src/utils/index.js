@@ -9,6 +9,17 @@ const isSameDay = (date1, date2) => {
     return format(date1, APP_STANDARD_DATE_FORMAT) === format(date2, APP_STANDARD_DATE_FORMAT);
 };
 
+const stringToTimeStamp = (dateString) => {
+    const date = new Date(dateString);
+    return Math.floor(date.getTime());
+};
+
+const toStartOfDay = (ts) => {
+    const date = new Date(ts);
+    date.setHours(0, 0, 0, 0);
+    return date.getTime();
+};
+
 function mixWithWhite(hex, whiteRatio) {
     const r = parseInt(hex.substring(1, 3), 16);
     const g = parseInt(hex.substring(3, 5), 16);
@@ -38,4 +49,4 @@ const randomColor = () => {
     };
 };
 
-export { formatDate, isSameDay, randomColor };
+export { formatDate, isSameDay, randomColor, stringToTimeStamp, toStartOfDay };

@@ -22,7 +22,8 @@ function RegisterPage() {
                         placeholder="Enter your full name"
                         icon={assets.icon.user}
                         borderRadius="rounded-full"
-                        className="mb-4"
+                        className="mb-4 px-3 py-2"
+                        widthFull={true}
                     />
 
                     <FormField
@@ -34,7 +35,8 @@ function RegisterPage() {
                         placeholder="Enter your email"
                         icon={assets.icon.email}
                         borderRadius="rounded-full"
-                        className="mb-4"
+                        className="mb-4 px-3 py-2"
+                        widthFull={true}
                     />
 
                     <FormField
@@ -46,7 +48,8 @@ function RegisterPage() {
                         placeholder="Enter your password"
                         icon={assets.icon.lock}
                         borderRadius="rounded-full"
-                        className="mb-4"
+                        className="mb-4 px-3 py-2"
+                        widthFull={true}
                     />
                     <FormField
                         label="Confirm Password"
@@ -57,7 +60,8 @@ function RegisterPage() {
                         placeholder="Enter your password"
                         icon={assets.icon.lock}
                         borderRadius="rounded-full"
-                        className="mb-4"
+                        className="mb-4 px-3 py-2"
+                        widthFull={true}
                     />
                 </div>
                 <div className="w-full flex justify-between items-center mb-6">
@@ -88,7 +92,7 @@ function RegisterPage() {
 
                 <div className="w-full flex items-center justify-center mt-6">
                     <p className="text-center text-lg mr-3">Already have an account?</p>
-                    <Button variant="text" to="/login">
+                    <Button variant="text" to="/login" className="text-headline">
                         Sign In
                     </Button>
                 </div>

@@ -26,6 +26,7 @@ import {
     faEllipsisVertical,
     faPaperPlane,
     faPlus,
+    faMagnifyingGlass,
 } from '@fortawesome/free-solid-svg-icons';
 import { faJira, faTrello } from '@fortawesome/free-brands-svg-icons';
 import { faEnvelope, faClock, faCalendarDays, faCommentDots } from '@fortawesome/free-regular-svg-icons';
@@ -60,6 +61,7 @@ const icon = {
     calendarOutline: faCalendarDays,
     comment: faCommentDots,
     add: faPlus,
+    search: faMagnifyingGlass,
 };
 
 const image = {

@@ -22,7 +22,8 @@ function LoginPage() {
                         placeholder="Enter your email"
                         icon={assets.icon.email}
                         borderRadius="rounded-full"
-                        className="mb-4"
+                        className="mb-4 px-3 py-2"
+                        widthFull={true}
                     />
 
                     <FormField
@@ -34,7 +35,8 @@ function LoginPage() {
                         placeholder="Enter your password"
                         icon={assets.icon.lock}
                         borderRadius="rounded-full"
-                        className="mb-4"
+                        className="mb-4 px-3 py-2"
+                        widthFull={true}
                     />
                 </div>
                 <div className="w-full flex justify-between items-center mb-6">
@@ -48,7 +50,7 @@ function LoginPage() {
                 </div>
 
                 <div className="w-full">
-                    <Button variant="primary" className="mr-4 mb-2 rounded-full px-2 py-4 w-full">
+                    <Button variant="primary" className="mr-4 mb-2 rounded-full px-2 py-4 text-headline w-full">
                         Sign in
                     </Button>
 

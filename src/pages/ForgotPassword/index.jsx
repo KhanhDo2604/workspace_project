@@ -25,11 +25,12 @@ function ForgotPasswordPage() {
                         placeholder="Enter your email"
                         icon={assets.icon.email}
                         borderRadius="rounded-full"
-                        className="mb-4"
+                        className="mb-4 px-3 py-2"
+                        widthFull={true}
                     />
                 </div>
 
-                <Button variant="primary" className="mr-4 mb-2 rounded-full px-2 py-4  w-full">
+                <Button variant="primary" className="mr-4 mb-2 rounded-full px-2 py-4 text-headline w-full">
                     Submit
                 </Button>
             </form>
