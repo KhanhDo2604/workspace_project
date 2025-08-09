@@ -37,7 +37,7 @@ export default function ChatEditor({ placeholder, value, onChange, onSend, showO
                     className="w-full resize-none border-none outline-none px-3 py-2 text-lg"
                 />
                 <Button variant="primary" className="rounded-full w-10 h-10" onClick={onSend}>
-                    <FontAwesomeIcon icon={assets.icon.send} size="sm" />
+                    <FontAwesomeIcon icon={assets.icon.send} size="sm" className="text-headline" />
                 </Button>
             </div>
 

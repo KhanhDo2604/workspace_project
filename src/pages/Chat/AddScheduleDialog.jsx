@@ -24,16 +24,19 @@ function AddScheduleDialog() {
             <div className="p-4 border-y-1 border-gray-300 text-xl space-y-6">
                 <div className="grid grid-cols-5 items-center gap-4">
                     <p className="col-span-1">Conference Topic *</p>
-                    <FormField
-                        name="conferenceTopic"
-                        type="text"
-                        placeholder="Set a conference topic before it starts"
-                        onChange={() => {}}
-                        borderRadius="rounded-xl"
-                        borderColor="border-stroke"
-                        className="col-span-4"
-                        isRequired={true}
-                    />
+                    <div className="col-span-4 w-full">
+                        <FormField
+                            name="conferenceTopic"
+                            type="text"
+                            placeholder="Set a conference topic before it starts"
+                            onChange={() => {}}
+                            borderRadius="rounded-xl"
+                            borderColor="border-stroke"
+                            className="px-3 py-2"
+                            isRequired
+                            widthFull
+                        />
+                    </div>
                 </div>
 
                 <div className="grid grid-cols-5 items-center gap-4">
@@ -51,15 +54,18 @@ function AddScheduleDialog() {
 
                 <div className="grid grid-cols-5 items-start gap-4">
                     <p className="col-span-1">Description</p>
-                    <FormField
-                        name="description"
-                        type="textarea"
-                        placeholder="Add a description for the conference"
-                        onChange={() => {}}
-                        borderRadius="rounded-xl"
-                        borderColor="border-stroke"
-                        className="col-span-4"
-                    />
+                    <div className="col-span-4">
+                        <FormField
+                            name="description"
+                            type="textarea"
+                            placeholder="Add a description for the conference"
+                            onChange={() => {}}
+                            borderRadius="rounded-xl"
+                            borderColor="border-stroke"
+                            className="px-3 py-2"
+                            widthFull
+                        />
+                    </div>
                 </div>
             </div>
 
@@ -73,7 +79,8 @@ function AddScheduleDialog() {
                             onChange={() => {}}
                             borderRadius="rounded-xl"
                             borderColor="border-stroke"
-                            className="col-span-4 w-full"
+                            className="col-span-4 px-3 py-2"
+                            widthFull
                         />
                         <FormField
                             type="hour"
@@ -81,6 +88,7 @@ function AddScheduleDialog() {
                             onChange={() => {}}
                             borderRadius="rounded-xl"
                             borderColor="border-stroke"
+                            className="px-3 py-2"
                         />
                         <Dropdown
                             options={[
@@ -106,7 +114,8 @@ function AddScheduleDialog() {
                             onChange={() => {}}
                             borderRadius="rounded-xl"
                             borderColor="border-stroke"
-                            className="flex-1"
+                            className="flex-1 px-3 py-2"
+                            widthFull
                         />
                         <p className="text-base">/hour</p>
                     </div>
@@ -122,7 +131,7 @@ function AddScheduleDialog() {
                     Cancel
                 </Button>
 
-                <Button className="text-xl rounded-lg border border-button px-6">Save</Button>
+                <Button className="text-xl rounded-lg border border-button px-6 text-headline">Save</Button>
             </div>
         </div>
     );

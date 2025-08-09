@@ -6,6 +6,7 @@ const dialogSlice = createSlice({
         openSetting: false,
         openNotification: false,
         openAddScheduleDialog: false,
+        openTaskCreationDialog: false,
     },
     reducers: {
         toggleSetting: (state) => {
@@ -20,6 +21,7 @@ const dialogSlice = createSlice({
         closeAllDialogs: (state) => {
             state.openSetting = false;
             state.openNotification = false;
+            state.openAddScheduleDialog = false;
         },
         toggleNotification: (state) => {
             state.openNotification = !state.openNotification;
@@ -33,6 +35,12 @@ const dialogSlice = createSlice({
 
         closeAddScheduleDialog: (state) => {
             state.openAddScheduleDialog = false;
+        },
+        openTaskCreationDialog: (state) => {
+            state.openTaskCreationDialog = true;
+        },
+        closeTaskCreationDialog: (state) => {
+            state.openTaskCreationDialog = false;
         },
     },
 });
