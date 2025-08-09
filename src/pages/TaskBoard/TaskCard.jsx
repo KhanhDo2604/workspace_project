@@ -1,16 +1,33 @@
+import { useDraggable } from '@dnd-kit/core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { typeColorMap } from '../../constants/color';
 import assets from '../../constants/icon';
 
-function TaskCard({ id, title, assignees, types }) {
-    return (
-        <div className="bg-headline p-6 rounded-lg shadow-sm w-full">
-            <p className="text-gray-500 text-base">{id}</p>
+function TaskCard({ task }) {
+    const { attributes, listeners, setNodeRef, transform } = useDraggable({
+        id: task.id,
+    });
 
-            <h1 className="text-xl font-semibold line-clamp-1 text-ellipsis overflow-hidden mt-4">{title}</h1>
+    const style = transform
+        ? {
+              transform: `translate(${transform.x}px, ${transform.y}px)`,
+          }
+        : undefined;
+
+    return (
+        <div
+            ref={setNodeRef}
+            {...listeners}
+            {...attributes}
+            style={style}
+            className="cursor-grab bg-headline p-6 rounded-lg shadow-sm w-full hover:shadow-md"
+        >
+            <p className="text-gray-500 text-base">{task.id}</p>
+
+            <h1 className="text-xl font-semibold line-clamp-1 text-ellipsis overflow-hidden mt-4">{task.title}</h1>
 
             <div className="my-4 gap-2 flex flex-wrap">
-                {types.map((type, index) => (
+                {task.types.map((type, index) => (
                     <span
                         key={index}
                         className={`px-2 py-1 text-base rounded-full font-bold ${
@@ -23,9 +40,9 @@ function TaskCard({ id, title, assignees, types }) {
             </div>
 
             <div className="flex justify-between">
-                {assignees && assignees.length > 0 && (
+                {task.assignees && task.assignees.length > 0 && (
                     <div>
-                        {assignees.map((assignee, index) => (
+                        {task.assignees.map((assignee, index) => (
                             <img
                                 key={index}
                                 src={assignee.avatar || assets.image.userTemp}

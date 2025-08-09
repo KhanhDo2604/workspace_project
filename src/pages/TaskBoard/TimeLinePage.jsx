@@ -1,11 +1,14 @@
-import Button from '../../components/Button';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useDispatch, useSelector } from 'react-redux';
+import { useMemo } from 'react';
 import assets from '../../constants/icon';
 import ProjectHeader from '../../components/ProjectHeader';
 import FormField from '../../components/FormField';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { formatDate, toStartOfDay } from '../../utils';
 import { addDays, addMonths, differenceInCalendarDays } from 'date-fns';
-import { useMemo } from 'react';
+import TaskCreationDialog from './TaskCreationDialog';
+import { dialogActions } from '../../store/slices/DialogSlice';
+import Button from '../../components/Button';
 
 const users = [
     { name: 'Alice', avatar: '/avatars/alice.png' },
@@ -79,7 +82,7 @@ const teamInfo = {
 
 const rowHeight = 60;
 
-const UpperSection = () => {
+const UpperSection = ({ onCreateTask }) => {
     return (
         <div>
             <div className="flex justify-between items-center mb-5">
@@ -112,6 +115,7 @@ const UpperSection = () => {
                 <Button
                     startIcon={<FontAwesomeIcon icon={assets.icon.add} className="text-headline" />}
                     className="rounded-xl"
+                    onClick={onCreateTask}
                 >
                     <span className="text-white leading-0 py-4">Create Task</span>
                 </Button>
@@ -121,6 +125,9 @@ const UpperSection = () => {
 };
 
 function TimelinePage() {
+    const dispatch = useDispatch();
+    const isOpenTaskCreationDialog = useSelector((state) => state.dialog.openTaskCreationDialog);
+
     const startDate = useMemo(() => new Date(), []);
     const endDate = useMemo(() => addMonths(startDate, 1), [startDate]);
     const totalDays = useMemo(() => differenceInCalendarDays(endDate, startDate), [startDate, endDate]);
@@ -137,8 +144,13 @@ function TimelinePage() {
         <div className="flex flex-col h-full">
             <ProjectHeader {...teamInfo} />
 
-            <div className="p-5 flex flex-col flex-1 min-h-0">
-                <UpperSection />
+            <div className="p-5 flex flex-col flex-1 min-h-0 relative">
+                <UpperSection onCreateTask={() => dispatch(dialogActions.openTaskCreationDialog())} />
+                {isOpenTaskCreationDialog && (
+                    <div className="absolute inset-0 z-50">
+                        <TaskCreationDialog />
+                    </div>
+                )}
 
                 <div className="flex flex-col flex-1 min-h-0">
                     <div className="overflow-x-auto">

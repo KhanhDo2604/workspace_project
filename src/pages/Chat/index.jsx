@@ -1,13 +1,9 @@
-import { useSelector } from 'react-redux';
 import ChatCard from '../../components/ChatCard';
 import ChatEditor from '../../components/ChatEditor';
 import ProjectHeader from '../../components/ProjectHeader';
 import assets from '../../constants/icon';
-import AddScheduleDialog from './AddScheduleDialog';
 
 function ChatScreen() {
-    const isOpenAddScheduleDialog = useSelector((state) => state.dialog.openAddScheduleDialog);
-
     const teamInfo = {
         teamName: 'Team Alpha',
         teamDescription: 'Track and coordinate social media',
@@ -80,7 +76,7 @@ function ChatScreen() {
     return (
         <div className="bg-secondary h-screen flex flex-col">
             <ProjectHeader {...teamInfo} />
-            <div className={`relative ${isOpenAddScheduleDialog ? 'overflow-hidden' : 'overflow-y-auto'} h-full`}>
+            <div className={`relative overflow-y-auto h-full`}>
                 <div className="flex-1 p-6">
                     {/* Chat messages */}
                     <div className="space-y-4">
@@ -96,21 +92,9 @@ function ChatScreen() {
                         ))}
                     </div>
                 </div>
-
-                {/* Dialog & Overlay */}
-                {isOpenAddScheduleDialog && (
-                    <div className="absolute inset-0 z-50">
-                        <div className="absolute inset-0 bg-black/30" />
-
-                        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50">
-                            <AddScheduleDialog />
-                        </div>
-                    </div>
-                )}
             </div>
 
             <div className="p-4 w-full">
-                {/* Chat editor will go here */}
                 <ChatEditor
                     placeholder="Message #social-media"
                     onSend={handleSend}

@@ -3,6 +3,7 @@ import lock from '../assets/icons/lock.svg';
 import userTemp from '../assets/icons/user_temp.svg';
 import meetingEnd from '../assets/icons/meeting_end.svg';
 import whiteBoard from '../assets/icons/whiteboard.svg';
+import enter from '../assets/icons/enter.svg';
 
 import login_bg from '../assets/images/login_bg.svg';
 
@@ -27,6 +28,8 @@ import {
     faPaperPlane,
     faPlus,
     faMagnifyingGlass,
+    faCheck,
+    faUser,
 } from '@fortawesome/free-solid-svg-icons';
 import { faJira, faTrello } from '@fortawesome/free-brands-svg-icons';
 import { faEnvelope, faClock, faCalendarDays, faCommentDots } from '@fortawesome/free-regular-svg-icons';
@@ -62,6 +65,9 @@ const icon = {
     comment: faCommentDots,
     add: faPlus,
     search: faMagnifyingGlass,
+    check: faCheck,
+    user: faUser,
+    enter: enter,
 };
 
 const image = {
