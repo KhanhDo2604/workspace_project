@@ -1,5 +1,20 @@
 import { format } from 'date-fns';
 import { APP_STANDARD_DATE_FORMAT } from '../constants/common';
+import dayjs from 'dayjs';
+
+const getMonth = (month = dayjs().month(), year = dayjs().year()) => {
+    month = Math.floor(month);
+    year = Math.floor(year);
+    const firstDayOfTheMonth = dayjs(new Date(year, month, 1)).day();
+    let currentMonthCount = 0 - firstDayOfTheMonth;
+    const daysMatrix = new Array(5).fill([]).map(() => {
+        return new Array(7).fill(null).map(() => {
+            currentMonthCount++;
+            return dayjs(new Date(year, month, currentMonthCount));
+        });
+    });
+    return daysMatrix;
+};
 
 const formatDate = (date) => {
     return format(date, APP_STANDARD_DATE_FORMAT);
@@ -49,4 +64,4 @@ const randomColor = () => {
     };
 };
 
-export { formatDate, isSameDay, randomColor, stringToTimeStamp, toStartOfDay };
+export { formatDate, isSameDay, randomColor, stringToTimeStamp, toStartOfDay, getMonth };
