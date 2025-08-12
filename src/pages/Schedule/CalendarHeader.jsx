@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import dayjs from 'dayjs';
 
@@ -6,13 +6,11 @@ import assets from '../../constants/icon';
 import Button from '../../components/Button';
 import { MODES } from '../../constants/common';
 import { calendarActions } from '../../store/slices/CalendarSlice';
-import { useDispatch, useSelector } from 'react-redux';
 
 function CalendarHeader() {
-    const [mode, setMode] = useState(MODES[2]);
-
     const dispatch = useDispatch();
     const monthIndex = useSelector((state) => state.calendar.monthIndex);
+    const viewMode = useSelector((state) => state.calendar.viewMode);
     const year = useSelector((state) => state.calendar.year);
     const currentDate = dayjs().year(year).month(monthIndex);
 
@@ -53,10 +51,12 @@ function CalendarHeader() {
                 {MODES.map((m) => (
                     <Button
                         key={m}
-                        onClick={() => setMode(m)}
-                        className={`px-3 py-1 rounded-xl text-[#003861] ${mode === m ? 'bg-button' : 'bg-gray-100'}`}
+                        onClick={() => dispatch(calendarActions.setViewMode(m))}
+                        className={`px-3 py-1 rounded-xl text-[#003861] ${
+                            viewMode === m ? 'bg-button' : 'bg-gray-100'
+                        }`}
                     >
-                        <p className={mode === m ? 'font-bold' : ''}>{m.charAt(0).toUpperCase() + m.slice(1)}</p>
+                        <p className={viewMode === m ? 'font-bold' : ''}>{m.charAt(0).toUpperCase() + m.slice(1)}</p>
                     </Button>
                 ))}
             </div>

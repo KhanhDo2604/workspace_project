@@ -1,7 +1,7 @@
 import { DAYOFWEEK } from '../../constants/common';
 import Day from './Day';
 
-function CalendarContent({ month }) {
+function MonthView({ month }) {
     return (
         <div className="w-full h-full flex flex-col">
             <div className="grid grid-cols-7">
@@ -21,4 +21,4 @@ function CalendarContent({ month }) {
     );
 }
 
-export default CalendarContent;
+export default MonthView;

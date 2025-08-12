@@ -16,6 +16,24 @@ const getMonth = (month = dayjs().month(), year = dayjs().year()) => {
     return daysMatrix;
 };
 
+const getWeek = (baseDate = dayjs(), weekOffset = 0) => {
+    const startOfWeek = dayjs(baseDate).add(weekOffset, 'week').startOf('week'); //sunday as default
+
+    const weekDays = new Array(7).fill(null).map((_, idx) => startOfWeek.add(idx, 'day'));
+
+    return weekDays;
+};
+
+function getCurrentDayClass(day) {
+    return day.format('DD-MM-YY') === dayjs().format('DD-MM-YY') ? 'bg-button text-white rounded-full' : '';
+}
+
+function isDaySelected(daySelected, day) {
+    return daySelected === day.format('DD-MM-YY')
+        ? 'rounded-full size-8 flex items-center justify-center border border-button'
+        : '';
+}
+
 const formatDate = (date) => {
     return format(date, APP_STANDARD_DATE_FORMAT);
 };
@@ -34,6 +52,10 @@ const toStartOfDay = (ts) => {
     date.setHours(0, 0, 0, 0);
     return date.getTime();
 };
+
+function getStartHour(event) {
+    return dayjs(event.date * 1000).hour();
+}
 
 function mixWithWhite(hex, whiteRatio) {
     const r = parseInt(hex.substring(1, 3), 16);
@@ -64,4 +86,15 @@ const randomColor = () => {
     };
 };
 
-export { formatDate, isSameDay, randomColor, stringToTimeStamp, toStartOfDay, getMonth };
+export {
+    formatDate,
+    isSameDay,
+    randomColor,
+    stringToTimeStamp,
+    toStartOfDay,
+    getMonth,
+    getWeek,
+    getCurrentDayClass,
+    isDaySelected,
+    getStartHour,
+};
