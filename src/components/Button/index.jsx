@@ -53,7 +53,13 @@ const Button = ({
     const googleIcon = variant === 'google' && !startIcon ? <img src={assets.icon.google} alt="Google Icon" /> : null;
 
     return (
-        <Element type={type} className={classes} onClick={onClick} disabled={disabled || isLoading} to={to}>
+        <Element
+            type={type}
+            className={`${classes} hover:shadow-md`}
+            onClick={onClick}
+            disabled={disabled || isLoading}
+            to={to}
+        >
             <>
                 {googleIcon}
                 {startIcon && <span className="mr-2 w-6 h-6 ">{startIcon}</span>}

@@ -13,13 +13,14 @@ function Column({ column, tasks }) {
     else if (tasks.color === 'green') colorClass = 'bg-green-200 text-green-950';
 
     return (
-        <div className="flex-1 min-h-0 overflow-y-auto">
-            <div className="flex items-center mb-2">
+        <div className="flex-1 min-h-0 flex flex-col">
+            <div className="flex items-center mb-2 flex-shrink-0">
                 <div className={`rounded-full ${colorClass} size-9 text-lg mr-2 flex justify-center items-center`}>
                     <p className="leading-0">{tasks.filter((task) => task.status === column.id).length}</p>
                 </div>
                 <h2 className="text-xl font-bold">{column.title}</h2>
             </div>
+
             <div ref={setNodeRef} className="flex-1 min-h-0 overflow-y-auto flex flex-col gap-4 p-1">
                 {tasks
                     .filter((task) => task.status === column.id)

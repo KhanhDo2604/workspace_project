@@ -19,6 +19,14 @@ import assets from '../../constants/icon';
 export default function ChatEditor({ placeholder, value, onChange, onSend, showOptions = false, className }) {
     const [message, setMessage] = useState(value || '');
 
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        if (message.trim()) {
+            onSend(message);
+            setMessage('');
+        }
+    };
+
     const handleInputChange = (e) => {
         const val = e.target.value;
         setMessage(val);
@@ -26,7 +34,7 @@ export default function ChatEditor({ placeholder, value, onChange, onSend, showO
     };
 
     return (
-        <div className={className}>
+        <form className={className} onSubmit={handleSubmit}>
             {/* Input area */}
             <div className="flex items-start justify-between p-3 ">
                 <textarea
@@ -81,6 +89,6 @@ export default function ChatEditor({ placeholder, value, onChange, onSend, showO
                     </div>
                 </div>
             )}
-        </div>
+        </form>
     );
 }

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import PropTypes from 'prop-types';
 import assets from '../../constants/icon';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Input } from '../ui/input';
 
 const FormField = ({
     label,
@@ -40,9 +41,9 @@ const FormField = ({
                 } focus-within:ring-2 focus-within:ring-button ${isTextarea ? 'items-start' : ''}`}
             >
                 {icon === assets.icon.lock && icon ? (
-                    <img src={icon} alt="icon" className="mr-1 w-8 h-8 text-gray-400" />
+                    <img src={icon} alt="icon" className="w-8 h-8 text-gray-400" />
                 ) : (
-                    <FontAwesomeIcon icon={icon} className={`mr-1 text-gray-400 ${isDate ? 'cursor-pointer' : ''}`} />
+                    <FontAwesomeIcon icon={icon} className={` text-gray-400 ${isDate ? 'cursor-pointer' : ''}`} />
                 )}
 
                 {isTextarea ? (
@@ -56,7 +57,7 @@ const FormField = ({
                         className={`${baseClass} resize-none h-24`}
                     />
                 ) : (
-                    <input
+                    <Input
                         id={name}
                         name={name}
                         type={inputType}

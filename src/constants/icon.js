@@ -4,6 +4,7 @@ import userTemp from '../assets/icons/user_temp.svg';
 import meetingEnd from '../assets/icons/meeting_end.svg';
 import whiteBoard from '../assets/icons/whiteboard.svg';
 import enter from '../assets/icons/enter.svg';
+import success from '../assets/icons/success.svg';
 
 import login_bg from '../assets/images/login_bg.svg';
 
@@ -30,6 +31,7 @@ import {
     faMagnifyingGlass,
     faCheck,
     faUser,
+    faChevronUp,
 } from '@fortawesome/free-solid-svg-icons';
 import { faJira, faTrello } from '@fortawesome/free-brands-svg-icons';
 import { faEnvelope, faClock, faCalendarDays, faCommentDots } from '@fortawesome/free-regular-svg-icons';
@@ -45,6 +47,7 @@ const icon = {
     myTask: faClipboardCheck,
     rightChevron: faChevronRight,
     leftChevron: faChevronLeft,
+    upChevron: faChevronUp,
     google: google,
     email: faEnvelope,
     lock: lock,
@@ -73,6 +76,7 @@ const icon = {
 const image = {
     userTemp: userTemp,
     login_bg: login_bg,
+    success: success,
 };
 
 export default { icon, image };

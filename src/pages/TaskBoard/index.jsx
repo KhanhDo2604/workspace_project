@@ -1,12 +1,12 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useState } from 'react';
-import { DndContext } from '@dnd-kit/core';
+import { DndContext, DragOverlay } from '@dnd-kit/core';
 
 import Button from '../../components/Button';
 import assets from '../../constants/icon';
-import TaskCard from './TaskCard';
 import ProjectHeader from '../../components/ProjectHeader';
 import Column from './Column';
+import TaskCard from './TaskCard';
 
 const INITIAL_TASKS = [
     {
@@ -98,6 +98,13 @@ const COLUMNS = [
 ];
 function TaskBoardPage() {
     const [tasks, setTasks] = useState(INITIAL_TASKS);
+    const [activeTask, setActiveTask] = useState(null);
+
+    function handleDragStart(event) {
+        const { active } = event;
+        const task = tasks.find((t) => t.id === active.id);
+        setActiveTask(task);
+    }
 
     function handleDragEnd(event) {
         const { active, over } = event;
@@ -107,44 +114,8 @@ function TaskBoardPage() {
         const taskId = active.id;
         const newStatus = over.id;
 
-        setTasks(() =>
-            tasks.map((task) =>
-                task.id === taskId
-                    ? {
-                          ...task,
-                          status: newStatus,
-                      }
-                    : task,
-            ),
-        );
+        setTasks((prev) => prev.map((task) => (task.id === taskId ? { ...task, status: newStatus } : task)));
     }
-
-    const TaskList = ({ status, title, color }) => {
-        let colorClass = '';
-
-        if (color === 'blue') colorClass = 'bg-blue-300 text-blue-950';
-        else if (color === 'red') colorClass = 'bg-red-200 text-red-950';
-        else if (color === 'orange') colorClass = 'bg-yellow-100 text-yellow-950';
-        else if (color === 'green') colorClass = 'bg-green-200 text-green-950';
-
-        return (
-            <div className="flex flex-col min-h-0">
-                <div className="flex items-center mb-2">
-                    <div className={`rounded-full ${colorClass} size-9 text-lg mr-2 flex justify-center items-center`}>
-                        <p className="leading-0">{tasks.filter((task) => task.status === status).length}</p>
-                    </div>
-                    <h2 className="text-xl font-bold">{title}</h2>
-                </div>
-                <div className="flex-1 min-h-0 overflow-y-auto flex flex-col gap-4 p-1">
-                    {tasks
-                        .filter((task) => task.status === status)
-                        .map((e) => (
-                            <TaskCard key={e.id} {...e} />
-                        ))}
-                </div>
-            </div>
-        );
-    };
 
     return (
         <div className="size-full flex flex-col">
@@ -153,8 +124,8 @@ function TaskBoardPage() {
             <div className="px-8 py-5 flex-1 flex flex-col min-h-0">
                 <h1 className="text-2xl font-bold">Task Board</h1>
 
-                <div className="grid grid-cols-4 gap-8 flex-1 mt-4 min-h-0">
-                    <DndContext onDragEnd={handleDragEnd}>
+                <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+                    <div className="grid grid-cols-4 gap-8 flex-1 mt-4 min-h-0">
                         {COLUMNS.map((column) => {
                             return (
                                 <Column
@@ -164,11 +135,15 @@ function TaskBoardPage() {
                                 />
                             );
                         })}
-                    </DndContext>
-                </div>
+                    </div>
+                    <DragOverlay>
+                        {activeTask ? <TaskCard task={activeTask} className="z-50 shadow-2xl" /> : null}
+                    </DragOverlay>
+                </DndContext>
+
                 <Button
                     variant="text"
-                    className="my-4 text-stroke self-start"
+                    className="my-4 text-stroke self-start hover:shadow-white"
                     startIcon={<FontAwesomeIcon icon={assets.icon.add} size="sm" />}
                 >
                     <p className="font-bold text-lg leading-0">Create</p>

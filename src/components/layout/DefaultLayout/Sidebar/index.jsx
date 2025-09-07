@@ -4,16 +4,26 @@ import SidebarBtn from './SidebarBtn';
 import { dialogActions } from '../../../../store/slices/DialogSlice';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { colors } from '../../../../constants/color';
+import { logoutUser } from '../../../../store/slices/AuthSlice';
+import { useNavigate } from 'react-router-dom';
 
 function Sidebar() {
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const isOpenSetting = useSelector((state) => state.dialog.openSetting);
     const isOpenNotification = useSelector((state) => state.dialog.openNotification);
     const sidebarState = useSelector((state) => state.sideBar.currentTab);
 
-    const handleSidebarClick = (path) => {
+    const handleSidebarClick = async (path, onClick) => {
         dispatch(dialogActions.closeAllDialogs());
         dispatch({ type: 'sideBar/setCurrentTab', payload: path });
+        if (onClick) await onClick();
+    };
+
+    const handleSignOut = async () => {
+        await dispatch(logoutUser());
+
+        navigate(`/login`, { replace: true });
     };
 
     return (
@@ -57,7 +67,7 @@ function Sidebar() {
                 </div>
             </div>
 
-            <div>
+            <div className="flex flex-col flex-1">
                 <div className="flex items-center mb-2">
                     <h5 className="text-headline font-medium mr-2">Your Projects</h5>
                     <FontAwesomeIcon icon={assets.icon.dropdown} color={colors.button} />
@@ -97,6 +107,14 @@ function Sidebar() {
                         <FontAwesomeIcon icon={assets.icon.rightChevron} className="ml-3" color={colors.button} />
                     </div>
                 </div>
+            </div>
+            <div>
+                <SidebarBtn
+                    icon={assets.icon.leftChevron}
+                    label="Sign Out"
+                    isActive={sidebarState === '/signout'}
+                    onClick={() => handleSidebarClick('/signout', handleSignOut)}
+                />
             </div>
         </aside>
     );

@@ -18,11 +18,20 @@ function ProjectTasks({ teamName, taskCount, endDate, tasks }) {
         <div className="bg-white rounded-lg mb-4">
             {/* Header */}
             <div
-                className="flex justify-between items-center cursor-pointer p-6 border-b border-gray-200 "
+                className={`flex justify-between items-center cursor-pointer p-6 ${
+                    isExpanded ? 'border-b border-gray-200' : ''
+                }`}
                 onClick={() => setIsExpanded(!isExpanded)}
             >
                 <div className="flex items-center gap-3 font-semibold text-2xl">
-                    <span>{isExpanded ? '🔼' : '🔽'}</span>#{teamName} tasks
+                    <div className="flex gap-2">
+                        {isExpanded ? (
+                            <FontAwesomeIcon icon={assets.icon.upChevron} />
+                        ) : (
+                            <FontAwesomeIcon icon={assets.icon.dropdown} />
+                        )}
+                        <span>#{teamName} tasks</span>
+                    </div>
                     <span className="text-xl font-normal text-gray-500">
                         ({taskCount} task{taskCount > 1 ? 's' : ''})
                     </span>

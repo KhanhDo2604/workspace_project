@@ -1,21 +1,32 @@
+import { useEffect } from 'react';
 import AddScheduleDialog from '../../../pages/Chat/AddScheduleDialog';
 import { dialogActions } from '../../../store/slices/DialogSlice';
 import NotificationDialog from '../../Notification';
 import SettingDialog from '../../SettingDialog';
 import Sidebar from './Sidebar';
 import { useDispatch, useSelector } from 'react-redux';
+import toast, { Toaster } from 'react-hot-toast';
 
 function DefaultLayout({ children }) {
     const isOpenSetting = useSelector((state) => state.dialog.openSetting);
     const isOpenNotification = useSelector((state) => state.dialog.openNotification);
     const isOpenAddScheduleDialog = useSelector((state) => state.dialog.openAddScheduleDialog);
+    const message = useSelector((state) => state.auth.message);
 
     const dispatch = useDispatch();
+
+    useEffect(() => {
+        if (message) {
+            toast.success(message);
+        }
+        return;
+    }, [message]);
 
     return (
         <div>
             <div className="flex h-screen">
                 <Sidebar />
+                <Toaster />
                 <div className="size-full relative overflow-hidden">
                     {children}
 

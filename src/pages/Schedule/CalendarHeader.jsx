@@ -52,9 +52,8 @@ function CalendarHeader() {
                     <Button
                         key={m}
                         onClick={() => dispatch(calendarActions.setViewMode(m))}
-                        className={`px-3 py-1 rounded-xl text-[#003861] ${
-                            viewMode === m ? 'bg-button' : 'bg-gray-100'
-                        }`}
+                        className={`px-3 py-1 rounded-xl text-[#003861] ${viewMode === m ? 'bg-button' : 'bg-gray-100'}
+                        `}
                     >
                         <p className={viewMode === m ? 'font-bold' : ''}>{m.charAt(0).toUpperCase() + m.slice(1)}</p>
                     </Button>

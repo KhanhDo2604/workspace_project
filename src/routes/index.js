@@ -11,8 +11,7 @@ import ChatScreen from '../pages/Chat';
 import TimelinePage from '../pages/TaskBoard/TimeLinePage';
 
 const privateRoutes = [
-    { path: '/', component: HomePage },
-    { path: '/my-task', component: PersonalTaskPage },
+    { path: '/my-task/:userId', component: PersonalTaskPage },
     { path: '/calendar', component: SchedulePage },
     { path: '/task-board', component: TaskBoardPage },
     { path: '/chat', component: ChatScreen },

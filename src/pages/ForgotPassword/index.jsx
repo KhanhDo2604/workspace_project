@@ -1,10 +1,43 @@
-import Button from '../../components/Button';
+import { useState } from 'react';
 import FormField from '../../components/FormField';
+import { Button } from '../../components/ui/button';
 import assets from '../../constants/icon';
+import { requestPasswordResetUser } from '../../store/slices/AuthSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import toast, { Toaster } from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
+import { Loader2Icon } from 'lucide-react';
 
 function ForgotPasswordPage() {
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const isLoading = useSelector((state) => state.auth.loading);
+    const [email, setEmail] = useState('');
+    const [errorEmail, setErrorEmail] = useState('');
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        if (!email) {
+            setErrorEmail('Email is required');
+            return;
+        } else if (!email.includes('@')) {
+            setErrorEmail('Invalid email address');
+            return;
+        }
+        try {
+            await dispatch(requestPasswordResetUser(email)).unwrap();
+            toast.success('Password reset link has been sent to your email');
+
+            navigate('/login', { replace: true });
+        } catch (error) {
+            toast.error(error.message);
+        }
+    };
+
     return (
         <div className="w-full h-screen flex items-center justify-center py-12">
+            <Toaster />
             <form
                 action=""
                 className="w-3/4 h-full bg-main rounded-2xl shadow-md px-32 flex flex-col items-baseline justify-center"
@@ -20,18 +53,30 @@ function ForgotPasswordPage() {
                         label="Email"
                         name="email"
                         type="email"
-                        value=""
-                        onChange={() => {}}
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
                         placeholder="Enter your email"
                         icon={assets.icon.email}
                         borderRadius="rounded-full"
                         className="mb-4 px-3 py-2"
                         widthFull={true}
+                        error={errorEmail}
                     />
                 </div>
 
-                <Button variant="primary" className="mr-4 mb-2 rounded-full px-2 py-4 text-headline w-full">
-                    Submit
+                <Button
+                    variant="primary"
+                    className="mr-4 mb-2 rounded-full px-2 py-4 text-headline w-full"
+                    onClick={handleSubmit}
+                >
+                    {isLoading ? (
+                        <div className="flex items-center">
+                            <Loader2Icon className="animate-spin" />
+                            <span className="ml-2">Sending...</span>
+                        </div>
+                    ) : (
+                        'Submit'
+                    )}
                 </Button>
             </form>
         </div>

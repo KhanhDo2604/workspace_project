@@ -65,10 +65,10 @@ const tasks = [
 const calendarSlice = createSlice({
     name: 'calendar',
     initialState: {
-        monthIndex: dayjs().month(),
-        year: dayjs().year(),
+        monthIndex: dayjs().month().valueOf(),
+        year: dayjs().year().valueOf(),
         smallCalendarMonth: null,
-        daySelected: dayjs(),
+        daySelected: dayjs().valueOf(),
         showEventModal: false,
         selectedEvent: null,
         labels: [],

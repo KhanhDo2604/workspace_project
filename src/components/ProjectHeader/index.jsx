@@ -36,6 +36,7 @@ function ProjectHeader({ teamName, teamDescription, teamMembers }) {
                         variant="text"
                         startIcon={<FontAwesomeIcon icon={assets.icon.trello} size="lg" />}
                         to={'task-board'}
+                        className="hover:shadow-white"
                     >
                         <span className="text-base text-gray-600">To do</span>
                     </Button>
@@ -43,6 +44,7 @@ function ProjectHeader({ teamName, teamDescription, teamMembers }) {
                         variant="text"
                         startIcon={<FontAwesomeIcon icon={assets.icon.jira} size="lg" />}
                         to={'time-line'}
+                        className="hover:shadow-white"
                     >
                         <span className="text-base text-gray-600">Jira board</span>
                     </Button>
@@ -61,6 +63,7 @@ function ProjectHeader({ teamName, teamDescription, teamMembers }) {
                     }}
                     placeholder="Create Meeting"
                     variant="primary"
+                    className="hover:shadow-lg"
                 />
             </div>
         </div>

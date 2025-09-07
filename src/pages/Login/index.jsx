@@ -1,10 +1,61 @@
-import Button from '../../components/Button';
+import { useDispatch, useSelector } from 'react-redux';
+import { Button } from '../../components/ui/button';
 import FormField from '../../components/FormField';
 import assets from '../../constants/icon';
+import { loginUser } from '../../store/slices/AuthSlice';
+import { Link, useNavigate } from 'react-router-dom';
+import { Loader2Icon } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import toast, { Toaster } from 'react-hot-toast';
+import SuccessPage from '../../components/Success';
 
 function LoginPage() {
+    const dispatch = useDispatch();
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [errorPassword, setErrorPassword] = useState('');
+    const [errorEmail, setErrorEmail] = useState('');
+
+    const navigate = useNavigate();
+
+    const isLoading = useSelector((state) => state.auth.loading);
+
+    const handleLogin = async (e) => {
+        e.preventDefault();
+
+        if (!email) {
+            setErrorEmail('email are required');
+            return;
+        } else if (!password) {
+            setErrorPassword('password are required');
+            return;
+        } else if (!email.includes('@')) {
+            setErrorEmail('Invalid email address format');
+            return;
+        }
+        try {
+            const res = await dispatch(loginUser({ email, password })).unwrap();
+            toast.success(res.message);
+
+            setTimeout(() => {
+                navigate(`/my-task/${res.data.userId}`, { replace: true });
+            }, 1000);
+        } catch (error) {
+            toast.error(error);
+        }
+    };
+
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        const userId = localStorage.getItem('user_id');
+        if (token && userId) {
+            navigate(`/my-task/${userId}`, { replace: true });
+        }
+    }, [navigate]);
+
     return (
         <div className="w-full h-screen flex items-center justify-center py-12">
+            <Toaster />
             <form
                 action=""
                 className="w-3/4 h-full bg-main rounded-2xl shadow-md px-32 flex flex-col items-baseline justify-center"
@@ -17,26 +68,28 @@ function LoginPage() {
                         label="Email"
                         name="email"
                         type="email"
-                        value=""
-                        onChange={() => {}}
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
                         placeholder="Enter your email"
                         icon={assets.icon.email}
                         borderRadius="rounded-full"
                         className="mb-4 px-3 py-2"
                         widthFull={true}
+                        error={errorEmail}
                     />
 
                     <FormField
                         label="Password"
                         name="password"
                         type="password"
-                        value=""
-                        onChange={() => {}}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
                         placeholder="Enter your password"
                         icon={assets.icon.lock}
                         borderRadius="rounded-full"
                         className="mb-4 px-3 py-2"
                         widthFull={true}
+                        error={errorPassword}
                     />
                 </div>
                 <div className="w-full flex justify-between items-center mb-6">
@@ -44,34 +97,48 @@ function LoginPage() {
                         <input type="checkbox" className="mr-2" />
                         Remember me
                     </label>
-                    <Button variant="text" to="/forgot-password">
-                        Forgot Password
+
+                    <Button variant="link">
+                        <Link to={'/forgot-password'}>Forgot Password</Link>
                     </Button>
                 </div>
 
                 <div className="w-full">
-                    <Button variant="primary" className="mr-4 mb-2 rounded-full px-2 py-4 text-headline w-full">
-                        Sign in
+                    <Button
+                        variant="primary"
+                        className="mr-4 mb-2 rounded-full px-2 py-4 text-headline w-full"
+                        onClick={handleLogin}
+                        disabled={isLoading}
+                    >
+                        {isLoading ? (
+                            <div className="flex items-center">
+                                <Loader2Icon className="animate-spin" />
+                                <span className="ml-2">Signing in...</span>
+                            </div>
+                        ) : (
+                            'Sign In'
+                        )}
                     </Button>
 
                     <div className="flex items-center justify-center w-full my-4">
-                        <hr className="flex-grow border-t border-blue-200" />
-                        <span className="mx-3 ">or</span>
-                        <hr className="flex-grow border-t border-blue-200" />
+                        <hr className="flex-grow border-t border-gray-300" />
+                        <span className="mx-3 text-xl">or</span>
+                        <hr className="flex-grow border-t border-gray-300" />
                     </div>
+
                     <Button
-                        variant="secondary"
-                        startIcon={<img src={assets.icon.google} alt="Secondary Icon" />}
-                        className="mr-4 mb-2 rounded-full px-2 py-4  w-full"
+                        variant="outline"
+                        className="mr-4 mb-2 rounded-full px-2 py-4 w-full shadow-none text-button"
                     >
-                        Sign in with Google
+                        <img src={assets.icon.google} alt="Google Icon" /> Sign in with Google
                     </Button>
                 </div>
 
                 <div className="w-full flex items-center justify-center mt-6">
-                    <p className="text-center text-lg mr-3">Don't have an account?</p>
-                    <Button variant="text" to="/signup">
-                        Sign Up
+                    <p className="text-center text-lg">Don't have an account?</p>
+
+                    <Button variant="link">
+                        <Link to={'/signup'}>Sign Up</Link>
                     </Button>
                 </div>
             </form>
