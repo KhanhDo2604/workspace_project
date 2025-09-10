@@ -1,30 +1,21 @@
 import { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-    faPaperclip,
-    faBolt,
-    faBold,
-    faItalic,
-    faStrikethrough,
-    faCode,
-    faLink,
-    faListUl,
-    faListOl,
-    faClipboard,
-    faSmile,
-} from '@fortawesome/free-solid-svg-icons';
-import Button from '../Button';
+import { faBolt, faBold, faItalic, faListUl, faListOl } from '@fortawesome/free-solid-svg-icons';
 import assets from '../../constants/icon';
+import { Button } from '../ui/button';
 
-export default function ChatEditor({ placeholder, value, onChange, onSend, showOptions = false, className }) {
-    const [message, setMessage] = useState(value || '');
+export default function ChatEditor({ placeholder, value = '', onChange, onSend, showOptions = false, className }) {
+    const [message, setMessage] = useState(value);
+
+    const submitMessage = (text) => {
+        if (!text || !text.trim()) return;
+        onSend(text);
+        setMessage('');
+    };
 
     const handleSubmit = (e) => {
-        e.preventDefault();
-        if (message.trim()) {
-            onSend(message);
-            setMessage('');
-        }
+        if (e && typeof e.preventDefault === 'function') e.preventDefault();
+        submitMessage(message);
     };
 
     const handleInputChange = (e) => {
@@ -43,8 +34,14 @@ export default function ChatEditor({ placeholder, value, onChange, onSend, showO
                     value={message}
                     onChange={handleInputChange}
                     className="w-full resize-none border-none outline-none px-3 py-2 text-lg"
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                            e.preventDefault();
+                            submitMessage(message);
+                        }
+                    }}
                 />
-                <Button variant="primary" className="rounded-full w-10 h-10" onClick={onSend}>
+                <Button variant="primary" className="rounded-full w-10 h-10" type="submit">
                     <FontAwesomeIcon icon={assets.icon.send} size="sm" className="text-headline" />
                 </Button>
             </div>
@@ -62,30 +59,17 @@ export default function ChatEditor({ placeholder, value, onChange, onSend, showO
                         <button className="hover:text-gray-800">
                             <FontAwesomeIcon icon={faItalic} />
                         </button>
-                        <button className="hover:text-gray-800">
-                            <FontAwesomeIcon icon={faStrikethrough} />
-                        </button>
-                        <button className="hover:text-gray-800">
-                            <FontAwesomeIcon icon={faCode} />
-                        </button>
-                        <button className="hover:text-gray-800">
-                            <FontAwesomeIcon icon={faLink} />
-                        </button>
+
                         <button className="hover:text-gray-800">
                             <FontAwesomeIcon icon={faListUl} />
                         </button>
                         <button className="hover:text-gray-800">
                             <FontAwesomeIcon icon={faListOl} />
                         </button>
-                        <button className="hover:text-gray-800">
-                            <FontAwesomeIcon icon={faClipboard} />
-                        </button>
-                        <button className="text-gray-400 hover:text-gray-600">
-                            <FontAwesomeIcon icon={faSmile} />
-                        </button>
-                        <button className="text-gray-400 hover:text-gray-600">
+
+                        {/* <button className="text-gray-400 hover:text-gray-600">
                             <FontAwesomeIcon icon={faPaperclip} />
-                        </button>
+                        </button> */}
                     </div>
                 </div>
             )}

@@ -5,8 +5,14 @@ import Dropdown from '../Dropdown';
 import { useDispatch } from 'react-redux';
 import { dialogActions } from '../../store/slices/DialogSlice';
 
-function ProjectHeader({ teamName, teamDescription, teamMembers }) {
+function ProjectHeader({ teamName, teamDescription, teamMembers }, onlineUsers) {
     const dispatch = useDispatch();
+    console.log('Online users:', onlineUsers);
+
+    const maxShown = 3;
+    const collapseThreshold = 5;
+    const shouldCollapse = onlineUsers.length > collapseThreshold;
+    const displayed = shouldCollapse ? onlineUsers.slice(0, maxShown) : onlineUsers;
 
     return (
         <div className="w-full flex flex-col bg-white shadow-sm">
@@ -16,17 +22,21 @@ function ProjectHeader({ teamName, teamDescription, teamMembers }) {
                     <span>#{teamName}</span>
                     <span className="text-base text-gray-500 font-medium">{teamDescription}</span>
                 </div>
-                <div className="flex items-center -space-x-2">
-                    {teamMembers.map((member, index) => (
+                {/* <div className="flex items-center -space-x-2">
+                    {displayed.map((member, idx) => (
                         <img
-                            key={index}
+                            key={member.id ?? member.email ?? idx}
                             src={member.avatar}
+                            alt={member.name ?? 'user'}
+                            title={member.name}
                             className="w-8 h-8 rounded-full border-2 border-white"
-                            alt="user"
                         />
                     ))}
-                    <span className="text-sm text-gray-600 ml-2">+{teamMembers.length}</span>
-                </div>
+
+                    {shouldCollapse && (
+                        <span className="text-sm text-gray-600 ml-2">+{onlineUsers.length - maxShown}</span>
+                    )}
+                </div> */}
             </div>
 
             {/* Middle: App icons */}

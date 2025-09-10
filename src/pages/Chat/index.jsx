@@ -1,16 +1,14 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import ChatCard from '../../components/ChatCard';
 import ChatEditor from '../../components/ChatEditor';
 import ProjectHeader from '../../components/ProjectHeader';
 import assets from '../../constants/icon';
-
-import { useSelector } from 'react-redux';
 import { io } from 'socket.io-client';
+import { useSelector } from 'react-redux';
 
 function ChatScreen() {
-    const user = useSelector((state) => state.auth.user);
+    const currentUser = useSelector((state) => state.auth.user);
     const teamInfo = {
-        teamId: 'team123',
         teamName: 'Team Alpha',
         teamDescription: 'Track and coordinate social media',
         teamMembers: [{ avatar: '/user1.jpg' }, { avatar: '/user2.jpg' }, { avatar: '/user3.jpg' }],
@@ -18,117 +16,119 @@ function ChatScreen() {
 
     const [socket, setSocket] = useState(null);
     const [messages, setMessages] = useState([]);
-    const [room] = useState(teamInfo.teamId);
     const [activity, setActivity] = useState('');
-    const chatDisplayRef = useRef(null);
+    const [users, setUsers] = useState([]);
 
-    // Kết nối socket khi component mount
     useEffect(() => {
-        const newSocket = io('ws://localhost:3500');
+        const newSocket = io('ws://localhost:3500', { autoConnect: true });
         setSocket(newSocket);
 
-        // Lắng nghe tin nhắn
-        newSocket.on('message', (data) => {
-            setActivity('');
-            setMessages((prev) => [
-                ...prev,
-                {
-                    userIcon: assets.image.userTemp,
-                    userName: data.name,
-                    content: data.text,
-                    timestamp: data.time,
-                    isMe: data.name === user.name,
-                },
-            ]);
-        });
+        console.log('⚡ Socket connected');
 
-        // Lắng nghe hoạt động đang gõ
-        newSocket.on('activity', (name) => {
-            setActivity(`${name} is typing...`);
-
-            // Xóa sau 3 giây
-            setTimeout(() => {
-                setActivity('');
-            }, 3000);
-        });
-
-        // // Lắng nghe danh sách người dùng
-        // newSocket.on('userList', ({ users }) => {
-        //     setUsers(users);
-        // });
-
-        // // Lắng nghe danh sách phòng
-        // newSocket.on('roomList', ({ rooms }) => {
-        //     setRooms(rooms);
-        // });
-
-        return () => newSocket.close();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+        return () => {
+            console.log('🛑 Disconnect socket');
+            newSocket.disconnect();
+        };
     }, []);
 
-    // Cuộn xuống dưới cùng khi có tin nhắn mới
     useEffect(() => {
-        if (chatDisplayRef.current) {
-            chatDisplayRef.current.scrollTop = chatDisplayRef.current.scrollHeight;
-        }
-    }, [messages]);
+        if (!socket) return;
+        socket.emit('enterRoom', {
+            name: currentUser.email,
+            room: teamInfo.teamName,
+        });
+    }, [socket, currentUser, teamInfo.teamName]);
 
-    //when user added into project
-    // const handleJoinRoom = (e) => {
-    //     e.preventDefault();
-    //     if (username && room) {
-    //         socket.emit('enterRoom', {
-    //             name: username,
-    //             room: room,
-    //         });
-    //         setJoined(true);
-    //     }
-    // };
+    useEffect(() => {
+        if (!socket) return;
 
-    const handleSendMessage = (messageText) => {
-        if (user.name && messageText && room) {
-            socket.emit('message', {
-                name: user.name,
-                text: messageText,
-            });
-        }
+        let timer;
+
+        const handleMessage = (data) => {
+            setActivity('');
+            setMessages((prev) => [...prev, data]);
+        };
+
+        const handleActivity = (name) => {
+            setActivity(`${name} is typing...`);
+            clearTimeout(timer);
+            timer = setTimeout(() => setActivity(''), 3000);
+        };
+
+        const handleUserList = ({ users }) => {
+            const userArray = Object.values(users);
+
+            setUsers(userArray);
+        };
+
+        socket.on('message', handleMessage);
+        socket.on('activity', handleActivity);
+        socket.on('userList', handleUserList);
+
+        return () => {
+            socket.off('message', handleMessage);
+            socket.off('activity', handleActivity);
+            socket.off('userList', handleUserList);
+        };
+    }, [socket]);
+
+    const handleSend = (text) => {
+        if (!text || typeof text !== 'string') return;
+        if (!text.trim()) return;
+
+        socket.emit('message', {
+            name: currentUser.name,
+            text: text,
+        });
     };
 
     const handleTyping = () => {
-        if (user.name) {
-            socket.emit('activity', user.name);
-        }
+        socket.emit('activity', currentUser.name);
     };
 
     return (
         <div className="bg-secondary h-screen flex flex-col">
-            <ProjectHeader {...teamInfo} />
-            <div className={`relative overflow-y-auto h-full`}>
-                <div className="flex-1 p-6">
-                    {/* Chat messages */}
-                    <div className="space-y-4">
-                        {messages.map((message, index) => (
+            <ProjectHeader {...teamInfo} onlineUsers={users} />
+
+            {/* Danh sách thành viên đang onl nên xuất hiện ở header*/}
+            {/* <div className="px-6 py-2 text-sm text-gray-600">
+                <span className="font-medium">Members:</span>{' '}
+                {users.map((u, i) => (
+                    <span key={u.id}>
+                        {u.name}
+                        {i < users.length - 1 ? ', ' : ''}
+                    </span>
+                ))}
+            </div> */}
+
+            {/* Khu vực chat */}
+            <div className="relative overflow-y-auto flex-1 p-6">
+                <div className="space-y-4">
+                    {messages.map((msg, index) => {
+                        return (
                             <ChatCard
                                 key={index}
-                                userIcon={message.userIcon}
-                                userName={message.userName}
-                                content={message.content}
-                                timestamp={message.timestamp}
-                                isMe={message.isMe}
+                                userIcon={assets.image.userTemp}
+                                userName={msg.name}
+                                content={msg.text}
+                                timestamp={msg.time}
+                                isMe={msg.name === currentUser.name}
                             />
-                        ))}
-                    </div>
+                        );
+                    })}
                 </div>
             </div>
-            {activity && <div className="px-4 py-2 italic text-gray-500 text-sm">{activity}</div>}
 
+            {/* Editor */}
             <div className="p-4 w-full">
+                {activity && <p className="text-sm italic text-gray-500 mt-2">{activity}</p>}
+
                 <ChatEditor
-                    placeholder="Message #social-media"
-                    onSend={handleSendMessage}
+                    placeholder={`Message #${teamInfo.teamName}`}
+                    onSend={handleSend}
                     onChange={handleTyping}
                     showOptions={true}
-                    className={'bg-white w-full shadow-sm rounded-lg'}
+                    className="bg-white w-full shadow-sm rounded-lg"
                 />
             </div>
         </div>

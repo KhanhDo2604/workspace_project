@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Button } from '../../components/ui/button';
 import FormField from '../../components/FormField';
 import assets from '../../constants/icon';
-import { loginUser } from '../../store/slices/AuthSlice';
+import { getUserInformation, loginUser } from '../../store/slices/AuthSlice';
 import { Link, useNavigate } from 'react-router-dom';
 import { Loader2Icon } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -49,9 +49,10 @@ function LoginPage() {
         const token = localStorage.getItem('token');
         const userId = localStorage.getItem('user_id');
         if (token && userId) {
+            dispatch(getUserInformation(userId));
             navigate(`/my-task/${userId}`, { replace: true });
         }
-    }, [navigate]);
+    }, [navigate, dispatch]);
 
     return (
         <div className="w-full h-screen flex items-center justify-center py-12">

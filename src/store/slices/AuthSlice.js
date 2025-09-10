@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { login, logout, requestPasswordReset, resetPassword, signup } from '../../services/AuthService';
+import { getUserInfoService } from '../../services/UserService';
 
 export const loginUser = createAsyncThunk('api/auth/login', async ({ email, password }, thunkAPI) => {
     try {
@@ -50,12 +51,19 @@ export const resetPasswordUser = createAsyncThunk(
 
 export const logoutUser = createAsyncThunk('auth/logout', async (_, thunkAPI) => {
     try {
-        console.log(localStorage.getItem('token'));
-
         await logout();
         return true;
     } catch (err) {
         throw thunkAPI.rejectWithValue(err.response?.data?.message || 'Logout failed');
+    }
+});
+
+export const getUserInformation = createAsyncThunk('api/user', async (userId, thunkAPI) => {
+    try {
+        const response = await getUserInfoService(userId);
+        return response;
+    } catch (error) {
+        return thunkAPI.rejectWithValue(error.message);
     }
 });
 
@@ -86,6 +94,8 @@ const authSlice = createSlice({
                     token: action.payload.data.token,
                     personalSetting: action.payload.data.personalSetting,
                 };
+                console.log(state.user);
+
                 state.message = null;
             })
             .addCase(loginUser.rejected, (state, action) => {
@@ -147,6 +157,21 @@ const authSlice = createSlice({
                 state.token = null;
                 state.loading = false;
                 state.message = 'Logout successful';
+            });
+        builder
+            .addCase(getUserInformation.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+                state.message = null;
+            })
+            .addCase(getUserInformation.fulfilled, (state, action) => {
+                state.loading = false;
+                state.user = {
+                    userId: action.payload._id,
+                    email: action.payload.email,
+                    name: action.payload.name,
+                };
+                state.message = null;
             });
     },
 });

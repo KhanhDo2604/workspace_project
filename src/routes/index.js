@@ -1,4 +1,3 @@
-import HomePage from '../pages/Home';
 import LoginPage from '../pages/Login';
 import MeetingPage from '../pages/Meeting';
 import PersonalTaskPage from '../pages/PersonalTask';
@@ -12,15 +11,15 @@ import TimelinePage from '../pages/TaskBoard/TimeLinePage';
 
 const privateRoutes = [
     { path: '/my-task/:userId', component: PersonalTaskPage },
-    { path: '/calendar', component: SchedulePage },
+    { path: '/calendar/:userId', component: SchedulePage },
     { path: '/task-board', component: TaskBoardPage },
-    { path: '/chat', component: ChatScreen },
+    { path: '/chat/:userId', component: ChatScreen },
     { path: '/task-board/time-line', component: TimelinePage },
     { path: '/login', component: LoginPage, thread: 'auth' },
     { path: '/signup', component: SignupPage, thread: 'auth' },
     { path: '/forgot-password', component: ForgotPasswordPage, thread: 'auth' },
     { path: '/set-new-password', component: SetPasswordPage, thread: 'auth' },
-    { path: '/meeting', component: MeetingPage, thread: 'none-layout' },
+    { path: '/meeting/:projectId', component: MeetingPage, thread: 'none-layout' },
 ];
 
 export default privateRoutes;

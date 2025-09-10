@@ -1,14 +1,17 @@
 import { useState } from 'react';
-import assets from '../../constants/icon'; // Assuming assets is imported from a correct path
+import assets from '../../constants/icon';
 import FormField from '../FormField';
 import Button from '../Button';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { dialogActions } from '../../store/slices/DialogSlice';
 
 function SettingDialog() {
     const dispatch = useDispatch();
+
+    const user = useSelector((state) => state.auth.user);
     const [appearance, setAppearance] = useState('Default');
     const [language, setLanguage] = useState('English');
+    const [name, setName] = useState(user.name || '');
 
     return (
         <div className="w-full mx-auto mt-10 bg-white rounded-xl shadow p-6">
@@ -31,8 +34,8 @@ function SettingDialog() {
                                 label="Full Name"
                                 name="fullName"
                                 type="text"
-                                value="User"
-                                onChange={() => {}}
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
                                 icon={assets.icon.user}
                                 borderRadius="rounded-xl"
                                 borderColor="border-stroke"
@@ -45,7 +48,6 @@ function SettingDialog() {
                         label="Email"
                         type="email"
                         value="khanhdph2604@gmail.com"
-                        onChange={() => {}}
                         icon={assets.icon.email}
                         borderRadius="rounded-xl"
                         borderColor="border-stroke"

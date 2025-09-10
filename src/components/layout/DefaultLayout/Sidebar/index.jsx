@@ -13,6 +13,7 @@ function Sidebar() {
     const isOpenSetting = useSelector((state) => state.dialog.openSetting);
     const isOpenNotification = useSelector((state) => state.dialog.openNotification);
     const sidebarState = useSelector((state) => state.sideBar.currentTab);
+    const userId = localStorage.getItem('user_id');
 
     const handleSidebarClick = async (path, onClick) => {
         dispatch(dialogActions.closeAllDialogs());
@@ -53,14 +54,14 @@ function Sidebar() {
                     <SidebarBtn
                         icon={assets.icon.myTask}
                         label="My tasks"
-                        to="/my-task"
+                        to={`/my-task/${userId}`}
                         isActive={sidebarState === '/my-task'}
                         onClick={() => handleSidebarClick('/my-task')}
                     />
                     <SidebarBtn
                         icon={assets.icon.calendar}
                         label="Calendar"
-                        to="/calendar"
+                        to={`/calendar/${userId}`}
                         isActive={sidebarState === '/calendar'}
                         onClick={() => handleSidebarClick('/calendar')}
                     />
@@ -84,7 +85,7 @@ function Sidebar() {
                             <SidebarBtn
                                 icon={assets.icon.chat}
                                 label="Chat"
-                                to="/chat"
+                                to={`/chat/${userId}`}
                                 isActive={sidebarState === '/chat'}
                                 onClick={() => handleSidebarClick('/chat')}
                             />
