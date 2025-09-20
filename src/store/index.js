@@ -7,6 +7,7 @@ import meetingReducer from './slices/MeetingSlice';
 import sideBarReducer from './slices/SideBarSlice';
 import calendarReducer from './slices/CalendarSlice';
 import authReducer from './slices/AuthSlice';
+import projectReducer from './slices/ProjectSlice';
 
 const persistConfig = {
     key: 'auth',
@@ -23,6 +24,7 @@ const store = configureStore({
         sideBar: sideBarReducer,
         calendar: calendarReducer,
         auth: persistedAuthReducer,
+        project: projectReducer,
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({

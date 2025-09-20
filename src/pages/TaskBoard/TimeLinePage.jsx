@@ -6,79 +6,79 @@ import FormField from '../../components/FormField';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { formatDate, toStartOfDay } from '../../utils';
 import { addDays, addMonths, differenceInCalendarDays } from 'date-fns';
-import TaskCreationDialog from './TaskCreationDialog';
 import { dialogActions } from '../../store/slices/DialogSlice';
 import Button from '../../components/Button';
+import { CreateTaskModal } from '../../components/CreateTaskModal';
 
 const users = [
     { name: 'Alice', avatar: '/avatars/alice.png' },
     { name: 'Bob', avatar: '/avatars/bob.png' },
 ];
 
-const tasks = [
-    {
-        id: 1,
-        title: 'Premium Templates theme update',
-        startDate: 1754568000,
-        endDate: 1756641600,
-        color: 'bg-orange-100',
-    },
-    {
-        id: 2,
-        title: 'New feature development',
-        startDate: 1754740800,
-        endDate: 1755604800,
-        color: 'bg-blue-100',
-    },
-    {
-        id: 3,
-        title: 'Bug fixes and improvements',
-        startDate: 1755172800,
-        endDate: 1756036800,
-        color: 'bg-green-100',
-    },
-    {
-        id: 4,
-        title: 'Documentation updates',
-        startDate: 1755432000,
-        endDate: 1756468800,
-        color: 'bg-purple-100',
-    },
-    {
-        id: 5,
-        title: 'Client feedback review',
-        startDate: 1755691200,
-        endDate: 1756627200,
-        color: 'bg-yellow-100',
-    },
-    {
-        id: 6,
-        title: 'Team meeting and planning',
-        startDate: 1755950400,
-        endDate: 1756886400,
-        color: 'bg-pink-100',
-    },
-    {
-        id: 7,
-        title: 'Marketing campaign launch',
-        startDate: 1756209600,
-        endDate: 1757145600,
-        color: 'bg-red-100',
-    },
-    {
-        id: 8,
-        title: 'Performance optimization',
-        startDate: 1756468800,
-        endDate: 1757404800,
-        color: 'bg-teal-100',
-    },
-];
+// const tasks = [
+//     {
+//         id: 1,
+//         title: 'Premium Templates theme update',
+//         startDate: 1754568000,
+//         endDate: 1756641600,
+//         color: 'bg-orange-100',
+//     },
+//     {
+//         id: 2,
+//         title: 'New feature development',
+//         startDate: 1754740800,
+//         endDate: 1755604800,
+//         color: 'bg-blue-100',
+//     },
+//     {
+//         id: 3,
+//         title: 'Bug fixes and improvements',
+//         startDate: 1755172800,
+//         endDate: 1756036800,
+//         color: 'bg-green-100',
+//     },
+//     {
+//         id: 4,
+//         title: 'Documentation updates',
+//         startDate: 1755432000,
+//         endDate: 1756468800,
+//         color: 'bg-purple-100',
+//     },
+//     {
+//         id: 5,
+//         title: 'Client feedback review',
+//         startDate: 1755691200,
+//         endDate: 1756627200,
+//         color: 'bg-yellow-100',
+//     },
+//     {
+//         id: 6,
+//         title: 'Team meeting and planning',
+//         startDate: 1755950400,
+//         endDate: 1756886400,
+//         color: 'bg-pink-100',
+//     },
+//     {
+//         id: 7,
+//         title: 'Marketing campaign launch',
+//         startDate: 1756209600,
+//         endDate: 1757145600,
+//         color: 'bg-red-100',
+//     },
+//     {
+//         id: 8,
+//         title: 'Performance optimization',
+//         startDate: 1756468800,
+//         endDate: 1757404800,
+//         color: 'bg-teal-100',
+//     },
+// ];
 
-const teamInfo = {
-    teamName: 'Team Alpha',
-    teamDescription: 'Track and coordinate social media',
-    teamMembers: [{ avatar: '/user1.jpg' }, { avatar: '/user2.jpg' }, { avatar: '/user3.jpg' }],
-};
+// const teamInfo = {
+//     teamName: 'Team Alpha',
+//     teamDescription: 'Track and coordinate social media',
+//     teamMembers: [{ avatar: '/user1.jpg' }, { avatar: '/user2.jpg' }, { avatar: '/user3.jpg' }],
+// };
 
 const rowHeight = 60;
 
@@ -112,13 +112,18 @@ const UpperSection = ({ onCreateTask }) => {
                         <FormField className="px-3 min-w-[200px] w-[200px] mr-4" type="date" />
                     </div>
                 </div>
-                <Button
-                    startIcon={<FontAwesomeIcon icon={assets.icon.add} className="text-headline" />}
-                    className="rounded-xl"
-                    onClick={onCreateTask}
-                >
-                    <span className="text-white leading-0 py-4">Create Task</span>
-                </Button>
+                <CreateTaskModal
+                    onSave={() => {}}
+                    trigger={
+                        <Button
+                            startIcon={<FontAwesomeIcon icon={assets.icon.add} className="text-headline" />}
+                            className="rounded-xl"
+                            onClick={onCreateTask}
+                        >
+                            <span className="text-white leading-0 py-4">Create Task</span>
+                        </Button>
+                    }
+                />
             </div>
         </div>
     );
@@ -126,7 +131,6 @@ const UpperSection = ({ onCreateTask }) => {
 
 function TimelinePage() {
     const dispatch = useDispatch();
-    const isOpenTaskCreationDialog = useSelector((state) => state.dialog.openTaskCreationDialog);
 
     const startDate = useMemo(() => new Date(), []);
     const endDate = useMemo(() => addMonths(startDate, 1), [startDate]);
@@ -136,21 +140,23 @@ function TimelinePage() {
         [totalDays, startDate],
     );
 
+    const tasks = useSelector((state) => state.project.tasks);
+    const currentProject = useSelector((state) => state.project.currentProject);
+
     const flexibleHeight = useMemo(() => {
         return tasks.length * rowHeight > window.innerHeight - 260 ? `${tasks.length * rowHeight}px` : '100%';
-    }, []);
+    }, [tasks]);
 
     return (
         <div className="flex flex-col h-full">
-            <ProjectHeader {...teamInfo} />
+            <ProjectHeader
+                teamName={currentProject.title}
+                teamDescription={currentProject.projectName}
+                teamMembers={currentProject.participants}
+            />
 
             <div className="p-5 flex flex-col flex-1 min-h-0 relative">
                 <UpperSection onCreateTask={() => dispatch(dialogActions.openTaskCreationDialog())} />
-                {isOpenTaskCreationDialog && (
-                    <div className="absolute inset-0 z-50">
-                        <TaskCreationDialog />
-                    </div>
-                )}
 
                 <div className="flex flex-col flex-1 min-h-0">
                     <div className="overflow-x-auto">

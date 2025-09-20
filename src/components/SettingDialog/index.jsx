@@ -53,6 +53,7 @@ function SettingDialog() {
                         borderColor="border-stroke"
                         className="mb-4 px-3 py-1"
                         widthFull={true}
+                        disable={true}
                     />
                 </div>
             </div>

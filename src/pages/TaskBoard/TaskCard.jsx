@@ -2,6 +2,8 @@ import { useDraggable } from '@dnd-kit/core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { typeColorMap } from '../../constants/color';
 import assets from '../../constants/icon';
+import UpdateTaskModal from '../../components/UpdateTaskModal';
+import { Button } from '../../components/ui/button';
 
 function TaskCard({ task }) {
     const { attributes, listeners, setNodeRef, transform } = useDraggable({
@@ -22,9 +24,21 @@ function TaskCard({ task }) {
             style={style}
             className="cursor-grab bg-headline p-6 rounded-lg shadow-sm w-full hover:shadow-md"
         >
-            <p className="text-gray-500 text-base">{task.id}</p>
+            <div className="flex justify-between items-center">
+                <p className="text-gray-500 text-base">{task.id}</p>
+                <UpdateTaskModal
+                    currentTask={task}
+                    triggerBtn={
+                        <Button variant={'icon'}>
+                            <FontAwesomeIcon icon={assets.icon.info} />
+                        </Button>
+                    }
+                />
+            </div>
 
             <h1 className="text-xl font-semibold line-clamp-1 text-ellipsis overflow-hidden mt-4">{task.title}</h1>
+
+            <p className="text-gray-500 text-base">{task.description}</p>
 
             <div className="my-4 gap-2 flex flex-wrap">
                 {task.types.map((type, index) => (
@@ -53,10 +67,10 @@ function TaskCard({ task }) {
                     </div>
                 )}
 
-                <div className="flex gap-1 items-center justify-center">
+                {/* <div className="flex gap-1 items-center justify-center">
                     <FontAwesomeIcon icon={assets.icon.comment} />
                     <p className="text-base font-semibold">3</p>
-                </div>
+                </div> */}
             </div>
         </div>
     );

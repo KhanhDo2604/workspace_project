@@ -24,9 +24,9 @@ function Column({ column, tasks }) {
             <div ref={setNodeRef} className="flex-1 min-h-0 overflow-y-auto flex flex-col gap-4 p-1">
                 {tasks
                     .filter((task) => task.status === column.id)
-                    .map((e) => (
-                        <TaskCard key={e.id} task={e} />
-                    ))}
+                    .map((e) => {
+                        return <TaskCard key={e.id} task={e} />;
+                    })}
             </div>
         </div>
     );

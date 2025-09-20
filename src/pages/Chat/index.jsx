@@ -8,11 +8,7 @@ import { useSelector } from 'react-redux';
 
 function ChatScreen() {
     const currentUser = useSelector((state) => state.auth.user);
-    const teamInfo = {
-        teamName: 'Team Alpha',
-        teamDescription: 'Track and coordinate social media',
-        teamMembers: [{ avatar: '/user1.jpg' }, { avatar: '/user2.jpg' }, { avatar: '/user3.jpg' }],
-    };
+    const currentProject = useSelector((state) => state.project.currentProject);
 
     const [socket, setSocket] = useState(null);
     const [messages, setMessages] = useState([]);
@@ -35,9 +31,9 @@ function ChatScreen() {
         if (!socket) return;
         socket.emit('enterRoom', {
             name: currentUser.email,
-            room: teamInfo.teamName,
+            room: currentProject.id,
         });
-    }, [socket, currentUser, teamInfo.teamName]);
+    }, [socket, currentUser, currentProject]);
 
     useEffect(() => {
         if (!socket) return;
@@ -88,7 +84,11 @@ function ChatScreen() {
 
     return (
         <div className="bg-secondary h-screen flex flex-col">
-            <ProjectHeader {...teamInfo} onlineUsers={users} />
+            <ProjectHeader
+                teamName={currentProject.title}
+                teamDescription={currentProject.description}
+                teamMembers={currentProject.participants}
+            />
 
             {/* Danh sách thành viên đang onl nên xuất hiện ở header*/}
             {/* <div className="px-6 py-2 text-sm text-gray-600">
@@ -124,7 +124,7 @@ function ChatScreen() {
                 {activity && <p className="text-sm italic text-gray-500 mt-2">{activity}</p>}
 
                 <ChatEditor
-                    placeholder={`Message #${teamInfo.teamName}`}
+                    placeholder={`Message #${currentProject.description}`}
                     onSend={handleSend}
                     onChange={handleTyping}
                     showOptions={true}

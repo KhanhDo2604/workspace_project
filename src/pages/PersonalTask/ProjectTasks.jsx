@@ -3,7 +3,7 @@ import { useState } from 'react';
 import assets from '../../constants/icon';
 
 function ProjectTasks({ teamName, taskCount, endDate, tasks }) {
-    const [isExpanded, setIsExpanded] = useState(true);
+    const [isExpanded, setIsExpanded] = useState(false);
 
     const typeColorMap = {
         Design: 'bg-yellow-200 text-yellow-800',
@@ -58,49 +58,55 @@ function ProjectTasks({ teamName, taskCount, endDate, tasks }) {
                     </div>
 
                     {/* Task rows */}
-                    {tasks.map((task, idx) => (
-                        <div key={idx} className="grid grid-cols-6 text-xl items-start py-3">
-                            {/* Name & subtask */}
-                            <div className="col-span-2">
-                                <div className="flex items-center gap-2">
-                                    <input type="checkbox" />
-                                    <span className="font-medium">{task.name}</span>
-                                </div>
-                                {task.subTasks?.map((sub, i) => (
-                                    <div key={i} className="ml-6 mt-1 text-gray-500 flex items-center gap-2">
-                                        <span>↳</span>
-                                        <span>{sub}</span>
+                    {tasks.map((task) => {
+                        return (
+                            <div key={task.id} className="grid grid-cols-6 text-xl items-start py-3">
+                                {/* Name & subtask */}
+                                <div className="col-span-2">
+                                    <div className="flex items-center gap-2">
+                                        <input type="checkbox" />
+                                        <span className="font-medium">{task.title}</span>
                                     </div>
-                                ))}
-                            </div>
+                                    {task.subTasks?.map((sub, i) => (
+                                        <div key={i} className="ml-6 mt-1 text-gray-500 flex items-center gap-2">
+                                            <span>↳</span>
+                                            <span>{sub.title}</span>
+                                        </div>
+                                    ))}
+                                </div>
 
-                            {/* Types */}
-                            <div className="flex flex-wrap gap-2">
-                                {task.types.map((type, i) => (
-                                    <span
-                                        key={i}
-                                        className={`px-2 py-1 text-base rounded-full ${
-                                            typeColorMap[type] || 'bg-gray-200 text-gray-800'
-                                        }`}
-                                    >
-                                        {type}
-                                    </span>
-                                ))}
-                            </div>
+                                {/* Types */}
+                                <div className="flex flex-wrap gap-2">
+                                    {task.types.map((type, i) => (
+                                        <span
+                                            key={i}
+                                            className={`px-2 py-1 text-base rounded-full ${
+                                                typeColorMap[type] || 'bg-gray-200 text-gray-800'
+                                            }`}
+                                        >
+                                            {type}
+                                        </span>
+                                    ))}
+                                </div>
 
-                            {/* Assignee */}
-                            <div>{task.assignee}</div>
-                            {/* Start Dates */}
-                            <div className="text-lg">
-                                <span>{task.startDate}</span>
-                            </div>
+                                {/* Assignee */}
+                                <div>
+                                    {task.assigneeId.map((id) => {
+                                        return <span key={id.id}>{id.name} </span>;
+                                    })}
+                                </div>
+                                {/* Start Dates */}
+                                <div className="text-lg">
+                                    <span>{new Date(task.startDay * 1000).toLocaleDateString()}</span>
+                                </div>
 
-                            {/* Due Dates */}
-                            <div className="text-lg">
-                                <span>{task.dueDate}</span>
+                                {/* Due Dates */}
+                                <div className="text-lg">
+                                    <span>{new Date(task.endDay * 1000).toLocaleDateString()}</span>
+                                </div>
                             </div>
-                        </div>
-                    ))}
+                        );
+                    })}
                 </div>
             )}
         </div>

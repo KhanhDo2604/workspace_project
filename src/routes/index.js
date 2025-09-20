@@ -12,9 +12,9 @@ import TimelinePage from '../pages/TaskBoard/TimeLinePage';
 const privateRoutes = [
     { path: '/my-task/:userId', component: PersonalTaskPage },
     { path: '/calendar/:userId', component: SchedulePage },
-    { path: '/task-board', component: TaskBoardPage },
-    { path: '/chat/:userId', component: ChatScreen },
-    { path: '/task-board/time-line', component: TimelinePage },
+    { path: '/task-board/:projectId', component: TaskBoardPage },
+    { path: '/chat/:projectId/:userId', component: ChatScreen },
+    { path: '/task-board/time-line/:projectId', component: TimelinePage },
     { path: '/login', component: LoginPage, thread: 'auth' },
     { path: '/signup', component: SignupPage, thread: 'auth' },
     { path: '/forgot-password', component: ForgotPasswordPage, thread: 'auth' },

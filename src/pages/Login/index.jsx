@@ -7,7 +7,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Loader2Icon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
-import SuccessPage from '../../components/Success';
+import { getAllProjects } from '../../store/slices/ProjectSlice';
 
 function LoginPage() {
     const dispatch = useDispatch();
@@ -35,23 +35,32 @@ function LoginPage() {
         }
         try {
             const res = await dispatch(loginUser({ email, password })).unwrap();
+            await dispatch(getAllProjects(res.data.userId)).unwrap();
+
             toast.success(res.message);
 
-            setTimeout(() => {
-                navigate(`/my-task/${res.data.userId}`, { replace: true });
-            }, 1000);
+            navigate(`/my-task/${res.data.userId}`, { replace: true });
         } catch (error) {
             toast.error(error);
         }
     };
 
     useEffect(() => {
-        const token = localStorage.getItem('token');
-        const userId = localStorage.getItem('user_id');
-        if (token && userId) {
-            dispatch(getUserInformation(userId));
-            navigate(`/my-task/${userId}`, { replace: true });
-        }
+        const fetchUser = async () => {
+            const token = localStorage.getItem('token');
+            const userId = localStorage.getItem('user_id');
+
+            if (token && userId) {
+                try {
+                    await Promise.all([dispatch(getUserInformation(userId)), dispatch(getAllProjects(userId))]);
+                    navigate(`/my-task/${userId}`, { replace: true });
+                } catch (err) {
+                    console.error('Failed to load user info:', err);
+                }
+            }
+        };
+
+        fetchUser();
     }, [navigate, dispatch]);
 
     return (

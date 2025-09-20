@@ -18,6 +18,7 @@ const FormField = ({
     className = '',
     isRequired = false,
     widthFull = false,
+    disable = false,
 }) => {
     const [showPassword, setShowPassword] = useState(false);
     const isPassword = type === 'password';
@@ -25,7 +26,7 @@ const FormField = ({
     const isDate = type === 'date';
     const inputType = isPassword ? (showPassword ? 'text' : 'password') : type;
 
-    const baseClass = 'flex-1 py-3 outline-none bg-transparent text-lg placeholder-gray-400';
+    const baseClass = 'flex-1 py-3 outline-none bg-transparent text-lg placeholder-gray-400 border-none';
 
     return (
         <div className={`${widthFull ? 'w-full' : 'w-fit'}`}>
@@ -55,6 +56,7 @@ const FormField = ({
                         onChange={onChange}
                         required={isRequired}
                         className={`${baseClass} resize-none h-24`}
+                        disabled={disable}
                     />
                 ) : (
                     <Input
@@ -66,6 +68,7 @@ const FormField = ({
                         onChange={onChange}
                         required={isRequired}
                         className={`${baseClass} ${isDate ? 'cursor-pointer' : ''}`}
+                        disabled={disable}
                     />
                 )}
 
@@ -98,6 +101,8 @@ FormField.propTypes = {
     borderRadius: PropTypes.string,
     className: PropTypes.string,
     isRequired: PropTypes.bool,
+    widthFull: PropTypes.bool,
+    disable: PropTypes.bool,
 };
 
 export default FormField;

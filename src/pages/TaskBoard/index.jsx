@@ -1,104 +1,59 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useState } from 'react';
-import { DndContext, DragOverlay } from '@dnd-kit/core';
+import { useEffect, useState } from 'react';
+import { DndContext, DragOverlay, MouseSensor, TouchSensor, useSensor, useSensors } from '@dnd-kit/core';
 
-import Button from '../../components/Button';
 import assets from '../../constants/icon';
 import ProjectHeader from '../../components/ProjectHeader';
 import Column from './Column';
 import TaskCard from './TaskCard';
-
-const INITIAL_TASKS = [
-    {
-        id: 'T1',
-        title: 'Task 1',
-        assignees: [
-            { name: 'User 1', avatar: assets.image.userTemp },
-            { name: 'User 2', avatar: assets.image.userTemp },
-        ],
-        types: ['Design', 'Q&A'],
-        status: 'todo',
-    },
-    {
-        id: 'T2',
-        title: 'Task 2',
-        assignees: [{ name: 'User 3', avatar: assets.image.userTemp }],
-        types: ['Development'],
-        status: 'in-progress',
-    },
-    {
-        id: 'T3',
-        title: 'Task 3',
-        assignees: [],
-        types: ['Research', 'Development2'],
-        status: 'review',
-    },
-    {
-        id: 'T4',
-        title: 'Task 4',
-        assignees: [{ name: 'User 4', avatar: assets.image.userTemp }],
-        types: ['Design'],
-        status: 'todo',
-    },
-    {
-        id: 'T5',
-        title: 'Task 5',
-        assignees: [{ name: 'User 5', avatar: assets.image.userTemp }],
-        types: ['Q&A'],
-        status: 'in-progress',
-    },
-    {
-        id: 'T6',
-        title: 'Task 6',
-        assignees: [{ name: 'User 6', avatar: assets.image.userTemp }],
-        types: ['Development'],
-        status: 'done',
-    },
-    {
-        id: 'T7',
-        title: 'Task 7',
-        assignees: [{ name: 'User 7', avatar: assets.image.userTemp }],
-        types: ['Research'],
-        status: 'todo',
-    },
-    {
-        id: 'T8',
-        title: 'Task 8',
-        assignees: [{ name: 'User 8', avatar: assets.image.userTemp }],
-        types: ['Design'],
-        status: 'in-progress',
-    },
-    {
-        id: 'T9',
-        title: 'Task 9',
-        assignees: [{ name: 'User 9', avatar: assets.image.userTemp }],
-        types: ['Q&A'],
-        status: 'review',
-    },
-    {
-        id: 'T10',
-        title: 'Task 10',
-        assignees: [{ name: 'User 10', avatar: assets.image.userTemp }],
-        types: ['Development'],
-        status: 'todo',
-    },
-];
-
-const teamInfo = {
-    teamName: 'Team Alpha',
-    teamDescription: 'Track and coordinate social media',
-    teamMembers: [{ avatar: '/user1.jpg' }, { avatar: '/user2.jpg' }, { avatar: '/user3.jpg' }],
-};
+import { Button } from '../../components/ui/button';
+import { CreateTaskModal } from '../../components/CreateTaskModal';
+import { useDispatch, useSelector } from 'react-redux';
+import { createTask, getProjectTasks } from '../../store/slices/ProjectSlice';
+import TaskModel from '../../model/TaskModel';
 
 const COLUMNS = [
-    { id: 'todo', title: 'To Do' },
-    { id: 'in-progress', title: 'In Progress' },
-    { id: 'review', title: 'Review' },
-    { id: 'done', title: 'Done' },
+    { id: 0, title: 'To Do' },
+    { id: 1, title: 'In Progress' },
+    { id: 2, title: 'Review' },
+    { id: 3, title: 'Done' },
 ];
 function TaskBoardPage() {
-    const [tasks, setTasks] = useState(INITIAL_TASKS);
+    const dispatch = useDispatch();
+
+    // const [tasks, setTasks] = useState([]);
     const [activeTask, setActiveTask] = useState(null);
+    const currentProject = useSelector((state) => state.project.currentProject);
+    const tasks = useSelector((state) => state.project.tasks);
+
+    const mouseSensor = useSensor(MouseSensor, {
+        activationConstraint: {
+            distance: 10,
+        },
+    });
+
+    const touchSensor = useSensor(TouchSensor, {
+        activationConstraint: {
+            delay: 250,
+            tolerance: 5,
+        },
+    });
+
+    const sensors = useSensors(mouseSensor, touchSensor);
+
+    useEffect(() => {
+        const fetchTasks = async () => {
+            if (currentProject && currentProject.id) {
+                try {
+                    await dispatch(getProjectTasks(currentProject.id)).unwrap();
+                    // setTasks(result.tasks);
+                } catch (error) {
+                    console.error('Failed to fetch tasks:', error);
+                }
+            }
+        };
+        fetchTasks();
+    }, [dispatch, currentProject]);
 
     function handleDragStart(event) {
         const { active } = event;
@@ -114,17 +69,34 @@ function TaskBoardPage() {
         const taskId = active.id;
         const newStatus = over.id;
 
-        setTasks((prev) => prev.map((task) => (task.id === taskId ? { ...task, status: newStatus } : task)));
+        // setTasks((prev) => prev.map((task) => (task.id === taskId ? { ...task, status: newStatus } : task)));
+        dispatch({ type: 'project/setNewStatus', payload: { taskId, newStatus } });
+    }
+
+    async function createNewTask(args) {
+        try {
+            const response = await dispatch(createTask(args)).unwrap();
+            const newTask = TaskModel.fromPayload(response.task);
+            console.log(`New task created:`, newTask);
+
+            // setTasks((prev) => [...prev, newTask]);
+        } catch (error) {
+            console.error('Failed to create task:', error);
+        }
     }
 
     return (
         <div className="size-full flex flex-col">
-            <ProjectHeader {...teamInfo} />
+            <ProjectHeader
+                teamName={currentProject.title}
+                teamDescription={currentProject.description}
+                teamMembers={currentProject.participants}
+            />
 
             <div className="px-8 py-5 flex-1 flex flex-col min-h-0">
                 <h1 className="text-2xl font-bold">Task Board</h1>
 
-                <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+                <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd} sensors={sensors}>
                     <div className="grid grid-cols-4 gap-8 flex-1 mt-4 min-h-0">
                         {COLUMNS.map((column) => {
                             return (
@@ -141,13 +113,15 @@ function TaskBoardPage() {
                     </DragOverlay>
                 </DndContext>
 
-                <Button
-                    variant="text"
-                    className="my-4 text-stroke self-start hover:shadow-white"
-                    startIcon={<FontAwesomeIcon icon={assets.icon.add} size="sm" />}
-                >
-                    <p className="font-bold text-lg leading-0">Create</p>
-                </Button>
+                <CreateTaskModal
+                    onSave={createNewTask}
+                    triggerBtn={
+                        <Button variant="text" className="my-4 text-stroke self-start hover:shadow-white">
+                            <FontAwesomeIcon icon={assets.icon.add} size="sm" />
+                            <p className="font-bold text-2xl leading-0">Create</p>
+                        </Button>
+                    }
+                />
             </div>
         </div>
     );

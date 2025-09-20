@@ -1,46 +1,66 @@
 import RecentProjectTag from './RecentProjectTag';
 import cloudIcon from '../../assets/icons/Cloud.svg';
 import ProjectTasks from './ProjectTasks';
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { getAllUsersTask } from '../../store/slices/AuthSlice';
+import CreateProjectModal from '../../components/CreateProjectModal';
+import { Button } from '../../components/ui/button';
 
 function PersonalTaskPage() {
-    const project = [
-        {
-            number: 'Project 1',
-            title: 'Cloud Migration',
-            members: ['1', '2', '3'],
-        },
-        {
-            number: 'Project 2',
-            title: 'Data Analysis',
-            members: ['1', '2'],
-        },
-    ];
+    const dispatch = useDispatch();
+    const userId = localStorage.getItem('user_id');
+    const isLoading = useSelector((state) => state.auth.loading);
+    const userTasks = useSelector((state) => state.auth.usersTask);
+    const projects = useSelector((state) => state.project.projects);
 
-    const tasksData = [
-        {
-            name: 'Task 1',
-            subTasks: ['Sub Task 1'],
-            types: ['Design', 'Research', 'Q&A', 'Development', 'Development2', 'Development3'],
-            assignee: 'Khanh Do',
-            startDate: '19 Jul 2025',
-            dueDate: '31 Oct 2025',
-        },
-    ];
+    useEffect(() => {
+        const fetchData = async () => {
+            await dispatch(getAllUsersTask(userId)).unwrap();
+        };
+        fetchData();
+    }, [dispatch, userId]);
 
     return (
         <div className="bg-secondary size-full p-6">
             <h1 className="font-bold text-3xl">For you</h1>
             <hr className="my-4 border border-[#D9D9D9]" />
-            <h2 className="font-semibold mb-4">Recent projects</h2>
-            <div className="flex flex-wrap gap-8 mb-18">
-                {project.map((proj, index) => (
-                    <RecentProjectTag key={index} icon={cloudIcon} color="#004643" project={proj} />
-                ))}
+            <div className="flex items-center justify-between">
+                <h2 className="font-semibold mb-4">Recent projects</h2>
+                <CreateProjectModal
+                    triggerBtn={
+                        <Button className="my-4 p-6 rounded-lg">
+                            <p className=" text-lg leading-0">Create Project</p>
+                        </Button>
+                    }
+                />
             </div>
 
-            <ProjectTasks teamName="Team 1" taskCount={1} endDate="31 Oct 2025" tasks={tasksData} />
+            <div className="flex flex-wrap gap-8 mb-18">
+                {projects.map((proj) => {
+                    return <RecentProjectTag key={proj.id} icon={cloudIcon} project={proj} />;
+                })}
+            </div>
 
-            <ProjectTasks teamName="Team 2" taskCount={12} endDate="31 Oct 2025" tasks={[]} />
+            {isLoading ? (
+                <p>Loading...</p>
+            ) : (
+                projects.map((proj, index) => {
+                    const tasksData = userTasks.filter((task) => {
+                        return task.project._id === proj.id;
+                    });
+
+                    return (
+                        <ProjectTasks
+                            key={index}
+                            teamName={proj.title}
+                            taskCount={tasksData.length}
+                            endDate={proj.dueDay}
+                            tasks={tasksData}
+                        />
+                    );
+                })
+            )}
         </div>
     );
 }
