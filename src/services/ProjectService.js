@@ -1,11 +1,12 @@
 import http from '../api/http';
 
-export const createProjectService = async (title, projectName, userId) => {
+export const createProjectService = async (title, projectName, userId, color) => {
     try {
         const { data } = await http.post('api/project/create', {
             title: title,
             projectName: projectName,
             userId: userId,
+            color: color,
         });
 
         return data;
@@ -95,11 +96,10 @@ export const createTaskService = async (project, title, description, assignedTo,
 
 export const updateTaskService = async (taskId, title, description, userIds, types, startDay, dueDay) => {
     try {
-        const getUserIds = userIds.map((user) => user._id);
         const { data } = await http.put(`api/project/update-task/${taskId}`, {
             title: title,
             description: description,
-            userIds: getUserIds,
+            userIds: userIds,
             types: types,
             startDay: startDay,
             dueDay: dueDay,
@@ -107,6 +107,18 @@ export const updateTaskService = async (taskId, title, description, userIds, typ
         return data;
     } catch (error) {
         console.error('Error updating task:', error);
+        throw error;
+    }
+};
+
+export const updateTaskStatusService = async (taskId, status) => {
+    try {
+        const { data } = await http.put(`api/project/update-status/${taskId}`, {
+            status: status,
+        });
+        return data;
+    } catch (error) {
+        console.error('Error updating task status:', error);
         throw error;
     }
 };
@@ -128,6 +140,29 @@ export const getProjectTasksService = async (projectId) => {
         return data;
     } catch (error) {
         console.error('Error fetching project tasks:', error);
+        throw error;
+    }
+};
+
+export const updateUserAvatarService = async (userId, userName, file) => {
+    try {
+        const { res } = await http.post(
+            'api/user/change-avatar',
+            {
+                userId: userId,
+                userName: userName,
+            },
+            {
+                headers: { 'Content-Type': 'application/json' },
+            },
+        );
+        const { uploadUrl, fileURL } = res;
+
+        await http.put(uploadUrl, file, { headers: { 'Content-Type': file.type } });
+
+        return fileURL;
+    } catch (error) {
+        console.error('Error updating user avatar:', error);
         throw error;
     }
 };

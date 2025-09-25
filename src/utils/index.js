@@ -17,7 +17,9 @@ const getMonth = (month = dayjs().month(), year = dayjs().year()) => {
 };
 
 const getWeek = (baseDate = dayjs(), weekOffset = 0) => {
-    const startOfWeek = dayjs(baseDate).add(weekOffset, 'week').startOf('week'); //sunday as default
+    let startOfWeek = dayjs(baseDate).add(weekOffset, 'week').startOf('week');
+
+    startOfWeek = startOfWeek.add(1, 'day');
 
     const weekDays = new Array(7).fill(null).map((_, idx) => startOfWeek.add(idx, 'day'));
 
@@ -38,6 +40,24 @@ const formatDate = (date) => {
     return format(date, APP_STANDARD_DATE_FORMAT);
 };
 
+const formatDateTime = (date) => {
+    if (!date) return '';
+
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = date.toLocaleString('en-US', { month: 'short' }); // Sep
+    const year = date.getFullYear();
+
+    let hours = date.getHours();
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+
+    hours = hours % 12;
+    hours = hours ? hours : 12;
+    const strTime = `${hours}:${minutes}${ampm}`;
+
+    return `${day}-${month}-${year}, ${strTime}`;
+};
+
 const isSameDay = (date1, date2) => {
     return format(date1, APP_STANDARD_DATE_FORMAT) === format(date2, APP_STANDARD_DATE_FORMAT);
 };
@@ -53,9 +73,26 @@ const toStartOfDay = (ts) => {
     return date.getTime();
 };
 
-function getStartHour(event) {
-    return dayjs(event.date * 1000).hour();
+function getStartHour(time) {
+    return dayjs(time * 1000).hour();
 }
+
+function getDurationMinutes(startTime, endTime) {
+    const start = dayjs(startTime * 1000);
+    const end = dayjs(endTime * 1000);
+
+    let duration = end.diff(start, 'minutes');
+    if (duration <= 0) {
+        duration = end.add(1, 'day').diff(start, 'minutes');
+    }
+
+    return Math.max(duration, 1);
+}
+
+const getStartMinutes = (ts) => {
+    const date = new Date(ts * 1000);
+    return date.getHours() * 60 + date.getMinutes();
+};
 
 function mixWithWhite(hex, whiteRatio) {
     const r = parseInt(hex.substring(1, 3), 16);
@@ -71,25 +108,37 @@ function mixWithWhite(hex, whiteRatio) {
         .padStart(2, '0')}${Math.round(newB).toString(16).padStart(2, '0')}`;
 }
 
-const randomColor = () => {
-    const darkColor =
-        '#' +
-        Math.floor(Math.random() * 16777215)
-            .toString(16)
-            .padStart(6, '0');
-
-    const lightColor = mixWithWhite(darkColor, 0.8);
+const setBackgroundColor = (color) => {
+    const lightColor = mixWithWhite(color, 0.8);
 
     return {
-        darkColor: darkColor,
+        darkColor: color,
         lightColor: lightColor,
     };
+};
+
+const randomColor = () => {
+    const colors = [
+        '#FF0000', // red
+        '#0000FF', // blue
+        '#008000', // green
+        '#FFFF00', // yellow
+        '#FFA500', // orange
+        '#800080', // purple
+        '#FFC0CB', // pink
+        '#A52A2A', // brown
+        '#000000', // black
+        '#FFFFFF', // white
+        '#808080', // gray
+    ];
+    const randomIndex = Math.floor(Math.random() * colors.length);
+    return colors[randomIndex];
 };
 
 export {
     formatDate,
     isSameDay,
-    randomColor,
+    setBackgroundColor,
     stringToTimeStamp,
     toStartOfDay,
     getMonth,
@@ -97,4 +146,8 @@ export {
     getCurrentDayClass,
     isDaySelected,
     getStartHour,
+    formatDateTime,
+    randomColor,
+    getDurationMinutes,
+    getStartMinutes,
 };

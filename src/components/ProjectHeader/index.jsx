@@ -5,10 +5,13 @@ import { useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@radix-ui/react-dropdown-menu';
 import { DropdownMenuGroup, DropdownMenuItem } from '../ui/dropdown-menu';
+import MeetingModal from '../MeetingModal';
+import { useState } from 'react';
 
 function ProjectHeader({ teamName, teamDescription, teamMembers, onlineUsers }) {
     const dispatch = useDispatch();
     const { projectId } = useParams();
+    const [meetingRoom, setMeetingRoom] = useState(null);
 
     const userList = onlineUsers || teamMembers || [];
 
@@ -62,20 +65,41 @@ function ProjectHeader({ teamName, teamDescription, teamMembers, onlineUsers }) 
                         <span className="text-base text-gray-600">Jira board</span>
                     </Button>
                 </div>
-                <div>
+                <div className="flex items-center gap-3">
+                    {meetingRoom && <Button className="rounded-lg bg-tertiary text-headline">Join meeting room</Button>}
                     <DropdownMenu>
                         <DropdownMenuTrigger>
                             <Button className="rounded-lg min-w-[100px] text-lg text-headline">Create Meeting</Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent>
-                            <DropdownMenuGroup>
-                                <DropdownMenuItem onClick={() => {}}>
-                                    <FontAwesomeIcon icon={assets.icon.video} className="w-6 h-6 mr-2 text-gray-500" />
-                                    {'Instant meeting'}
+                        <DropdownMenuContent className="bg-white rounded-md" sideOffset={5} align="end">
+                            <DropdownMenuGroup className="border border-gray-300 rounded-md">
+                                <DropdownMenuItem
+                                    className="cursor-pointer hover:bg-gray-100"
+                                    onClick={() => setMeetingRoom(!meetingRoom)}
+                                >
+                                    <div className="flex items-center text-base">
+                                        <FontAwesomeIcon
+                                            icon={assets.icon.video}
+                                            className="w-6 h-6 mr-2 text-gray-500"
+                                            size="lg"
+                                        />
+                                        <p>Instant meeting</p>
+                                    </div>
                                 </DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => {}}>
-                                    <FontAwesomeIcon icon={assets.icon.clock} className="w-6 h-6 mr-2 text-gray-500" />
-                                    {'Scheduled meeting'}
+
+                                <DropdownMenuItem asChild className="cursor-pointer hover:bg-gray-100">
+                                    <MeetingModal
+                                        triggerBtn={
+                                            <div className="flex items-center justify-center text-base p-2 cursor-pointer">
+                                                <FontAwesomeIcon
+                                                    icon={assets.icon.clock}
+                                                    className="w-6 h-6 mr-2 text-gray-500"
+                                                    size="lg"
+                                                />
+                                                <p>Scheduled meeting</p>
+                                            </div>
+                                        }
+                                    />
                                 </DropdownMenuItem>
                             </DropdownMenuGroup>
                         </DropdownMenuContent>

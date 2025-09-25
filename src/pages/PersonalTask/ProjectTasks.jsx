@@ -1,6 +1,7 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useState } from 'react';
 import assets from '../../constants/icon';
+import { formatDateTime } from '../../utils';
 
 function ProjectTasks({ teamName, taskCount, endDate, tasks }) {
     const [isExpanded, setIsExpanded] = useState(false);
@@ -91,18 +92,18 @@ function ProjectTasks({ teamName, taskCount, endDate, tasks }) {
 
                                 {/* Assignee */}
                                 <div>
-                                    {task.assigneeId.map((id) => {
+                                    {task.userIds.map((id) => {
                                         return <span key={id.id}>{id.name} </span>;
                                     })}
                                 </div>
                                 {/* Start Dates */}
                                 <div className="text-lg">
-                                    <span>{new Date(task.startDay * 1000).toLocaleDateString()}</span>
+                                    <span>{formatDateTime(new Date(task.startDay * 1000), 'dd-MMM-yyyy, HH:mm')}</span>
                                 </div>
 
                                 {/* Due Dates */}
                                 <div className="text-lg">
-                                    <span>{new Date(task.endDay * 1000).toLocaleDateString()}</span>
+                                    <span>{formatDateTime(new Date(task.dueDay * 1000), 'dd-MMM-yyyy, HH:mm')}</span>
                                 </div>
                             </div>
                         );

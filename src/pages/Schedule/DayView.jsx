@@ -1,19 +1,32 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { HOURS } from '../../constants/common';
-import { getCurrentDayClass, getStartHour } from '../../utils';
+import { getCurrentDayClass, getDurationMinutes, setBackgroundColor } from '../../utils';
 import dayjs from 'dayjs';
 import { useSelector } from 'react-redux';
 
 function DayView({ day }) {
     const [events, setEvents] = useState([]);
-    const savedEvents = useSelector((state) => state.calendar.savedEvents);
+    const meetings = useSelector((state) => state.meeting.meetings);
+    const projects = useSelector((state) => state.project.projects);
 
     useEffect(() => {
-        const events = savedEvents.filter((evt) => {
-            return dayjs(evt['date'] * 1000).format('DD-MM-YY') === day.format('DD-MM-YY');
+        const events = meetings.filter((evt) => {
+            return dayjs(evt.startTime * 1000).format('DD-MM-YY') === day.format('DD-MM-YY');
         });
         setEvents(events);
-    }, [savedEvents, day]);
+    }, [meetings, day]);
+
+    function formatDateTime(dateObj) {
+        const date = new Date(dateObj * 1000);
+
+        let hours = date.getHours();
+        let minutes = date.getMinutes();
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        hours = hours % 12 || 12;
+        const hourStr = String(hours).padStart(2, '0');
+        const minuteStr = String(minutes).padStart(2, '0');
+        return `${hourStr}:${minuteStr} ${ampm}`;
+    }
 
     return (
         <div className="w-full flex flex-col">
@@ -55,24 +68,60 @@ function DayView({ day }) {
                         ))}
 
                         {events.map((event, eIdx) => {
-                            let topPosition = getStartHour(event) * 44;
-
+                            const project = projects.find((proj) => proj.id === event.projectId);
                             return (
-                                <div
-                                    key={eIdx}
-                                    className="absolute left-1 right-1 bg-blue-100 border border-blue-300 text-xs p-1 rounded"
-                                    style={{
-                                        top: `${topPosition}px`,
-                                        height: `${event.duration * 44}px`,
-                                    }}
-                                >
-                                    <div className="font-semibold">{event.title}</div>
-                                    <div className="text-[10px]">{event.time}</div>
-                                </div>
+                                <EventItem key={eIdx} event={event} project={project} formatDateTime={formatDateTime} />
                             );
                         })}
                     </div>
                 </div>
+            </div>
+        </div>
+    );
+}
+
+function EventItem({ event, project, formatDateTime }) {
+    const [isHovering, setIsHovering] = useState(false);
+    const [contentHeight, setContentHeight] = useState(0);
+    const innerRef = useRef(null);
+
+    useEffect(() => {
+        if (isHovering && innerRef.current) {
+            setContentHeight(innerRef.current.scrollHeight + 2);
+        } else {
+            setContentHeight(null);
+        }
+    }, [isHovering]);
+
+    const startMinutes = dayjs(event.startTime * 1000).hour() * 60 + dayjs(event.startTime * 1000).minute();
+    const topPosition = (startMinutes / 60) * 44;
+    const durationMinutes = getDurationMinutes(event.startTime, event.endTime);
+    const defaultHeight = (durationMinutes / 60) * 44;
+
+    const colorClass = setBackgroundColor(project.color);
+
+    return (
+        <div
+            className="absolute left-1 right-1 border-y border-r border-l-5 rounded-md shadow-md cursor-pointer"
+            style={{
+                top: `${topPosition}px`,
+                minHeight: `${contentHeight || defaultHeight}px`,
+                backgroundColor: colorClass.lightColor,
+                borderColor: colorClass.darkColor,
+            }}
+            onMouseEnter={() => (defaultHeight < 44 ? setIsHovering(true) : null)}
+            onMouseLeave={() => (defaultHeight < 44 ? setIsHovering(false) : null)}
+        >
+            <div
+                ref={innerRef}
+                className="px-3 py-1 absolute inset-0 overflow-hidden hover:overflow-visible hover:h-fit rounded-md transition-[height] duration-300 ease-in-out"
+                style={{
+                    backgroundColor: colorClass.lightColor,
+                    color: colorClass.darkColor,
+                }}
+            >
+                <div className="text-lg font-semibold">{formatDateTime(event.startTime)}</div>
+                <div className="text-lg font-semibold">{event.title}</div>
             </div>
         </div>
     );

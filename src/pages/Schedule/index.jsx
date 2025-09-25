@@ -1,15 +1,17 @@
 import { useEffect, useState } from 'react';
 
 import { getMonth, getWeek } from '../../utils';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import CalendarHeader from './CalendarHeader';
 import MonthView from './MonthView';
 import { MODES } from '../../constants/common';
 import WeekView from './WeekView';
 import dayjs from 'dayjs';
 import DayView from './DayView';
+import { getMeetingsByUserId } from '../../store/slices/MeetingSlice';
 
 function SchedulePage() {
+    const dispatch = useDispatch();
     const [currentMonth, setCurrentMonth] = useState(getMonth());
     const [currentWeek, setCurrentWeek] = useState(getWeek());
     const [currentDay, setCurrentDay] = useState();
@@ -17,12 +19,18 @@ function SchedulePage() {
     const monthIndex = useSelector((state) => state.calendar.monthIndex);
     const year = useSelector((state) => state.calendar.year);
     const viewMode = useSelector((state) => state.calendar.viewMode);
+    const userId = localStorage.getItem('user_id');
 
     useEffect(() => {
+        const fetchMeetings = async () => {
+            await dispatch(getMeetingsByUserId(userId)).unwrap();
+        };
+
+        fetchMeetings();
         setCurrentMonth(getMonth(monthIndex, year));
         setCurrentWeek(getWeek());
         setCurrentDay(dayjs());
-    }, [monthIndex, year]);
+    }, [monthIndex, year, dispatch, userId]);
 
     return (
         <>

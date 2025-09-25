@@ -19,3 +19,13 @@ export const getAllUsersTaskService = async (userId) => {
         throw error;
     }
 };
+
+export const changeUserInfoService = async (userId, userData) => {
+    try {
+        const { data } = await http.put(`/api/user/${userId}`, userData);
+        return data;
+    } catch (error) {
+        console.error('Error changing user information:', error);
+        throw error;
+    }
+};

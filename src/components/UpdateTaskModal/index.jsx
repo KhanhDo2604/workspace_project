@@ -13,7 +13,6 @@ import { useState } from 'react';
 import { DropdownMenu, DropdownMenuGroup, DropdownMenuItem, DropdownMenuTrigger } from '../ui/dropdown-menu';
 import { DropdownMenuContent } from '@radix-ui/react-dropdown-menu';
 import { typeColorMap } from '../../constants/color';
-// import { toTimestamp } from '../../constants/common';
 import { useDispatch, useSelector } from 'react-redux';
 import { deleteTask, updateTask } from '../../store/slices/ProjectSlice';
 import ConfirmDialog from '../ConfirmDialog';
@@ -80,8 +79,23 @@ function UpdateTaskModal({ triggerBtn, currentTask }) {
         assignees.length !== currentTask.userIds.length ||
         types.length !== currentTask.types.length;
 
+    const resetState = () => {
+        setTitle(currentTask.title || '');
+        setDescription(currentTask.description || '');
+        setAssignees(currentTask.userIds || []);
+        setTypes(currentTask.types || []);
+        setStartDate(currentTask.startDay || '');
+        setDueDate(currentTask.dueDay || '');
+    };
+
     return (
-        <Dialog open={open} onOpenChange={(isOpen) => setOpen(isOpen)} s>
+        <Dialog
+            open={open}
+            onOpenChange={(isOpen) => {
+                setOpen(isOpen);
+                if (!isOpen) resetState();
+            }}
+        >
             <Toaster position="top-right" reverseOrder={false} />
             <DialogTrigger asChild>{triggerBtn}</DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">
@@ -138,24 +152,26 @@ function UpdateTaskModal({ triggerBtn, currentTask }) {
                             </DropdownMenuTrigger>
                             <DropdownMenuContent>
                                 <DropdownMenuGroup className="bg-white w-full max-h-60 overflow-y-auto border border-x-gray-300 rounded-b-md border-b-gray-300">
-                                    {currentProject.participants.map((member) => (
-                                        <DropdownMenuItem
-                                            key={member._id}
-                                            className="cursor-pointer text-base flex justify-between"
-                                            onClick={() =>
-                                                setAssignees((prev) =>
-                                                    prev.find((m) => m._id === member._id)
-                                                        ? prev.filter((m) => m._id !== member._id)
-                                                        : [...prev, member],
-                                                )
-                                            }
-                                        >
-                                            {member.name}
-                                            {assignees.find((m) => m._id === member._id) && (
-                                                <span className="text-green-500 font-bold">✓</span>
-                                            )}
-                                        </DropdownMenuItem>
-                                    ))}
+                                    {currentProject.participants.map((member) => {
+                                        return (
+                                            <DropdownMenuItem
+                                                key={member._id}
+                                                className="cursor-pointer text-base flex justify-between"
+                                                onClick={() =>
+                                                    setAssignees((prev) => {
+                                                        return prev.find((m) => m._id === member._id)
+                                                            ? prev.filter((m) => m._id !== member._id)
+                                                            : [...prev, member];
+                                                    })
+                                                }
+                                            >
+                                                {member.name}
+                                                {assignees.find((m) => m._id === member._id) && (
+                                                    <span className="text-green-500 font-bold">✓</span>
+                                                )}
+                                            </DropdownMenuItem>
+                                        );
+                                    })}
                                 </DropdownMenuGroup>
                             </DropdownMenuContent>
                         </DropdownMenu>
@@ -222,15 +238,21 @@ function UpdateTaskModal({ triggerBtn, currentTask }) {
                     <div className="grid gap-3">
                         <h1 className="text-lg font-semibold">Start Date</h1>
                         <CalendarButton
-                            dateValue={new Date(startDate * 1000)}
-                            onDateSelect={(date) => setStartDate(Math.floor(date.getTime() / 1000))}
+                            value={startDate}
+                            onChange={(date) => {
+                                const timestamp = Math.floor(date / 1000);
+                                setStartDate(timestamp);
+                            }}
                         />
                     </div>
                     <div className="grid gap-3">
                         <h1 className="text-lg font-semibold">Due Date</h1>
                         <CalendarButton
-                            dateValue={new Date(dueDate * 1000)}
-                            onDateSelect={(date) => setDueDate(Math.floor(date.getTime() / 1000))}
+                            value={dueDate}
+                            onChange={(date) => {
+                                const timestamp = Math.floor(date / 1000);
+                                setDueDate(timestamp);
+                            }}
                         />
                     </div>
                 </div>

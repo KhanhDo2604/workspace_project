@@ -4,6 +4,14 @@ import FormField from '../FormField';
 import Button from '../Button';
 import { useDispatch, useSelector } from 'react-redux';
 import { dialogActions } from '../../store/slices/DialogSlice';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@radix-ui/react-dropdown-menu';
+import { DropdownMenuGroup, DropdownMenuItem } from '../ui/dropdown-menu';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import toast, { Toaster } from 'react-hot-toast';
+import { updateUserAvatar } from '../../store/slices/AuthSlice';
+
+const appearances = ['Default', 'Dark', 'Light'];
+const languages = ['English', 'Vietnamese', 'Japanese'];
 
 function SettingDialog() {
     const dispatch = useDispatch();
@@ -12,10 +20,28 @@ function SettingDialog() {
     const [appearance, setAppearance] = useState('Default');
     const [language, setLanguage] = useState('English');
     const [name, setName] = useState(user.name || '');
+    const [avatar, setAvatar] = useState(user.avatar || '');
+
+    const handleFileChange = async (event) => {
+        const file = event.target.files[0];
+
+        const previewUrl = URL.createObjectURL(file);
+        setAvatar(previewUrl);
+
+        try {
+            const uploadedUrl = await dispatch(updateUserAvatar(user.id, user.name, file)).unwrap();
+            setAvatar(uploadedUrl);
+            toast.success('Avatar updated!');
+        } catch (err) {
+            console.error(err);
+            toast.error('Upload failed');
+        }
+    };
 
     return (
         <div className="w-full mx-auto mt-10 bg-white rounded-xl shadow p-6">
             {/* Account Section */}
+            <Toaster />
             <div className="mb-6">
                 <div className="flex items-center justify-between mb-4">
                     <h2 className="text-2xl font-semibold mb-2">Account</h2>
@@ -28,7 +54,13 @@ function SettingDialog() {
                 <div className="mb-4">
                     {/* Name & Email */}
                     <div className="flex items-center ml-4">
-                        <img src={assets.image.userTemp} alt="" className="w-14 h-14 mr-3" />
+                        <label className="relative cursor-pointer">
+                            <img src={avatar} alt="avatar" className="w-14 h-14 mr-3 rounded-full object-cover" />
+                            <input type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
+                            <span className="absolute bottom-0 right-2 bg-gray-800 text-white text-xs px-1 py-0.5 rounded">
+                                <FontAwesomeIcon icon={assets.icon.edit} size="sm" />
+                            </span>
+                        </label>
                         <div className="flex-1">
                             <FormField
                                 label="Full Name"
@@ -70,15 +102,29 @@ function SettingDialog() {
                             <p className="font-medium">Appearance</p>
                             <p className="text-base text-gray-500">Customize your workspace theme.</p>
                         </div>
-                        <select
-                            className="border rounded px-3 py-2 text-base"
-                            value={appearance}
-                            onChange={(e) => setAppearance(e.target.value)}
-                        >
-                            <option value="Default">Default</option>
-                            <option value="Dark">Dark</option>
-                            <option value="Light">Light</option>
-                        </select>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger className="min-w-[100px]">
+                                <Button
+                                    variant="outline"
+                                    className="border px-3 py-2 text-base hover:shadow-none rounded-md w-full"
+                                >
+                                    {appearance} <FontAwesomeIcon icon={assets.icon.dropdown} className="ml-2" />
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent className="bg-white min-w-[100px]">
+                                <DropdownMenuGroup className="w-full border border-gray-300 rounded-md">
+                                    {appearances.map((item) => (
+                                        <DropdownMenuItem
+                                            key={item}
+                                            onClick={() => setAppearance(item)}
+                                            className="cursor-pointer hover:bg-gray-100"
+                                        >
+                                            <p>{item}</p>
+                                        </DropdownMenuItem>
+                                    ))}
+                                </DropdownMenuGroup>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
                     </div>
 
                     {/* Language */}
@@ -87,15 +133,29 @@ function SettingDialog() {
                             <p className="font-medium">Language</p>
                             <p className="text-base text-gray-500">Change the language used in the user interface.</p>
                         </div>
-                        <select
-                            className="border rounded px-3 py-2 text-base"
-                            value={language}
-                            onChange={(e) => setLanguage(e.target.value)}
-                        >
-                            <option value="English">English</option>
-                            <option value="Vietnamese">Vietnamese</option>
-                            <option value="Japanese">Japanese</option>
-                        </select>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger className="min-w-[100px]">
+                                <Button
+                                    variant="outline"
+                                    className="border px-3 py-2 text-base hover:shadow-none rounded-md w-full"
+                                >
+                                    {language} <FontAwesomeIcon icon={assets.icon.dropdown} className="ml-2" />
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent className="bg-white min-w-[100px] rounded-md">
+                                <DropdownMenuGroup className="w-full border border-gray-300 rounded-md">
+                                    {languages.map((item) => (
+                                        <DropdownMenuItem
+                                            key={item}
+                                            onClick={() => setLanguage(item)}
+                                            className="cursor-pointer hover:bg-gray-100"
+                                        >
+                                            <p>{item}</p>
+                                        </DropdownMenuItem>
+                                    ))}
+                                </DropdownMenuGroup>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
                     </div>
                 </div>
             </div>

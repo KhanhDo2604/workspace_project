@@ -9,7 +9,7 @@ import TaskCard from './TaskCard';
 import { Button } from '../../components/ui/button';
 import { CreateTaskModal } from '../../components/CreateTaskModal';
 import { useDispatch, useSelector } from 'react-redux';
-import { createTask, getProjectTasks } from '../../store/slices/ProjectSlice';
+import { createTask, getProjectTasks, updateTaskStatus } from '../../store/slices/ProjectSlice';
 import TaskModel from '../../model/TaskModel';
 
 const COLUMNS = [
@@ -21,7 +21,6 @@ const COLUMNS = [
 function TaskBoardPage() {
     const dispatch = useDispatch();
 
-    // const [tasks, setTasks] = useState([]);
     const [activeTask, setActiveTask] = useState(null);
     const currentProject = useSelector((state) => state.project.currentProject);
     const tasks = useSelector((state) => state.project.tasks);
@@ -46,7 +45,6 @@ function TaskBoardPage() {
             if (currentProject && currentProject.id) {
                 try {
                     await dispatch(getProjectTasks(currentProject.id)).unwrap();
-                    // setTasks(result.tasks);
                 } catch (error) {
                     console.error('Failed to fetch tasks:', error);
                 }
@@ -61,7 +59,7 @@ function TaskBoardPage() {
         setActiveTask(task);
     }
 
-    function handleDragEnd(event) {
+    async function handleDragEnd(event) {
         const { active, over } = event;
 
         if (!over) return;
@@ -69,8 +67,8 @@ function TaskBoardPage() {
         const taskId = active.id;
         const newStatus = over.id;
 
-        // setTasks((prev) => prev.map((task) => (task.id === taskId ? { ...task, status: newStatus } : task)));
         dispatch({ type: 'project/setNewStatus', payload: { taskId, newStatus } });
+        await dispatch(updateTaskStatus({ taskId, newStatus })).unwrap();
     }
 
     async function createNewTask(args) {
@@ -78,8 +76,6 @@ function TaskBoardPage() {
             const response = await dispatch(createTask(args)).unwrap();
             const newTask = TaskModel.fromPayload(response.task);
             console.log(`New task created:`, newTask);
-
-            // setTasks((prev) => [...prev, newTask]);
         } catch (error) {
             console.error('Failed to create task:', error);
         }

@@ -10,15 +10,16 @@ import {
     removeMemberFromProjectService,
     updateProjectService,
     updateTaskService,
+    updateTaskStatusService,
 } from '../../services/ProjectService';
 import ProjectModel from '../../model/ProjectModel';
 import TaskModel from '../../model/TaskModel';
 
 export const createProject = createAsyncThunk(
     'api/project/create',
-    async ({ title, projectName, userId }, thunkAPI) => {
+    async ({ title, projectName, userId, color }, thunkAPI) => {
         try {
-            const res = await createProjectService(title, projectName, userId);
+            const res = await createProjectService(title, projectName, userId, color);
             return res;
         } catch (error) {
             return thunkAPI.rejectWithValue(error.message || 'Create project failed');
@@ -109,11 +110,24 @@ export const updateTask = createAsyncThunk('api/project/update-task', async (tas
             taskData.startDay,
             taskData.dueDay,
         );
+
         return res;
     } catch (error) {
         return thunkAPI.rejectWithValue(error.message || 'Update task failed');
     }
 });
+
+export const updateTaskStatus = createAsyncThunk(
+    'api/project/update-status',
+    async ({ taskId, newStatus }, thunkAPI) => {
+        try {
+            const res = await updateTaskStatusService(taskId, newStatus);
+            return res;
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error.message || 'Update task status failed');
+        }
+    },
+);
 
 export const deleteTask = createAsyncThunk('api/project/delete-task', async (taskId, thunkAPI) => {
     try {
@@ -189,6 +203,7 @@ const projectSlice = createSlice({
                         action.payload.project.projectName,
                         action.payload.project.host,
                         action.payload.project.participants || [],
+                        action.payload.project.color,
                     ),
                 );
                 state.message = action.payload.message;
@@ -213,6 +228,7 @@ const projectSlice = createSlice({
                         action.payload.project.projectName,
                         action.payload.project.host,
                         action.payload.project.participants || [],
+                        action.payload.project.color,
                     );
                 }
                 state.message = action.payload.message;
@@ -246,7 +262,14 @@ const projectSlice = createSlice({
                 state.loading = false;
                 state.projects = action.payload.projects.map(
                     (proj) =>
-                        new ProjectModel(proj._id, proj.title, proj.projectName, proj.host, proj.participants || []),
+                        new ProjectModel(
+                            proj._id,
+                            proj.title,
+                            proj.projectName,
+                            proj.host,
+                            proj.participants || [],
+                            proj.color,
+                        ),
                 );
                 state.message = action.payload.message;
             })
@@ -270,6 +293,7 @@ const projectSlice = createSlice({
                         action.payload.project.projectName,
                         action.payload.project.host,
                         action.payload.project.participants || [],
+                        action.payload.project.color,
                     );
                 }
                 state.message = action.payload.message;
@@ -368,7 +392,6 @@ const projectSlice = createSlice({
                         action.payload.task.subTasks,
                         action.payload.task.project,
                     );
-                    console.log(state.tasks[index]);
                 }
                 state.message = action.payload.message;
             })

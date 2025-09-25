@@ -13,7 +13,7 @@ function Sidebar() {
     const navigate = useNavigate();
 
     const isOpenSetting = useSelector((state) => state.dialog.openSetting);
-    const isOpenNotification = useSelector((state) => state.dialog.openNotification);
+    // const isOpenNotification = useSelector((state) => state.dialog.openNotification);
     const sidebarState = useSelector((state) => state.sideBar.currentTab);
     const userId = localStorage.getItem('user_id');
     const projects = useSelector((state) => state.project.projects);
@@ -44,12 +44,12 @@ function Sidebar() {
                 <h4 className="text-headline font-medium text-3xl">User</h4>
             </div>
             <div className="my-10">
-                <SidebarBtn
+                {/* <SidebarBtn
                     icon={assets.icon.notification}
                     label="Notification"
                     isActive={isOpenNotification}
                     onClick={() => dispatch(dialogActions.toggleNotification())}
-                />
+                /> */}
                 <SidebarBtn
                     icon={assets.icon.setting}
                     label="Settings"

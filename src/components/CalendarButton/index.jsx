@@ -1,41 +1,83 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { CalendarIcon } from 'lucide-react';
 
-export function CalendarButton({ dateValue, onDateSelect }) {
+export function CalendarButton({ value, onChange, placeholder, showTime = true }) {
     const [open, setOpen] = useState(false);
-    const [date, setDate] = useState(dateValue);
+    const [dateTime, setDateTime] = useState(value ? new Date(value * 1000) : null);
+
+    function updateTimestamp(newDateTime) {
+        if (!newDateTime) return;
+        const timestamp = Math.floor(newDateTime.getTime());
+        onChange?.(timestamp);
+    }
+
+    function formatDateTime(dateObj) {
+        if (!dateObj) return placeholder || 'Select date';
+        const day = String(dateObj.getDate()).padStart(2, '0');
+        const month = dateObj.toLocaleString('en-US', { month: 'short' });
+        const year = dateObj.getFullYear();
+
+        let hours = dateObj.getHours();
+        let minutes = dateObj.getMinutes();
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        hours = hours % 12 || 12;
+        const hourStr = String(hours).padStart(2, '0');
+        const minuteStr = String(minutes).padStart(2, '0');
+
+        return `${day}-${month}-${year}, ${hourStr}:${minuteStr}${ampm}`;
+    }
 
     return (
-        <div className="flex flex-col gap-3 w-full">
-            <Popover open={open} onOpenChange={(isOpen) => setOpen(isOpen)}>
-                <PopoverTrigger>
-                    <Button
-                        variant="outline"
-                        id="date"
-                        className="justify-between font-normal w-full border border-gray-300 rounded-md shadow-none"
-                    >
-                        {date ? date.toLocaleDateString() : 'Select date'}
-                        <CalendarIcon className="h-4 w-4" />
-                    </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto overflow-hidden p-0" align="start">
-                    <Calendar
-                        mode="single"
-                        selected={date}
-                        captionLayout="dropdown"
-                        onSelect={(newDate) => {
-                            if (newDate) {
-                                setDate(newDate);
-                                if (onDateSelect) onDateSelect(newDate);
+        <Popover open={open} onOpenChange={setOpen}>
+            <PopoverTrigger>
+                <Button
+                    variant="outline"
+                    className="justify-between font-normal w-full border border-gray-300 rounded-md shadow-none"
+                >
+                    {formatDateTime(dateTime)}
+                    <CalendarIcon className="h-4 w-4" />
+                </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-3 space-y-3" align="start">
+                <Calendar
+                    mode="single"
+                    selected={dateTime}
+                    onSelect={(newDate) => {
+                        if (newDate) {
+                            const updated = new Date(newDate);
+                            if (dateTime) {
+                                updated.setHours(dateTime.getHours(), dateTime.getMinutes());
                             }
-                            setOpen(false);
+                            setDateTime(updated);
+                            updateTimestamp(updated);
+                        }
+                    }}
+                />
+                {showTime && (
+                    <input
+                        type="time"
+                        className="border rounded px-2 py-1 w-full text-base"
+                        value={
+                            dateTime
+                                ? `${String(dateTime.getHours()).padStart(2, '0')}:${String(
+                                      dateTime.getMinutes(),
+                                  ).padStart(2, '0')}`
+                                : '00:00'
+                        }
+                        onChange={(e) => {
+                            if (!dateTime) return;
+                            const [hours, minutes] = e.target.value.split(':').map(Number);
+                            const updated = new Date(dateTime);
+                            updated.setHours(hours, minutes, 0, 0);
+                            setDateTime(updated);
+                            updateTimestamp(updated);
                         }}
                     />
-                </PopoverContent>
-            </Popover>
-        </div>
+                )}
+            </PopoverContent>
+        </Popover>
     );
 }

@@ -1,8 +1,9 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { login, logout, requestPasswordReset, resetPassword, signup } from '../../services/AuthService';
-import { getAllUsersTaskService, getUserInfoService } from '../../services/UserService';
+import { changeUserInfoService, getAllUsersTaskService, getUserInfoService } from '../../services/UserService';
 import UserModel from '../../model/UserModel';
 import TaskModel from '../../model/TaskModel';
+import { updateUserAvatarService } from '../../services/ProjectService';
 
 export const loginUser = createAsyncThunk('api/auth/login', async ({ email, password }, thunkAPI) => {
     try {
@@ -76,6 +77,27 @@ export const getAllUsersTask = createAsyncThunk('api/users', async (userId, thun
         return thunkAPI.rejectWithValue(error.message);
     }
 });
+
+export const changeUserInfo = createAsyncThunk('api/user/change-info', async ({ userId, userData }, thunkAPI) => {
+    try {
+        const response = await changeUserInfoService(userId, userData);
+        return response;
+    } catch (error) {
+        return thunkAPI.rejectWithValue(error.message);
+    }
+});
+
+export const updateUserAvatar = createAsyncThunk(
+    'api/user/update-avatar',
+    async ({ userId, userName, file }, thunkAPI) => {
+        try {
+            const response = await updateUserAvatarService(userId, userName, file);
+            return response;
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error.message);
+        }
+    },
+);
 
 const authSlice = createSlice({
     name: 'auth',
@@ -176,11 +198,14 @@ const authSlice = createSlice({
             })
             .addCase(getUserInformation.fulfilled, (state, action) => {
                 state.loading = false;
-                state.user = {
-                    userId: action.payload._id,
-                    email: action.payload.email,
-                    name: action.payload.name,
-                };
+                state.user = new UserModel(
+                    action.payload._id,
+                    action.payload.avatar,
+                    action.payload.name,
+                    action.payload.email,
+                    state.token,
+                    action.payload.personalSetting,
+                );
                 state.message = null;
             });
         builder
@@ -209,6 +234,25 @@ const authSlice = createSlice({
                 state.message = action.payload.message;
             })
             .addCase(getAllUsersTask.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload.message;
+            });
+        builder
+            .addCase(changeUserInfo.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+                state.message = null;
+            })
+            .addCase(changeUserInfo.fulfilled, (state, action) => {
+                state.loading = false;
+                state.user = {
+                    ...state.user,
+                    name: action.payload.name || state.user.name,
+                    avatar: action.payload.avatar || state.user.avatar,
+                };
+                state.message = action.payload.message;
+            })
+            .addCase(changeUserInfo.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload.message;
             });

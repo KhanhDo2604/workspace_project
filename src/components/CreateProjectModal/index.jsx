@@ -14,6 +14,7 @@ import {
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 import { Loader2Icon } from 'lucide-react';
+import { randomColor } from '../../utils';
 
 function CreateProjectModal({ triggerBtn }) {
     const dispatch = useDispatch();
@@ -35,6 +36,7 @@ function CreateProjectModal({ triggerBtn }) {
                 title: title,
                 projectName: description,
                 userId: userId,
+                color: randomColor(),
             }),
         ).unwrap();
     };

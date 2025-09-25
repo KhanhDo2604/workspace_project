@@ -14,7 +14,6 @@ import { DropdownMenu, DropdownMenuGroup, DropdownMenuItem, DropdownMenuTrigger 
 import { DropdownMenuContent } from '@radix-ui/react-dropdown-menu';
 import { typeColorMap } from '../../constants/color';
 import { useSelector } from 'react-redux';
-import { toTimestamp } from '../../constants/common';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import assets from '../../constants/icon';
 import { CalendarButton } from '../CalendarButton';
@@ -26,8 +25,8 @@ export function CreateTaskModal({ triggerBtn, onSave }) {
     const [description, setDescription] = useState('');
     const [assignees, setAssignees] = useState([]);
     const [types, setTypes] = useState([]);
-    const [startDate, setStartDate] = useState('');
-    const [dueDate, setDueDate] = useState('');
+    const [startDate, setStartDate] = useState();
+    const [dueDate, setDueDate] = useState();
     const [open, setOpen] = useState(false);
 
     const currentProject = useSelector((state) => state.project.currentProject);
@@ -192,14 +191,14 @@ export function CreateTaskModal({ triggerBtn, onSave }) {
                     {/* Start Date */}
                     <div className="grid gap-3">
                         <h1 className="text-lg font-semibold">Start Date</h1>
-                        <CalendarButton dateValue={startDate} onDateSelect={(date) => setStartDate(date)} />
+                        <CalendarButton value={startDate} onChange={(date) => setStartDate(date / 1000)} />
                     </div>
 
                     {/* Due Date */}
                     <div className="grid gap-3">
                         <h1 className="text-lg font-semibold">Due Date</h1>
 
-                        <CalendarButton dateValue={dueDate} onDateSelect={(date) => setDueDate(date)} />
+                        <CalendarButton value={dueDate} onChange={(date) => setDueDate(date / 1000)} />
                     </div>
                 </div>
 
@@ -220,8 +219,8 @@ export function CreateTaskModal({ triggerBtn, onSave }) {
                                 description: description,
                                 assignees: assignees,
                                 types: types,
-                                startDay: toTimestamp(startDate),
-                                dueDay: toTimestamp(dueDate),
+                                startDay: startDate,
+                                dueDay: dueDate,
                             });
                             setOpen(false);
                             resetForm();
