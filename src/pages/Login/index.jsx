@@ -2,10 +2,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Button } from '../../components/ui/button';
 import FormField from '../../components/FormField';
 import assets from '../../constants/icon';
-import { getUserInformation, loginUser } from '../../store/slices/AuthSlice';
+import { loginUser } from '../../store/slices/AuthSlice';
 import { Link, useNavigate } from 'react-router-dom';
 import { Loader2Icon } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 import { getAllProjects } from '../../store/slices/ProjectSlice';
 
@@ -44,24 +44,6 @@ function LoginPage() {
             toast.error(error);
         }
     };
-
-    useEffect(() => {
-        const fetchUser = async () => {
-            const token = localStorage.getItem('token');
-            const userId = localStorage.getItem('user_id');
-
-            if (token && userId) {
-                try {
-                    await Promise.all([dispatch(getUserInformation(userId)), dispatch(getAllProjects(userId))]);
-                    navigate(`/my-task/${userId}`, { replace: true });
-                } catch (err) {
-                    console.error('Failed to load user info:', err);
-                }
-            }
-        };
-
-        fetchUser();
-    }, [navigate, dispatch]);
 
     return (
         <div className="w-full h-screen flex items-center justify-center py-12">

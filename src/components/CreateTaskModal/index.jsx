@@ -191,14 +191,34 @@ export function CreateTaskModal({ triggerBtn, onSave }) {
                     {/* Start Date */}
                     <div className="grid gap-3">
                         <h1 className="text-lg font-semibold">Start Date</h1>
-                        <CalendarButton value={startDate} onChange={(date) => setStartDate(date / 1000)} />
+                        <CalendarButton
+                            value={startDate}
+                            onChange={(date) => {
+                                const timestamp = date / 1000;
+                                if (dueDate && timestamp > dueDate) {
+                                    alert('Start date cannot be after Due date');
+                                    return;
+                                }
+                                setStartDate(timestamp);
+                            }}
+                        />
                     </div>
 
                     {/* Due Date */}
                     <div className="grid gap-3">
                         <h1 className="text-lg font-semibold">Due Date</h1>
 
-                        <CalendarButton value={dueDate} onChange={(date) => setDueDate(date / 1000)} />
+                        <CalendarButton
+                            value={dueDate}
+                            onChange={(date) => {
+                                const timestamp = date / 1000;
+                                if (startDate && timestamp < startDate) {
+                                    alert('Due date cannot be before Start date');
+                                    return;
+                                }
+                                setDueDate(timestamp);
+                            }}
+                        />
                     </div>
                 </div>
 

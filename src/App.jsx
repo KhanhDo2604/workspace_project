@@ -1,13 +1,14 @@
 import { Navigate, Route, BrowserRouter as Router, Routes } from 'react-router';
 import privateRoutes from './routes';
 import { AuthenticationLayout, DefaultLayout } from './components/layout';
+import LoadingPage from './pages/LoadingPage';
 
 function App() {
     return (
         <Router>
             <>
                 <Routes>
-                    <Route path="/" element={<Navigate to="/login" replace />} />
+                    <Route path="/" element={<LoadingPage />} />
 
                     {privateRoutes.map((route, index) => {
                         let Layout = DefaultLayout;

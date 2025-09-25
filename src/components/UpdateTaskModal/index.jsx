@@ -241,6 +241,10 @@ function UpdateTaskModal({ triggerBtn, currentTask }) {
                             value={startDate}
                             onChange={(date) => {
                                 const timestamp = Math.floor(date / 1000);
+                                if (dueDate && timestamp > dueDate) {
+                                    alert('Start date cannot be after Due date');
+                                    return;
+                                }
                                 setStartDate(timestamp);
                             }}
                         />
@@ -251,6 +255,10 @@ function UpdateTaskModal({ triggerBtn, currentTask }) {
                             value={dueDate}
                             onChange={(date) => {
                                 const timestamp = Math.floor(date / 1000);
+                                if (startDate && timestamp < startDate) {
+                                    alert('Due date cannot be before Start date');
+                                    return;
+                                }
                                 setDueDate(timestamp);
                             }}
                         />

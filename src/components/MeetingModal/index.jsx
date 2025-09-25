@@ -107,12 +107,32 @@ function MeetingModal({ meeting, triggerBtn }) {
 
                     <div className="grid gap-3">
                         <h1 className="text-lg font-semibold">Start Date</h1>
-                        <CalendarButton value={startTime} onChange={(date) => setStartTime(date / 1000)} />
+                        <CalendarButton
+                            value={startTime}
+                            onChange={(date) => {
+                                const timestamp = Math.floor(date / 1000);
+                                if (endTime && timestamp > endTime) {
+                                    alert('Start date cannot be after End date');
+                                    return;
+                                }
+                                setStartTime(timestamp);
+                            }}
+                        />
                     </div>
 
                     <div className="grid gap-3">
                         <h1 className="text-lg font-semibold">End Date</h1>
-                        <CalendarButton value={endTime} onChange={(date) => setEndTime(date / 1000)} />
+                        <CalendarButton
+                            value={endTime}
+                            onChange={(date) => {
+                                const timestamp = Math.floor(date / 1000);
+                                if (startTime && timestamp < startTime) {
+                                    alert('End date cannot be before Start date');
+                                    return;
+                                }
+                                setEndTime(timestamp);
+                            }}
+                        />
                     </div>
 
                     <div className="grid gap-3">

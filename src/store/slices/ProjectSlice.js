@@ -6,6 +6,7 @@ import {
     deleteProjectService,
     deleteTaskService,
     getAllProjectsService,
+    getChatMessagesService,
     getProjectTasksService,
     removeMemberFromProjectService,
     updateProjectService,
@@ -14,6 +15,7 @@ import {
 } from '../../services/ProjectService';
 import ProjectModel from '../../model/ProjectModel';
 import TaskModel from '../../model/TaskModel';
+import ChatModel from '../../model/ChatModel';
 
 export const createProject = createAsyncThunk(
     'api/project/create',
@@ -57,6 +59,15 @@ export const getAllProjects = createAsyncThunk('api/project/user', async (userId
         return res;
     } catch (error) {
         return thunkAPI.rejectWithValue(error.message || 'Get all projects failed');
+    }
+});
+
+export const getChatMessages = createAsyncThunk('api/chat/messages', async (projectId, thunkAPI) => {
+    try {
+        const res = await getChatMessagesService(projectId);
+        return res;
+    } catch (error) {
+        return thunkAPI.rejectWithValue(error.message || 'Get chat messages failed');
     }
 });
 
@@ -171,6 +182,7 @@ const projectSlice = createSlice({
         message: null,
         tasks: [],
         currentProject: new ProjectModel(),
+        chat: [],
     },
     reducers: {
         setCurrentProject(state, action) {
@@ -349,20 +361,22 @@ const projectSlice = createSlice({
             })
             .addCase(getProjectTasks.fulfilled, (state, action) => {
                 state.loading = false;
-                state.tasks = action.payload.tasks.map((task) => {
-                    return new TaskModel(
-                        task.id,
-                        task.title,
-                        task.description,
-                        task.startDay,
-                        task.dueDay,
-                        task.userIds,
-                        task.status,
-                        task.types,
-                        task.subtasks,
-                        task.project,
-                    );
-                });
+                state.tasks = action.payload.tasks
+                    .map((task) => {
+                        return new TaskModel(
+                            task.id,
+                            task.title,
+                            task.description,
+                            task.startDay,
+                            task.dueDay,
+                            task.userIds,
+                            task.status,
+                            task.types,
+                            task.subtasks,
+                            task.project,
+                        );
+                    })
+                    .sort((a, b) => new Date(a.startDay) - new Date(b.startDay));
 
                 state.message = action.payload.message;
             })
@@ -413,6 +427,23 @@ const projectSlice = createSlice({
                 state.message = action.payload.message;
             })
             .addCase(deleteTask.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.error.message;
+            });
+        builder
+            .addCase(getChatMessages.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+                state.message = null;
+            })
+            .addCase(getChatMessages.fulfilled, (state, action) => {
+                state.loading = false;
+                if (action.payload.length > 0) {
+                    state.chat = action.payload;
+                }
+                state.message = action.payload.message;
+            })
+            .addCase(getChatMessages.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.error.message;
             });

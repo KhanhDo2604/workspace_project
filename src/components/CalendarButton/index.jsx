@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
@@ -7,6 +7,10 @@ import { CalendarIcon } from 'lucide-react';
 export function CalendarButton({ value, onChange, placeholder, showTime = true }) {
     const [open, setOpen] = useState(false);
     const [dateTime, setDateTime] = useState(value ? new Date(value * 1000) : null);
+
+    useEffect(() => {
+        setDateTime(value ? new Date(value * 1000) : null);
+    }, [value]);
 
     function updateTimestamp(newDateTime) {
         if (!newDateTime) return;
@@ -27,7 +31,7 @@ export function CalendarButton({ value, onChange, placeholder, showTime = true }
         const hourStr = String(hours).padStart(2, '0');
         const minuteStr = String(minutes).padStart(2, '0');
 
-        return `${day}-${month}-${year}, ${hourStr}:${minuteStr}${ampm}`;
+        return showTime ? `${day}-${month}-${year}, ${hourStr}:${minuteStr}${ampm}` : `${day}-${month}-${year}`;
     }
 
     return (

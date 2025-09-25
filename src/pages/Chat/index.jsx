@@ -4,9 +4,12 @@ import ChatEditor from '../../components/ChatEditor';
 import ProjectHeader from '../../components/ProjectHeader';
 import assets from '../../constants/icon';
 import { io } from 'socket.io-client';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { getChatMessages } from '../../store/slices/ProjectSlice';
+import ChatModel from '../../model/ChatModel';
 
 function ChatScreen() {
+    const dispatch = useDispatch();
     const currentUser = useSelector((state) => state.auth.user);
     const currentProject = useSelector((state) => state.project.currentProject);
 
@@ -29,11 +32,21 @@ function ChatScreen() {
 
     useEffect(() => {
         if (!socket) return;
+        const fetchMessages = async () => {
+            try {
+                const data = await dispatch(getChatMessages(currentProject.id)).unwrap();
+
+                setMessages(data);
+            } catch (error) {
+                console.error('Failed to fetch messages:', error);
+            }
+        };
+        fetchMessages();
         socket.emit('enterRoom', {
             name: currentUser.email,
             room: currentProject.id,
         });
-    }, [socket, currentUser, currentProject]);
+    }, [socket, currentUser, currentProject, dispatch]);
 
     useEffect(() => {
         if (!socket) return;
@@ -42,7 +55,15 @@ function ChatScreen() {
 
         const handleMessage = (data) => {
             setActivity('');
-            setMessages((prev) => [...prev, data]);
+            const chatData = new ChatModel({
+                projectId: data.projectId,
+                userId: data.userId,
+                message: data.text,
+                avatar: data.avatar,
+                createdAt: data.createdAt,
+                name: data.name,
+            });
+            setMessages((prev) => [...prev, chatData]);
         };
 
         const handleActivity = (name) => {
@@ -66,15 +87,19 @@ function ChatScreen() {
             socket.off('activity', handleActivity);
             socket.off('userList', handleUserList);
         };
-    }, [socket]);
+    }, [socket, currentUser, currentProject]);
 
     const handleSend = (text) => {
         if (!text || typeof text !== 'string') return;
         if (!text.trim()) return;
 
         socket.emit('message', {
+            userId: currentUser.id,
+            projectId: currentProject.id,
             name: currentUser.name,
+            avatar: currentUser.avatar,
             text: text,
+            createdAt: new Date().getTime(),
         });
     };
 
@@ -90,29 +115,19 @@ function ChatScreen() {
                 teamMembers={currentProject.participants}
             />
 
-            {/* Danh sách thành viên đang onl nên xuất hiện ở header*/}
-            {/* <div className="px-6 py-2 text-sm text-gray-600">
-                <span className="font-medium">Members:</span>{' '}
-                {users.map((u, i) => (
-                    <span key={u.id}>
-                        {u.name}
-                        {i < users.length - 1 ? ', ' : ''}
-                    </span>
-                ))}
-            </div> */}
-
-            {/* Khu vực chat */}
             <div className="relative overflow-y-auto flex-1 p-6">
                 <div className="space-y-4">
                     {messages.map((msg, index) => {
+                        console.log(msg);
+
                         return (
                             <ChatCard
                                 key={index}
-                                userIcon={assets.image.userTemp}
+                                userIcon={msg.avatar || assets.image.userTemp}
                                 userName={msg.name}
-                                content={msg.text}
-                                timestamp={msg.time}
-                                isMe={msg.name === currentUser.name}
+                                content={msg.message}
+                                createdAt={msg.createdAt}
+                                isMe={msg.userId === currentUser.id}
                             />
                         );
                     })}

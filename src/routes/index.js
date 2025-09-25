@@ -8,6 +8,7 @@ import ForgotPasswordPage from '../pages/ForgotPassword';
 import SetPasswordPage from '../pages/SetPassword';
 import ChatScreen from '../pages/Chat';
 import TimelinePage from '../pages/TaskBoard/TimeLinePage';
+import LoadingPage from '../pages/LoadingPage';
 
 const privateRoutes = [
     { path: '/my-task/:userId', component: PersonalTaskPage },
@@ -20,6 +21,7 @@ const privateRoutes = [
     { path: '/forgot-password', component: ForgotPasswordPage, thread: 'auth' },
     { path: '/set-new-password', component: SetPasswordPage, thread: 'auth' },
     { path: '/meeting/:projectId', component: MeetingPage, thread: 'none-layout' },
+    { path: '/', component: LoadingPage, thread: 'none-layout' },
 ];
 
 export default privateRoutes;

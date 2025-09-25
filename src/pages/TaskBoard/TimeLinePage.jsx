@@ -4,20 +4,33 @@ import assets from '../../constants/icon';
 import ProjectHeader from '../../components/ProjectHeader';
 import FormField from '../../components/FormField';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { formatDate, toStartOfDay } from '../../utils';
+import { formatDate } from '../../utils';
 import { addDays, addMonths, differenceInCalendarDays } from 'date-fns';
-import Button from '../../components/Button';
 import { CreateTaskModal } from '../../components/CreateTaskModal';
 import { CalendarButton } from '../../components/CalendarButton';
 import { createTask } from '../../store/slices/ProjectSlice';
 import TaskModel from '../../model/TaskModel';
 import UpdateTaskModal from '../../components/UpdateTaskModal';
+import { Button } from '../../components/ui/button';
+import dayjs from 'dayjs';
+import isBetween from 'dayjs/plugin/isBetween';
 
+dayjs.extend(isBetween);
+
+const DAY_PX = 161;
 const rowHeight = 60;
-const pxPerMinute = 160 / (24 * 60);
+const pxPerMinute = DAY_PX / (24 * 60);
 const dayInMs = 24 * 60 * 60 * 1000;
 
-const UpperSection = ({ onCreateTask, users, projectDescription, onSearchChange, onDateSelect }) => {
+const UpperSection = ({
+    onCreateTask,
+    users,
+    projectDescription,
+    onSearchChange,
+    onDateSelect,
+    onResetFilters,
+    filterDate,
+}) => {
     return (
         <div>
             <div className="flex justify-between items-center mb-5">
@@ -63,6 +76,11 @@ const UpperSection = ({ onCreateTask, users, projectDescription, onSearchChange,
                     />
 
                     {/* Reset Filters */}
+                    {filterDate && (
+                        <Button variant="outline" className="ml-4 border-tertiary" onClick={onResetFilters}>
+                            Reset Filters
+                        </Button>
+                    )}
                 </div>
                 <CreateTaskModal
                     onSave={onCreateTask}
@@ -94,13 +112,22 @@ function TimelinePage() {
     const tasks = useSelector((state) => state.project.tasks);
     const currentProject = useSelector((state) => state.project.currentProject);
 
-    // 🔹 Apply search + filter
+    const resetFilters = () => {
+        setSearchQuery('');
+        setFilterDate(null);
+    };
+
     const filteredTasks = useMemo(() => {
         return tasks.filter((task) => {
             const matchesSearch = task.title.toLowerCase().includes(searchQuery.trim().toLowerCase());
 
             const matchesDate = filterDate
-                ? task.startDay * 1000 <= filterDate.getTime() && task.dueDay * 1000 >= filterDate.getTime()
+                ? dayjs(filterDate).isBetween(
+                      dayjs(new Date(task.startDay * 1000)).startOf('day'),
+                      dayjs(new Date(task.dueDay * 1000)).endOf('day'),
+                      'day',
+                      '[]',
+                  )
                 : true;
 
             return matchesSearch && matchesDate;
@@ -116,8 +143,7 @@ function TimelinePage() {
     async function createNewTask(args) {
         try {
             const response = await dispatch(createTask(args)).unwrap();
-            const newTask = TaskModel.fromPayload(response.task);
-            console.log(`New task created:`, newTask);
+            TaskModel.fromPayload(response.task);
         } catch (error) {
             console.error('Failed to create task:', error);
         }
@@ -138,6 +164,8 @@ function TimelinePage() {
                     projectDescription={currentProject.description}
                     onSearchChange={setSearchQuery}
                     onDateSelect={setFilterDate}
+                    onResetFilters={resetFilters}
+                    filterDate={filterDate}
                 />
 
                 <div className="flex flex-col flex-1 min-h-0">
@@ -174,40 +202,40 @@ function TimelinePage() {
                                     </div>
                                     <div className="size-full mt-1">
                                         {filteredTasks.map((task, idx) => {
-                                            const taskStart = task.startDay * 1000;
-                                            const taskEnd = task.dueDay * 1000;
+                                            const taskStartMs = Number(task.startDay) * 1000;
+                                            const taskEndMs = Number(task.dueDay) * 1000;
 
-                                            const timelineStart = toStartOfDay(days[0].getTime());
-                                            const timelineEnd = toStartOfDay(days[days.length - 1].getTime());
+                                            const timelineStartMs = dayjs(days[0]).startOf('day').valueOf();
+                                            const timelineEndMs = dayjs(days[days.length - 1])
+                                                .endOf('day')
+                                                .valueOf();
 
-                                            if (taskEnd < timelineStart || taskStart > timelineEnd) return null;
+                                            if (taskEndMs < timelineStartMs || taskStartMs > timelineEndMs) return null;
 
-                                            const visibleStart = Math.max(taskStart, timelineStart);
-                                            const visibleEnd = Math.min(taskEnd, timelineEnd);
+                                            const visibleStartMs = Math.max(taskStartMs, timelineStartMs);
+                                            const visibleEndMs = Math.min(taskEndMs, timelineEndMs);
 
-                                            const startDayOffset = Math.floor((visibleStart - timelineStart) / dayInMs);
-                                            const minutesInDay =
-                                                (visibleStart - toStartOfDay(visibleStart)) / (1000 * 60);
-
-                                            let left = startDayOffset * 160 + minutesInDay * pxPerMinute;
-                                            left = Math.max(0, left);
+                                            const minutesFromTimelineStart = Math.floor(
+                                                (visibleStartMs - timelineStartMs) / 60000,
+                                            );
+                                            const left = Math.max(0, minutesFromTimelineStart * pxPerMinute);
 
                                             const durationMinutes = Math.max(
-                                                (visibleEnd - visibleStart) / (1000 * 60),
+                                                Math.ceil((visibleEndMs - visibleStartMs) / 60000),
                                                 1,
                                             );
                                             const width = durationMinutes * pxPerMinute;
 
-                                            const taskBorder =
-                                                task.startDay * 1000 <= timelineStart ? 'rounded-r-md' : 'rounded-md';
+                                            const taskBorderClass =
+                                                taskStartMs <= timelineStartMs ? 'rounded-r-md' : 'rounded-md';
 
                                             return (
                                                 <UpdateTaskModal
+                                                    key={task.id}
                                                     currentTask={task}
                                                     triggerBtn={
                                                         <div
-                                                            key={task.id}
-                                                            className={`bg-amber-50 absolute ${taskBorder} shadow-sm text-sm px-3 py-2 overflow-visible cursor-pointer`}
+                                                            className={`bg-amber-50 absolute ${taskBorderClass} shadow-sm text-sm px-3 py-2 overflow-visible cursor-pointer`}
                                                             style={{
                                                                 top: `${idx * rowHeight}px`,
                                                                 left: `${left}px`,
@@ -222,7 +250,7 @@ function TimelinePage() {
 
                                                             <div className="text-xs text-gray-600 mt-1">
                                                                 Days Remaining:{' '}
-                                                                {Math.ceil((taskEnd - Date.now()) / dayInMs)}
+                                                                {Math.ceil((taskEndMs - Date.now()) / dayInMs)}
                                                             </div>
                                                         </div>
                                                     }

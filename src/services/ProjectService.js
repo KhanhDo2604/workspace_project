@@ -1,4 +1,5 @@
 import http from '../api/http';
+import ChatModel from '../model/ChatModel';
 
 export const createProjectService = async (title, projectName, userId, color) => {
     try {
@@ -46,6 +47,18 @@ export const getAllProjectsService = async (userId) => {
         return data;
     } catch (error) {
         console.error('Error fetching projects:', error);
+        throw error;
+    }
+};
+
+export const getChatMessagesService = async (projectId) => {
+    try {
+        const { data } = await http.get(`api/project/get-chat/${projectId}`);
+        console.log(data);
+
+        return data.chat.map((msg) => ChatModel.fromJson(msg)).sort((a, b) => a.createdAt - b.createdAt);
+    } catch (error) {
+        console.error('Error fetching chat messages:', error);
         throw error;
     }
 };
