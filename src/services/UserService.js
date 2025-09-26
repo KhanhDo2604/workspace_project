@@ -20,12 +20,29 @@ export const getAllUsersTaskService = async (userId) => {
     }
 };
 
-export const changeUserInfoService = async (userId, userData) => {
+export const changeUserInfoService = async (userId, newName) => {
     try {
-        const { data } = await http.put(`/api/user/${userId}`, userData);
+        const { data } = await http.put(`api/user/change_name/${userId}`, { newName: newName });
         return data;
     } catch (error) {
         console.error('Error changing user information:', error);
+        throw error;
+    }
+};
+
+export const updateUserAvatarService = async (userId, file) => {
+    try {
+        const formData = new FormData();
+        formData.append('userId', userId);
+        formData.append('file', file);
+
+        const { data } = await http.post('api/user/change-avatar', formData, {
+            headers: { 'Content-Type': 'multipart/form-data' },
+        });
+
+        return data.user;
+    } catch (error) {
+        console.error('Error updating user avatar:', error);
         throw error;
     }
 };

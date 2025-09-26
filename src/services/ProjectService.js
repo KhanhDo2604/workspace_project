@@ -156,26 +156,3 @@ export const getProjectTasksService = async (projectId) => {
         throw error;
     }
 };
-
-export const updateUserAvatarService = async (userId, userName, file) => {
-    try {
-        const { res } = await http.post(
-            'api/user/change-avatar',
-            {
-                userId: userId,
-                userName: userName,
-            },
-            {
-                headers: { 'Content-Type': 'application/json' },
-            },
-        );
-        const { uploadUrl, fileURL } = res;
-
-        await http.put(uploadUrl, file, { headers: { 'Content-Type': file.type } });
-
-        return fileURL;
-    } catch (error) {
-        console.error('Error updating user avatar:', error);
-        throw error;
-    }
-};

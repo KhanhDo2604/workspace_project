@@ -1,9 +1,13 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { login, logout, requestPasswordReset, resetPassword, signup } from '../../services/AuthService';
-import { changeUserInfoService, getAllUsersTaskService, getUserInfoService } from '../../services/UserService';
+import {
+    changeUserInfoService,
+    getAllUsersTaskService,
+    getUserInfoService,
+    updateUserAvatarService,
+} from '../../services/UserService';
 import UserModel from '../../model/UserModel';
 import TaskModel from '../../model/TaskModel';
-import { updateUserAvatarService } from '../../services/ProjectService';
 
 export const loginUser = createAsyncThunk('api/auth/login', async ({ email, password }, thunkAPI) => {
     try {
@@ -78,26 +82,23 @@ export const getAllUsersTask = createAsyncThunk('api/users', async (userId, thun
     }
 });
 
-export const changeUserInfo = createAsyncThunk('api/user/change-info', async ({ userId, userData }, thunkAPI) => {
+export const changeUserInfo = createAsyncThunk('api/user/change_name', async ({ userId, newName }, thunkAPI) => {
     try {
-        const response = await changeUserInfoService(userId, userData);
+        const response = await changeUserInfoService(userId, newName);
         return response;
     } catch (error) {
         return thunkAPI.rejectWithValue(error.message);
     }
 });
 
-export const updateUserAvatar = createAsyncThunk(
-    'api/user/update-avatar',
-    async ({ userId, userName, file }, thunkAPI) => {
-        try {
-            const response = await updateUserAvatarService(userId, userName, file);
-            return response;
-        } catch (error) {
-            return thunkAPI.rejectWithValue(error.message);
-        }
-    },
-);
+export const updateUserAvatar = createAsyncThunk('api/user/change-avatar', async ({ userId, file }, thunkAPI) => {
+    try {
+        const updatedUser = await updateUserAvatarService(userId, file);
+        return updatedUser;
+    } catch (error) {
+        return thunkAPI.rejectWithValue(error.message);
+    }
+});
 
 const authSlice = createSlice({
     name: 'auth',
@@ -237,22 +238,28 @@ const authSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload.message;
             });
+        builder.addCase(changeUserInfo.fulfilled, (state, action) => {
+            state.loading = false;
+            state.user = {
+                ...state.user,
+                name: action.payload.user.name || state.user.name,
+                avatar: action.payload.user.avatar || state.user.avatar,
+            };
+            state.message = action.payload.message;
+        });
         builder
-            .addCase(changeUserInfo.pending, (state) => {
+            .addCase(updateUserAvatar.pending, (state) => {
                 state.loading = true;
                 state.error = null;
                 state.message = null;
             })
-            .addCase(changeUserInfo.fulfilled, (state, action) => {
+            .addCase(updateUserAvatar.fulfilled, (state, action) => {
                 state.loading = false;
-                state.user = {
-                    ...state.user,
-                    name: action.payload.name || state.user.name,
-                    avatar: action.payload.avatar || state.user.avatar,
-                };
-                state.message = action.payload.message;
+                if (state.user && state.user.userId === action.payload.userId) {
+                    state.user = { ...state.user, avatar: action.payload.avatar };
+                }
             })
-            .addCase(changeUserInfo.rejected, (state, action) => {
+            .addCase(updateUserAvatar.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload.message;
             });

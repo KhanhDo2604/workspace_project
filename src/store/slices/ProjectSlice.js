@@ -15,7 +15,6 @@ import {
 } from '../../services/ProjectService';
 import ProjectModel from '../../model/ProjectModel';
 import TaskModel from '../../model/TaskModel';
-import ChatModel from '../../model/ChatModel';
 
 export const createProject = createAsyncThunk(
     'api/project/create',

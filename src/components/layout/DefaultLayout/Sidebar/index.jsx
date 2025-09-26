@@ -7,16 +7,17 @@ import { colors } from '../../../../constants/color';
 import { logoutUser } from '../../../../store/slices/AuthSlice';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import SettingDialog from '../../../SettingDialog';
 
 function Sidebar() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    const isOpenSetting = useSelector((state) => state.dialog.openSetting);
-    // const isOpenNotification = useSelector((state) => state.dialog.openNotification);
     const sidebarState = useSelector((state) => state.sideBar.currentTab);
     const userId = localStorage.getItem('user_id');
     const projects = useSelector((state) => state.project.projects);
+    const user = useSelector((state) => state.auth.user);
     const [openProjects, setOpenProjects] = useState({});
 
     const handleSidebarClick = async (path, onClick) => {
@@ -40,26 +41,20 @@ function Sidebar() {
     return (
         <aside className="w-1/5 bg-primary py-9 px-7 flex flex-col h-screen">
             <div className="flex items-center">
-                <img src={assets.image.userTemp} alt="" className="w-14 h-14 mr-3" />
-                <h4 className="text-headline font-medium text-3xl">User</h4>
+                <Avatar className="w-21 h-21 mr-3 rounded-full object-cover border border-gray-300">
+                    <AvatarImage src={user?.avatar} />
+                    <AvatarFallback>{user?.name?.charAt(0).toUpperCase()}</AvatarFallback>
+                </Avatar>
+                <h4 className="text-headline font-medium text-3xl overflow-hidden text-ellipsis whitespace-nowrap">
+                    {user?.name}
+                </h4>
             </div>
-            <div className="my-10">
-                {/* <SidebarBtn
-                    icon={assets.icon.notification}
-                    label="Notification"
-                    isActive={isOpenNotification}
-                    onClick={() => dispatch(dialogActions.toggleNotification())}
-                /> */}
-                <SidebarBtn
-                    icon={assets.icon.setting}
-                    label="Settings"
-                    isActive={isOpenSetting}
-                    onClick={() => dispatch(dialogActions.toggleSetting())}
-                />
+            <div className="my-10 w-full">
+                <SettingDialog triggerBtn={<SidebarBtn icon={assets.icon.setting} label="Settings" />} />
             </div>
 
             <div className="mb-10">
-                <h5 className="text-headline font-medium">Workspace</h5>
+                <h5 className="text-headline font-medium overflow-hidden text-ellipsis whitespace-nowrap">Workspace</h5>
                 <div className="mb-2">
                     <SidebarBtn
                         icon={assets.icon.myTask}
@@ -80,7 +75,9 @@ function Sidebar() {
 
             <div className="flex-1 overflow-y-auto mb-10">
                 <div className="flex items-center justify-between mb-2">
-                    <h5 className="text-headline font-medium mr-2">Your Projects</h5>
+                    <h5 className="text-headline font-medium mr-2 overflow-hidden text-ellipsis whitespace-nowrap">
+                        Your Projects
+                    </h5>
                     <FontAwesomeIcon icon={assets.icon.dropdown} color={colors.button} />
                 </div>
                 {projects.map((project) => {
@@ -98,7 +95,9 @@ function Sidebar() {
                                         className="mr-3 flex-shrink-0"
                                         color={colors.button}
                                     />
-                                    <p className="text-main text-2xl truncate">{project.title}</p>
+                                    <p className="text-main text-2xl truncate overflow-hidden text-ellipsis whitespace-nowrap">
+                                        {project.title}
+                                    </p>
                                 </div>
                                 <FontAwesomeIcon
                                     icon={isOpen ? assets.icon.rightChevron : assets.icon.dropdown}

@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import PropTypes from 'prop-types';
 import assets from '../../constants/icon';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Input } from '../ui/input';
@@ -10,6 +9,7 @@ const FormField = ({
     type = 'text',
     value,
     onChange,
+    onBlur,
     placeholder,
     icon: icon,
     error,
@@ -54,6 +54,7 @@ const FormField = ({
                         placeholder={placeholder}
                         value={value}
                         onChange={onChange}
+                        onBlur={onBlur}
                         required={isRequired}
                         className={`${baseClass} resize-none h-24`}
                         disabled={disable}
@@ -66,6 +67,7 @@ const FormField = ({
                         placeholder={placeholder}
                         value={value}
                         onChange={onChange}
+                        onBlur={onBlur}
                         required={isRequired}
                         className={`${baseClass} ${isDate ? 'cursor-pointer' : ''}`}
                         disabled={disable}
@@ -86,23 +88,6 @@ const FormField = ({
             {error && <p className="text-tertiary text-base mt-1">{error}</p>}
         </div>
     );
-};
-
-FormField.propTypes = {
-    label: PropTypes.string,
-    name: PropTypes.string.isRequired,
-    type: PropTypes.oneOf(['text', 'password', 'textarea', 'select', 'email', 'number', 'date']),
-    value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-    onChange: PropTypes.func.isRequired,
-    placeholder: PropTypes.string,
-    icon: PropTypes.elementType,
-    error: PropTypes.string,
-    borderColor: PropTypes.string,
-    borderRadius: PropTypes.string,
-    className: PropTypes.string,
-    isRequired: PropTypes.bool,
-    widthFull: PropTypes.bool,
-    disable: PropTypes.bool,
 };
 
 export default FormField;

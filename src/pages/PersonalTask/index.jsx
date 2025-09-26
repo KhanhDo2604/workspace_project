@@ -10,7 +10,7 @@ import { Button } from '../../components/ui/button';
 function PersonalTaskPage() {
     const dispatch = useDispatch();
     const userId = localStorage.getItem('user_id');
-    const isLoading = useSelector((state) => state.auth.loading);
+    const isLoading = useSelector((state) => state.project.loading);
     const userTasks = useSelector((state) => state.auth.usersTask);
     const projects = useSelector((state) => state.project.projects);
 
@@ -35,7 +35,6 @@ function PersonalTaskPage() {
                     }
                 />
             </div>
-
             <div className="flex flex-wrap gap-8 mb-18">
                 {projects.map((proj) => {
                     return <RecentProjectTag key={proj.id} icon={cloudIcon} project={proj} />;

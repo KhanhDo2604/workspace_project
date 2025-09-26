@@ -75,7 +75,6 @@ function TaskBoardPage() {
         try {
             const response = await dispatch(createTask(args)).unwrap();
             TaskModel.fromPayload(response.task);
-            // console.log(`New task created:`, newTask);
         } catch (error) {
             console.error('Failed to create task:', error);
         }
