@@ -1,42 +1,58 @@
 import { useState } from 'react';
-import Button from '../../components/Button';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { ParticipantVideo } from './ParticipantVideo';
+import VideoPlayer from './VideoPlayer';
+import { useSelector } from 'react-redux';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import assets from '../../constants/icon';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 function ParticipantsVideo({ participants = [] }) {
     const [selected, setSelected] = useState(0);
-
-    const randomColor = `bg-${Math.floor(Math.random() * 360)}-500`;
+    const currentUser = useSelector((s) => s.auth.user);
+    const p = participants[selected];
 
     return (
-        <div className={`w-full flex flex-col gap-6 h-full`}>
-            <div className="flex items-center justify-center gap-2">
-                <Button className="text-xl p-2 rounded-lg size-16">
-                    <FontAwesomeIcon icon={assets.icon.leftChevron} />
-                </Button>
-                {participants.map((p, i) => (
-                    <div
-                        className={`${randomColor} rounded-2xl relative w-1/4 h-42 cursor-pointer ${
-                            selected === i ? 'border-2 border-button' : ''
-                        }`}
+        <div className="flex flex-col h-full overflow-hidden gap-3">
+            {/* Thumbnails */}
+            <div className="flex items-center justify-center gap-2 overflow-x-auto shrink-0 h-44">
+                {participants.map((u, i) => (
+                    <ParticipantVideo
+                        key={u.peerId || i}
+                        stream={u.stream}
+                        userName={u.userName}
+                        avatar={u.avatar}
+                        selected={selected === i}
                         onClick={() => setSelected(i)}
-                    >
-                        <div className="absolute bottom-0 left-0 rounded-xl px-3 py-2 bg-black/25 size-fit">
-                            <p className="text-white font-semibold text-lg">{p.userName}</p>
-                        </div>
-                    </div>
+                        isCamOn={u.isCamOn}
+                        isMicOn={u.isMicOn}
+                    />
                 ))}
-                <Button className="text-xl p-2 rounded-lg size-16">
-                    <FontAwesomeIcon icon={assets.icon.rightChevron} />
-                </Button>
             </div>
 
             {/* Main video */}
-            <div className="relative rounded-xl overflow-hidden border-2 border-button w-3/4 flex-1 flex mb-4 mx-auto">
-                {/*  */}
-                <div className={`${randomColor} rounded-2xl relative size-full`}>
-                    <div className="absolute bottom-0 left-0 rounded-xl px-3 py-2 bg-black/25 size-fit">
-                        <p className="text-white font-semibold text-lg">{participants[selected]?.userName}</p>
+            <div className="flex-1 flex items-center justify-center">
+                <div className="relative w-full max-w-4xl aspect-video bg-black rounded-xl overflow-hidden border-2 border-button">
+                    {p ? (
+                        <VideoPlayer
+                            stream={p.stream}
+                            userName={p.userName}
+                            avatar={p.avatar}
+                            isMain={true}
+                            className="w-full h-full"
+                            isCamOn={p.isCamOn}
+                        />
+                    ) : (
+                        <div className="flex items-center justify-center w-full h-full bg-gray-700">
+                            <Avatar className="w-20 h-20 rounded-full">
+                                <AvatarImage src={currentUser?.avatar} />
+                                <AvatarFallback>{currentUser?.userName?.[0]?.toUpperCase()}</AvatarFallback>
+                            </Avatar>
+                        </div>
+                    )}
+
+                    <div className="absolute bottom-0 left-0 bg-black/50 px-3 py-1 text-sm text-white rounded-tr-lg">
+                        <FontAwesomeIcon icon={!p?.isMicOn && assets.icon.micOff} />
+                        {p?.userName || 'You'}
                     </div>
                 </div>
             </div>

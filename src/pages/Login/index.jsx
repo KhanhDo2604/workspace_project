@@ -39,7 +39,7 @@ function LoginPage() {
 
             toast.success(res.message);
 
-            navigate(`/my-task/${res.data.userId}`, { replace: true });
+            navigate(`/my-space/${res.data.userId}`, { replace: true });
         } catch (error) {
             toast.error(error);
         }

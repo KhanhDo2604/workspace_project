@@ -2,6 +2,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import {
     createMeetingService,
     deleteMeetingService,
+    getMeetingsByProjectIdService,
     getMeetingsByUserIdService,
     updateMeetingService,
 } from '../../services/MeetingService';
@@ -45,6 +46,15 @@ export const getMeetingsByUserId = createAsyncThunk('project/get-meetings', asyn
     }
 });
 
+export const getMeetingsByProjectId = createAsyncThunk('project/get-meetings-project', async (projectId, thunkAPI) => {
+    try {
+        const data = await getMeetingsByProjectIdService(projectId);
+        return data;
+    } catch (error) {
+        return thunkAPI.rejectWithValue(error.message);
+    }
+});
+
 const meetingSlice = createSlice({
     name: 'meeting',
     initialState: {
@@ -52,7 +62,8 @@ const meetingSlice = createSlice({
         isLoading: false,
         error: null,
         message: null,
-        meetings: [],
+        userMeetings: [],
+        projectMeetings: [],
         currentMeeting: null,
     },
     reducers: {
@@ -72,7 +83,9 @@ const meetingSlice = createSlice({
             })
             .addCase(createMeeting.fulfilled, (state, action) => {
                 state.isLoading = false;
-                state.meetings.push(MeetingModel.fromPayload(action.payload.meeting));
+                state.userMeetings.push(MeetingModel.fromPayload(action.payload.meeting));
+                state.projectMeetings.push(MeetingModel.fromPayload(action.payload.meeting));
+
                 state.message = 'Meeting created successfully';
             })
             .addCase(createMeeting.rejected, (state, action) => {
@@ -87,7 +100,10 @@ const meetingSlice = createSlice({
             })
             .addCase(deleteMeeting.fulfilled, (state, action) => {
                 state.isLoading = false;
-                state.meetings = state.meetings.filter((meeting) => meeting.id !== action.payload.meetingId);
+                state.userMeetings = state.userMeetings.filter((meeting) => meeting.id !== action.payload.meetingId);
+                state.projectMeetings = state.projectMeetings.filter(
+                    (meeting) => meeting.id !== action.payload.meetingId,
+                );
                 state.message = 'Meeting deleted successfully';
             })
             .addCase(deleteMeeting.rejected, (state, action) => {
@@ -102,10 +118,16 @@ const meetingSlice = createSlice({
             })
             .addCase(updateMeeting.fulfilled, (state, action) => {
                 state.isLoading = false;
-                const index = state.meetings.findIndex((meeting) => meeting.id === action.payload.meeting._id);
+                const index = state.userMeetings.findIndex((meeting) => meeting.id === action.payload.meeting._id);
+                const projectIndex = state.projectMeetings.findIndex(
+                    (meeting) => meeting.id === action.payload.meeting._id,
+                );
 
                 if (index !== -1) {
-                    state.meetings[index] = MeetingModel.fromPayload(action.payload.meeting);
+                    state.userMeetings[index] = MeetingModel.fromPayload(action.payload.meeting);
+                }
+                if (projectIndex !== -1) {
+                    state.projectMeetings[projectIndex] = MeetingModel.fromPayload(action.payload.meeting);
                 }
                 state.message = 'Meeting updated successfully';
             })
@@ -121,9 +143,30 @@ const meetingSlice = createSlice({
             })
             .addCase(getMeetingsByUserId.fulfilled, (state, action) => {
                 state.isLoading = false;
-                state.meetings = action.payload.meetings.map((meeting) => MeetingModel.fromPayload(meeting));
+                state.userMeetings = action.payload.meetings
+                    .map((meeting) => MeetingModel.fromPayload(meeting))
+                    .sort((a, b) => b.startTime - a.startTime);
             })
             .addCase(getMeetingsByUserId.rejected, (state, action) => {
+                state.isLoading = false;
+                state.error = action.payload;
+            });
+        builder
+            .addCase(getMeetingsByProjectId.pending, (state) => {
+                state.isLoading = true;
+                state.error = null;
+                state.message = null;
+            })
+            .addCase(getMeetingsByProjectId.fulfilled, (state, action) => {
+                state.isLoading = false;
+                const now = Math.floor(Date.now() / 1000);
+
+                state.projectMeetings = action.payload.meetings
+                    .map((meeting) => MeetingModel.fromPayload(meeting))
+                    .filter((meeting) => meeting.startTime >= now)
+                    .sort((a, b) => a.startTime - b.startTime);
+            })
+            .addCase(getMeetingsByProjectId.rejected, (state, action) => {
                 state.isLoading = false;
                 state.error = action.payload;
             });

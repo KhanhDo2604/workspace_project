@@ -8,6 +8,7 @@ export const createMeetingService = async (meetingData) => {
             endTime: meetingData.endTime,
             participants: meetingData.participants,
             projectId: meetingData.projectId,
+            userId: meetingData.userId,
         });
 
         return data;
@@ -47,6 +48,16 @@ export const deleteMeetingService = async (meetingId) => {
 export const getMeetingsByUserIdService = async (userId) => {
     try {
         const { data } = await http.get(`/api/project/get-meetings/${userId}`);
+        return data;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+};
+
+export const getMeetingsByProjectIdService = async (projectId) => {
+    try {
+        const { data } = await http.get(`/api/project/get-meetings-project/${projectId}`);
         return data;
     } catch (error) {
         console.error(error);

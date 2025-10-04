@@ -8,7 +8,7 @@ import { getCurrentDayClass, isDaySelected } from '../../utils';
 export default function Day({ day }) {
     const dispatch = useDispatch();
     const [dayEvents, setDayEvents] = useState([]);
-    const meetings = useSelector((state) => state.meeting.meetings);
+    const meetings = useSelector((state) => state.meeting.userMeetings);
     const daySelected = useSelector((state) => state.calendar.daySelected);
 
     useEffect(() => {
@@ -17,7 +17,7 @@ export default function Day({ day }) {
                 const evtDay = dayjs(evt.startTime * 1000).startOf('day');
                 return evtDay.isSame(day.startOf('day'));
             })
-            .sort((a, b) => b.startTime - a.startTime);
+            .sort((a, b) => a.startTime - b.startTime);
 
         setDayEvents(events);
     }, [meetings, day]);

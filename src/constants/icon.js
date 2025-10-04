@@ -35,6 +35,8 @@ import {
     faX,
     faCircleInfo,
     faPen,
+    faTv,
+    faBarsProgress,
 } from '@fortawesome/free-solid-svg-icons';
 import { faJira, faTrello } from '@fortawesome/free-brands-svg-icons';
 import { faEnvelope, faClock, faCalendarDays, faCommentDots } from '@fortawesome/free-regular-svg-icons';
@@ -77,6 +79,8 @@ const icon = {
     close: faX,
     info: faCircleInfo,
     edit: faPen,
+    screen: faTv,
+    progress: faBarsProgress,
 };
 
 const image = {

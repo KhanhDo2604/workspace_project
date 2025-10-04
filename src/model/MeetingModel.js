@@ -1,11 +1,12 @@
 class MeetingModel {
-    constructor(id, projectId, title, startTime, endTime, participants) {
+    constructor(id, projectId, title, startTime, endTime, participants, host) {
         this.id = id;
         this.projectId = projectId;
         this.title = title;
         this.startTime = startTime;
         this.endTime = endTime;
         this.participants = participants;
+        this.host = host;
     }
 
     static fromPayload(meeting) {
@@ -16,6 +17,7 @@ class MeetingModel {
             meeting.startTime,
             meeting.endTime,
             meeting.participants || [],
+            meeting.host || null,
         );
     }
 
@@ -27,6 +29,7 @@ class MeetingModel {
             startTime: this.startTime,
             endTime: this.endTime,
             participants: this.participants,
+            host: this.host,
         };
     }
 }

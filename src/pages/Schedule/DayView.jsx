@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux';
 
 function DayView({ day }) {
     const [events, setEvents] = useState([]);
-    const meetings = useSelector((state) => state.meeting.meetings);
+    const meetings = useSelector((state) => state.meeting.userMeetings);
     const projects = useSelector((state) => state.project.projects);
 
     useEffect(() => {

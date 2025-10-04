@@ -16,7 +16,7 @@ function WeekView({ week }) {
     const [events, setEvents] = useState([]);
 
     const daySelected = useSelector((state) => state.calendar.daySelected);
-    const meetings = useSelector((state) => state.meeting.meetings);
+    const meetings = useSelector((state) => state.meeting.userMeetings);
     const projects = useSelector((state) => state.project.projects);
 
     useEffect(() => {

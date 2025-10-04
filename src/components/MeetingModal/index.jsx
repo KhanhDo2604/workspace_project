@@ -32,11 +32,12 @@ function MeetingModal({ meeting, triggerBtn }) {
     const currentProject = useSelector((state) => state.project.currentProject);
     const isLoading = useSelector((state) => state.meeting.loading);
     const projects = useSelector((state) => state.project.projects);
+    const userId = localStorage.getItem('user_id');
 
     const [open, setOpen] = useState(false);
     const [title, setTitle] = useState(meeting ? meeting.title : '');
-    const [startTime, setStartTime] = useState(meeting ? meeting.startTime : '');
-    const [endTime, setEndTime] = useState(meeting ? meeting.endTime : '');
+    const [startTime, setStartTime] = useState(meeting ? meeting.startTime : 0);
+    const [endTime, setEndTime] = useState(meeting ? meeting.endTime : 0);
     const [participants, setParticipants] = useState(meeting ? meeting.participants : currentProject.participants);
 
     const listParticipants = meeting
@@ -45,8 +46,8 @@ function MeetingModal({ meeting, triggerBtn }) {
 
     const resetForm = () => {
         setTitle(meeting ? meeting.title : '');
-        setStartTime(meeting ? meeting.startTime : '');
-        setEndTime(meeting ? meeting.endTime : '');
+        setStartTime(meeting ? meeting.startTime : 0);
+        setEndTime(meeting ? meeting.endTime : 0);
         setParticipants(meeting ? meeting.participants : currentProject.participants);
     };
 
@@ -111,10 +112,6 @@ function MeetingModal({ meeting, triggerBtn }) {
                             value={startTime}
                             onChange={(date) => {
                                 const timestamp = Math.floor(date / 1000);
-                                if (endTime && timestamp > endTime) {
-                                    alert('Start date cannot be after End date');
-                                    return;
-                                }
                                 setStartTime(timestamp);
                             }}
                         />
@@ -126,10 +123,6 @@ function MeetingModal({ meeting, triggerBtn }) {
                             value={endTime}
                             onChange={(date) => {
                                 const timestamp = Math.floor(date / 1000);
-                                if (startTime && timestamp < startTime) {
-                                    alert('End date cannot be before Start date');
-                                    return;
-                                }
                                 setEndTime(timestamp);
                             }}
                         />
@@ -201,7 +194,7 @@ function MeetingModal({ meeting, triggerBtn }) {
                             onConfirm={async () => await handleDeleteMeeting()}
                             triggerBtn={
                                 <Button className="bg-tertiary hover:bg-red-700" disabled={isLoading}>
-                                    {isLoading ? <Loader2Icon className="animate-spin" /> : 'Delete Task'}
+                                    {isLoading ? <Loader2Icon className="animate-spin" /> : 'Delete Meeting'}
                                 </Button>
                             }
                         />
@@ -213,6 +206,11 @@ function MeetingModal({ meeting, triggerBtn }) {
 
                         <Button
                             onClick={() => {
+                                if (endTime <= startTime) {
+                                    alert('Start date cannot be after End date');
+                                    return;
+                                }
+
                                 let meetingInfo;
                                 if (meeting) {
                                     meetingInfo = {
@@ -229,6 +227,7 @@ function MeetingModal({ meeting, triggerBtn }) {
                                         startTime: startTime,
                                         endTime: endTime,
                                         participants: participants.map((p) => p._id),
+                                        userId: userId,
                                     };
                                 }
                                 meeting ? handleUpdateMeeting(meetingInfo) : handleCreateMeeting(meetingInfo);

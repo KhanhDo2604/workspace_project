@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@radix-ui/react-dropdown-menu';
 import { DropdownMenuGroup, DropdownMenuItem } from '../ui/dropdown-menu';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import toast, { Toaster } from 'react-hot-toast';
+import toast from 'react-hot-toast';
 import { changeUserInfo, updateUserAvatar } from '../../store/slices/AuthSlice';
 import { Loader2Icon } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';

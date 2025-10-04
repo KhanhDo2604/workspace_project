@@ -17,7 +17,7 @@ function LoadingPage() {
             if (token && userId) {
                 try {
                     await Promise.all([dispatch(getUserInformation(userId)), dispatch(getAllProjects(userId))]);
-                    navigate(`/my-task/${userId}`, { replace: true });
+                    navigate(`/my-space/${userId}`, { replace: true });
                 } catch (err) {
                     console.error(err);
                     navigate('/login');

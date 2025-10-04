@@ -1,19 +1,29 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Button from '../Button';
 import assets from '../../constants/icon';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@radix-ui/react-dropdown-menu';
 import { DropdownMenuGroup, DropdownMenuItem } from '../ui/dropdown-menu';
 import MeetingModal from '../MeetingModal';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { getMeetingsByProjectId } from '../../store/slices/MeetingSlice';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
-function ProjectHeader({ teamName, teamDescription, teamMembers, onlineUsers }) {
+function ProjectHeader({ teamName, teamDescription, teamMembers }) {
     const dispatch = useDispatch();
     const { projectId } = useParams();
     const [meetingRoom, setMeetingRoom] = useState(null);
+    const projectMeetings = useSelector((state) => state.meeting.projectMeetings);
+    const userList = teamMembers || [];
 
-    const userList = onlineUsers || teamMembers || [];
+    useEffect(() => {
+        const fetchProjectMeetings = async () => {
+            await dispatch(getMeetingsByProjectId(projectId)).unwrap();
+        };
+
+        fetchProjectMeetings();
+    }, [dispatch, projectId]);
 
     return (
         <div className="w-full flex flex-col bg-white shadow-sm">
@@ -25,15 +35,19 @@ function ProjectHeader({ teamName, teamDescription, teamMembers, onlineUsers }) 
                 </div>
                 {/* show online users lists */}
                 <div className="flex items-center -space-x-2">
-                    {userList.slice(0, 3).map((user, idx) => (
-                        <img
-                            key={user.id ?? user.email ?? idx}
-                            src={user.avatar || assets.image.defaultAvatar}
-                            alt={user.name ?? 'user'}
-                            title={user.name}
-                            className="w-8 h-8 rounded-full border-2 border-white"
-                        />
-                    ))}
+                    {userList.slice(0, 3).map((user, idx) => {
+                        console.log(user);
+
+                        return (
+                            <Avatar
+                                className="w-10 h-10 rounded-full border-2 border-white"
+                                key={user.id ?? user.email ?? idx}
+                            >
+                                <AvatarImage src={user.avatar || assets.image.defaultAvatar} />
+                                <AvatarFallback>{user.name?.charAt(0).toUpperCase()}</AvatarFallback>
+                            </Avatar>
+                        );
+                    })}
                     {userList.length > 3 && (
                         <div className="w-8 h-8 flex items-center justify-center rounded-full border-2 border-white bg-gray-300 text-xs font-bold text-gray-700">
                             +{userList.length - 3}
@@ -66,7 +80,20 @@ function ProjectHeader({ teamName, teamDescription, teamMembers, onlineUsers }) 
                     </Button>
                 </div>
                 <div className="flex items-center gap-3">
-                    {meetingRoom && <Button className="rounded-lg bg-tertiary text-headline">Join meeting room</Button>}
+                    {meetingRoom && (
+                        <Button className="rounded-lg bg-tertiary text-headline" to={`/meeting/${projectId}`}>
+                            Join meeting room
+                        </Button>
+                    )}
+
+                    {projectMeetings.map(
+                        (meeting) =>
+                            Date.now() >= meeting.startTime * 1000 && (
+                                <Button className="rounded-lg bg-tertiary text-headline" to={`/meeting/${projectId}`}>
+                                    Join meeting room
+                                </Button>
+                            ),
+                    )}
                     <DropdownMenu>
                         <DropdownMenuTrigger>
                             <Button className="rounded-lg min-w-[100px] text-lg text-headline">Create Meeting</Button>

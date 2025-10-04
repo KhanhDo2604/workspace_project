@@ -48,7 +48,7 @@ export function CalendarButton({ value, onChange, placeholder, showTime = true }
             <PopoverContent className="w-auto p-3 space-y-3" align="start">
                 <Calendar
                     mode="single"
-                    selected={dateTime}
+                    selected={dateTime === null ? new Date() : dateTime}
                     onSelect={(newDate) => {
                         if (newDate) {
                             const updated = new Date(newDate);
@@ -69,13 +69,19 @@ export function CalendarButton({ value, onChange, placeholder, showTime = true }
                                 ? `${String(dateTime.getHours()).padStart(2, '0')}:${String(
                                       dateTime.getMinutes(),
                                   ).padStart(2, '0')}`
-                                : '00:00'
+                                : `${String(new Date().getHours()).padStart(2, '0')}:${String(
+                                      new Date().getMinutes(),
+                                  ).padStart(2, '0')}`
                         }
                         onChange={(e) => {
-                            if (!dateTime) return;
+                            let time = dateTime;
+                            if (!dateTime) {
+                                time = new Date();
+                            }
                             const [hours, minutes] = e.target.value.split(':').map(Number);
-                            const updated = new Date(dateTime);
+                            const updated = new Date(time);
                             updated.setHours(hours, minutes, 0, 0);
+
                             setDateTime(updated);
                             updateTimestamp(updated);
                         }}

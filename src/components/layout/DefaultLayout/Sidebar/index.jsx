@@ -58,10 +58,10 @@ function Sidebar() {
                 <div className="mb-2">
                     <SidebarBtn
                         icon={assets.icon.myTask}
-                        label="My tasks"
-                        to={`/my-task/${userId}`}
-                        isActive={sidebarState === `/my-task/${userId}`}
-                        onClick={() => handleSidebarClick(`/my-task/${userId}`)}
+                        label="My space"
+                        to={`/my-space/${userId}`}
+                        isActive={sidebarState === `/my-space/${userId}`}
+                        onClick={() => handleSidebarClick(`/my-space/${userId}`)}
                     />
                     <SidebarBtn
                         icon={assets.icon.calendar}
@@ -78,7 +78,7 @@ function Sidebar() {
                     <h5 className="text-headline font-medium mr-2 overflow-hidden text-ellipsis whitespace-nowrap">
                         Your Projects
                     </h5>
-                    <FontAwesomeIcon icon={assets.icon.dropdown} color={colors.button} />
+                    <FontAwesomeIcon icon={assets.icon.progress} color={colors.button} />
                 </div>
                 {projects.map((project) => {
                     const isOpen = openProjects[project.id] ?? false;

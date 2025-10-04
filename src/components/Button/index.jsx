@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import assets from '../../constants/icon';
 import { Link } from 'react-router-dom';
 
@@ -68,21 +67,6 @@ const Button = ({
             </>
         </Element>
     );
-};
-
-Button.propTypes = {
-    children: PropTypes.node.isRequired,
-    variant: PropTypes.oneOf(['primary', 'secondary', 'text']),
-    size: PropTypes.oneOf(['small', 'medium', 'large']),
-    onClick: PropTypes.func,
-    disabled: PropTypes.bool,
-    fullWidth: PropTypes.bool,
-    type: PropTypes.oneOf(['button', 'submit', 'reset']),
-    startIcon: PropTypes.node,
-    endIcon: PropTypes.node,
-    isLoading: PropTypes.bool,
-    className: PropTypes.string,
-    to: PropTypes.string,
 };
 
 export default Button;
