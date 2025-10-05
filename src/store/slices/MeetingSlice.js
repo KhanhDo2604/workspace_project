@@ -73,6 +73,9 @@ const meetingSlice = createSlice({
         setCurrentMeeting: (state, action) => {
             state.currentMeeting = action.payload;
         },
+        setWhiteBoardMode: (state, action) => {
+            state.whiteBoardMode = action.payload;
+        },
     },
     extraReducers: (builder) => {
         builder

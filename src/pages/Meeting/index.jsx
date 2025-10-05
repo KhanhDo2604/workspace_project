@@ -1,17 +1,20 @@
 import ParticipantTag from './ParticipantTag';
 import RoomButtonsController from './RoomButtonsController';
 import ParticipantsVideo from './ParticipantsVideo';
-import { useSelector } from 'react-redux';
-import Whiteboard from './Whiteboard';
+import { useDispatch, useSelector } from 'react-redux';
+import Whiteboard from '../../components/Whiteboard';
 import { useEffect, useRef, useState } from 'react';
 import ChatSection from './ChatSection';
 import { io } from 'socket.io-client';
 import { useNavigate } from 'react-router-dom';
+import { Loader2Icon } from 'lucide-react';
 
 function MeetingPage() {
+    const dispatch = useDispatch();
     const whiteBoardMode = useSelector((state) => state.meeting.whiteBoardMode);
     const currentUser = useSelector((state) => state.auth.user);
     const currentProject = useSelector((state) => state.project.currentProject);
+    const [isLoading, setIsLoading] = useState(true);
 
     const [userList, setUserList] = useState([]);
 
@@ -23,8 +26,28 @@ function MeetingPage() {
     const server = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3500';
 
     useEffect(() => {
+        dispatch({ type: 'meeting/setWhiteBoardMode', payload: false });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    useEffect(() => {
+        if (!currentProject?.id) return;
+
         async function init() {
-            const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+            let stream = null;
+
+            try {
+                setIsLoading(true);
+                stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                // eslint-disable-next-line no-unused-vars
+            } catch (err) {
+                try {
+                    stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                } catch (err2) {
+                    console.warn('❌ Failed to get even audio stream:', err2?.name || err2);
+                    stream = null;
+                }
+            }
             localStreamRef.current = stream;
 
             setUserList([
@@ -33,19 +56,22 @@ function MeetingPage() {
                     userName: currentUser.name,
                     avatar: currentUser.avatar,
                     stream,
-                    isMicOn: true,
-                    isCamOn: true,
+                    isMicOn: !!stream?.getAudioTracks().length,
+                    isCamOn: !!stream?.getVideoTracks().length,
                 },
             ]);
 
             const socket = io(server);
             socketRef.current = socket;
 
-            socket.emit('join-room', {
-                roomId: currentProject.id,
-                peerId: currentUser.id,
-                userName: currentUser.name,
-                avatar: currentUser.avatar,
+            socket.on('connect', () => {
+                socketRef.current = socket;
+                socket.emit('join-room', {
+                    roomId: currentProject.id,
+                    peerId: currentUser.id,
+                    userName: currentUser.name,
+                    avatar: currentUser.avatar,
+                });
             });
 
             socket.on('room-users', (users) => {
@@ -64,7 +90,10 @@ function MeetingPage() {
                 );
 
                 const pc = createPeerConnection(socket, peerId);
-                localStreamRef.current.getTracks().forEach((t) => pc.addTrack(t, localStreamRef.current));
+
+                if (localStreamRef.current) {
+                    localStreamRef.current.getTracks().forEach((t) => pc.addTrack(t, localStreamRef.current));
+                }
 
                 const offer = await pc.createOffer();
                 await pc.setLocalDescription(offer);
@@ -73,7 +102,10 @@ function MeetingPage() {
 
             socket.on('offer', async ({ from, offer }) => {
                 const pc = createPeerConnection(socket, from);
-                localStreamRef.current.getTracks().forEach((t) => pc.addTrack(t, localStreamRef.current));
+
+                if (localStreamRef.current) {
+                    localStreamRef.current.getTracks().forEach((t) => pc.addTrack(t, localStreamRef.current));
+                }
 
                 await pc.setRemoteDescription(new RTCSessionDescription(offer));
                 const answer = await pc.createAnswer();
@@ -110,12 +142,15 @@ function MeetingPage() {
                     delete pcRef.current[peerId];
                 }
             });
+
+            setIsLoading(false);
         }
 
         init();
+
         return () => releaseDevices();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [currentProject?.id]);
 
     function createPeerConnection(socket, peerId) {
         if (pcRef.current[peerId]) return pcRef.current[peerId];
@@ -197,50 +232,66 @@ function MeetingPage() {
 
     return (
         <div className="w-full h-screen grid grid-cols-20">
-            {/* LEFT: MEETING ROOM */}
-            <div className="col-span-15 bg-secondary p-6 flex flex-col h-full overflow-hidden">
-                <h1 className="font-bold text-3xl mb-4 shrink-0">Weekly General Team Meeting</h1>
-                <div className="flex-1 flex flex-col overflow-hidden">
-                    {whiteBoardMode ? <Whiteboard /> : <ParticipantsVideo participants={userList} />}
-                    <RoomButtonsController
-                        onLeave={handleLeaveMeeting}
-                        onToggleMic={toggleMic}
-                        onToggleCam={toggleCam}
-                        isMicOn={!!me?.isMicOn}
-                        isCamOn={!!me?.isCamOn}
-                    />
+            {isLoading ? (
+                <div className="col-span-20 flex items-center justify-center bg-secondary">
+                    <Loader2Icon className="animate-spin h-20 w-20 text-button" />
                 </div>
-            </div>
+            ) : (
+                <>
+                    <div className="col-span-15 bg-secondary p-6 flex flex-col h-full overflow-hidden">
+                        <h1 className="font-bold text-3xl mb-4 shrink-0">General Team Meeting</h1>
+                        <div className="flex flex-col flex-1 min-h-0">
+                            {/* Whiteboard hoặc Video */}
+                            <div className="flex-1 overflow-hidden rounded-xl">
+                                {whiteBoardMode && socketRef.current ? (
+                                    <Whiteboard roomId={currentProject.id} />
+                                ) : (
+                                    <ParticipantsVideo participants={userList} />
+                                )}
+                            </div>
 
-            {/* RIGHT: PARTICIPANTS & CHAT */}
-            <div className="col-span-5 rounded-l-3xl h-screen flex flex-col">
-                <div className="border-b border-gray-200 px-8 pt-8 pb-2 flex flex-col">
-                    <div className="mb-4 flex justify-between">
-                        <div className="flex gap-2">
-                            <h1 className="text-2xl font-bold">Participants</h1>
-                            <p className="text-2xl text-gray-500">{userList.length}</p>
+                            <div className="mt-4 shrink-0">
+                                <RoomButtonsController
+                                    onLeave={handleLeaveMeeting}
+                                    onToggleMic={toggleMic}
+                                    onToggleCam={toggleCam}
+                                    isMicOn={!!me?.isMicOn}
+                                    isCamOn={!!me?.isCamOn}
+                                />
+                            </div>
                         </div>
                     </div>
 
-                    <div className="flex-1 overflow-y-auto pr-1 space-y-2">
-                        {userList.map((u, i) => (
-                            <ParticipantTag
-                                key={i}
-                                userIcon={u.avatar}
-                                userName={u.userName}
-                                isHost={u.peerId === currentUser.id}
-                                canControl={u.peerId === currentUser.id}
-                                onToggleMic={u.peerId === currentUser.id ? toggleMic : undefined}
-                                onToggleCam={u.peerId === currentUser.id ? toggleCam : undefined}
-                                isMicOn={u.isMicOn}
-                                isCamOn={u.isCamOn}
-                            />
-                        ))}
-                    </div>
-                </div>
+                    <div className="col-span-5 rounded-l-3xl h-screen flex flex-col">
+                        <div className="border-b border-gray-200 px-8 pt-8 pb-2 flex flex-col">
+                            <div className="mb-4 flex justify-between">
+                                <div className="flex gap-2">
+                                    <h1 className="text-2xl font-bold">Participants</h1>
+                                    <p className="text-2xl text-gray-500">{userList.length}</p>
+                                </div>
+                            </div>
 
-                <ChatSection />
-            </div>
+                            <div className="flex-1 overflow-y-auto pr-1 space-y-2">
+                                {userList.map((u, i) => (
+                                    <ParticipantTag
+                                        key={i}
+                                        userIcon={u.avatar}
+                                        userName={u.userName}
+                                        isHost={currentProject.host._id === currentUser.id}
+                                        canControl={u.peerId === currentUser.id}
+                                        onToggleMic={u.peerId === currentUser.id ? toggleMic : undefined}
+                                        onToggleCam={u.peerId === currentUser.id ? toggleCam : undefined}
+                                        isMicOn={u.isMicOn}
+                                        isCamOn={u.isCamOn}
+                                    />
+                                ))}
+                            </div>
+                        </div>
+
+                        <ChatSection />
+                    </div>
+                </>
+            )}
         </div>
     );
 }

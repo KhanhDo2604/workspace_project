@@ -36,8 +36,6 @@ function ProjectHeader({ teamName, teamDescription, teamMembers }) {
                 {/* show online users lists */}
                 <div className="flex items-center -space-x-2">
                     {userList.slice(0, 3).map((user, idx) => {
-                        console.log(user);
-
                         return (
                             <Avatar
                                 className="w-10 h-10 rounded-full border-2 border-white"

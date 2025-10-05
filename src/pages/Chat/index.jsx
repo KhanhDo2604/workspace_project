@@ -16,7 +16,6 @@ function ChatScreen() {
     const [socket, setSocket] = useState(null);
     const [messages, setMessages] = useState([]);
     const [activity, setActivity] = useState('');
-    // const [users, setUsers] = useState([]);
 
     useEffect(() => {
         const newSocket = io('ws://localhost:3500', { autoConnect: true });
@@ -72,20 +71,12 @@ function ChatScreen() {
             timer = setTimeout(() => setActivity(''), 3000);
         };
 
-        // const handleUserList = ({ users }) => {
-        //     const userArray = Object.values(users);
-
-        //     setUsers(userArray);
-        // };
-
         socket.on('message', handleMessage);
         socket.on('activity', handleActivity);
-        // socket.on('userList', handleUserList);
 
         return () => {
             socket.off('message', handleMessage);
             socket.off('activity', handleActivity);
-            // socket.off('userList', handleUserList);
         };
     }, [socket, currentUser, currentProject]);
 
@@ -118,8 +109,6 @@ function ChatScreen() {
             <div className="relative overflow-y-auto flex-1 p-6">
                 <div className="space-y-4">
                     {messages.map((msg, index) => {
-                        console.log(msg);
-
                         return (
                             <ChatCard
                                 key={index}

@@ -37,6 +37,11 @@ import {
     faPen,
     faTv,
     faBarsProgress,
+    faEraser,
+    faNoteSticky,
+    faPalette,
+    faTrash,
+    faT,
 } from '@fortawesome/free-solid-svg-icons';
 import { faJira, faTrello } from '@fortawesome/free-brands-svg-icons';
 import { faEnvelope, faClock, faCalendarDays, faCommentDots } from '@fortawesome/free-regular-svg-icons';
@@ -81,6 +86,11 @@ const icon = {
     edit: faPen,
     screen: faTv,
     progress: faBarsProgress,
+    eraser: faEraser,
+    sticky: faNoteSticky,
+    palette: faPalette,
+    trash: faTrash,
+    text: faT,
 };
 
 const image = {

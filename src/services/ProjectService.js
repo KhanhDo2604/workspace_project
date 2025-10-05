@@ -54,7 +54,6 @@ export const getAllProjectsService = async (userId) => {
 export const getChatMessagesService = async (projectId) => {
     try {
         const { data } = await http.get(`api/project/get-chat/${projectId}`);
-        console.log(data);
 
         return data.chat.map((msg) => ChatModel.fromJson(msg)).sort((a, b) => a.createdAt - b.createdAt);
     } catch (error) {
