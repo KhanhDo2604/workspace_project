@@ -35,7 +35,6 @@ function LoginPage() {
         }
         try {
             const res = await dispatch(loginUser({ email, password })).unwrap();
-            console.log(res);
 
             const userId = localStorage.getItem('user_id');
             await dispatch(getAllProjects(res.data.userId || userId)).unwrap();
