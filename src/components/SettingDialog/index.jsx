@@ -93,7 +93,7 @@ function SettingDialog({ triggerBtn }) {
                                 </label>
                             ) : (
                                 <div className="w-21 h-21 mr-3 rounded-full object-cover border border-gray-300 flex items-center justify-center">
-                                    <Loader2Icon className="animate-spin mr-3" />
+                                    <Loader2Icon className="animate-spin" />
                                 </div>
                             )}
                             <div className="flex-1">
