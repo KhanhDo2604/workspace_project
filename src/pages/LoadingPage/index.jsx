@@ -14,7 +14,7 @@ function LoadingPage() {
             const token = localStorage.getItem('token');
             const userId = localStorage.getItem('user_id');
 
-            if (token && userId) {
+            if ((token && userId) || token === 'undefined' || userId === 'undefined') {
                 try {
                     await Promise.all([dispatch(getUserInformation(userId)), dispatch(getAllProjects(userId))]);
                     navigate(`/my-space/${userId}`, { replace: true });

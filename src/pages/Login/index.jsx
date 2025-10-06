@@ -35,11 +35,14 @@ function LoginPage() {
         }
         try {
             const res = await dispatch(loginUser({ email, password })).unwrap();
-            await dispatch(getAllProjects(res.data.userId)).unwrap();
+            console.log(res);
+
+            const userId = localStorage.getItem('user_id');
+            await dispatch(getAllProjects(res.data.userId || userId)).unwrap();
 
             toast.success(res.message);
 
-            navigate(`/my-space/${res.data.userId}`, { replace: true });
+            navigate(`/my-space/${res.data.userId || userId}`, { replace: true });
         } catch (error) {
             toast.error(error);
         }
