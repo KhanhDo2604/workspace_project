@@ -9,6 +9,7 @@ import MeetingModal from '../MeetingModal';
 import { useEffect, useState } from 'react';
 import { getMeetingsByProjectId } from '../../store/slices/MeetingSlice';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { io } from 'socket.io-client';
 
 function ProjectHeader({ teamName, teamDescription, teamMembers }) {
     const dispatch = useDispatch();
@@ -16,6 +17,7 @@ function ProjectHeader({ teamName, teamDescription, teamMembers }) {
     const [meetingRoom, setMeetingRoom] = useState(null);
     const projectMeetings = useSelector((state) => state.meeting.projectMeetings);
     const userList = teamMembers || [];
+    const [socket, setSocket] = useState(null);
 
     useEffect(() => {
         const fetchProjectMeetings = async () => {
@@ -24,6 +26,20 @@ function ProjectHeader({ teamName, teamDescription, teamMembers }) {
 
         fetchProjectMeetings();
     }, [dispatch, projectId]);
+
+    useEffect(() => {
+        const socket = io(import.meta.env.VITE_WEBSOCKET_URL, { transports: ['websocket'] });
+        setSocket(socket);
+
+        socket.emit('join_project', projectId);
+
+        socket.on('meeting_state_update', (state) => {
+            console.log('📡 Meeting state updated:', state);
+            setMeetingRoom(state);
+        });
+
+        return () => socket.disconnect();
+    }, [projectId]);
 
     return (
         <div className="w-full flex flex-col bg-white shadow-sm">
@@ -100,7 +116,7 @@ function ProjectHeader({ teamName, teamDescription, teamMembers }) {
                             <DropdownMenuGroup className="border border-gray-300 rounded-md">
                                 <DropdownMenuItem
                                     className="cursor-pointer hover:bg-gray-100"
-                                    onClick={() => setMeetingRoom(!meetingRoom)}
+                                    onClick={() => socket.emit('toggle_instant_meeting', projectId)}
                                 >
                                     <div className="flex items-center text-base">
                                         <FontAwesomeIcon

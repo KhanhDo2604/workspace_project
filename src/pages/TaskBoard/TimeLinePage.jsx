@@ -14,6 +14,7 @@ import UpdateTaskModal from '../../components/UpdateTaskModal';
 import { Button } from '../../components/ui/button';
 import dayjs from 'dayjs';
 import isBetween from 'dayjs/plugin/isBetween';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 dayjs.extend(isBetween);
 
@@ -52,13 +53,10 @@ const UpperSection = ({
 
                     <div className="flex items-center -space-x-2 mr-4">
                         {users.slice(0, 3).map((user, idx) => (
-                            <img
-                                key={user.id ?? user.email ?? idx}
-                                src={user.avatar || assets.image.userTemp}
-                                alt={user.name ?? 'user'}
-                                title={user.name}
-                                className="w-10 h-10 rounded-full border-2 border-white"
-                            />
+                            <Avatar className="w-10 h-10 rounded-full border-2 border-white" key={idx}>
+                                <AvatarImage src={user.avatar} />
+                                <AvatarFallback>{user.name?.charAt(0).toUpperCase()}</AvatarFallback>
+                            </Avatar>
                         ))}
                         {users.length > 3 && (
                             <div className="w-10 h-10 bg-gray-200 rounded-full border-2 border-white flex justify-center items-center text-sm text-gray-500">

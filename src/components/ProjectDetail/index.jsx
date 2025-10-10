@@ -86,7 +86,7 @@ function ProjectDetailModal({ triggerBtn, project, isHost }) {
                 <Button
                     type="button"
                     variant="text"
-                    className=" text-stroke self-start hover:shadow-white py-3"
+                    className=" text-stroke self-start hover:shadow-white py-3 mt-1"
                     onClick={() => setOpenAddMember(!openAddMember)}
                 >
                     <FontAwesomeIcon icon={assets.icon.add} size="sm" />

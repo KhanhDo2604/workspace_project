@@ -156,7 +156,7 @@ function MeetingPage() {
         if (pcRef.current[peerId]) return pcRef.current[peerId];
 
         const pc = new RTCPeerConnection({
-            iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
+            iceServers: [{ urls: import.meta.env.VITE_ICE_SERVERS_URL }],
         });
 
         pc.ontrack = (event) => {

@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import ChatCard from '../../components/ChatCard';
 import ChatEditor from '../../components/ChatEditor';
 import ProjectHeader from '../../components/ProjectHeader';
-import assets from '../../constants/icon';
 import { io } from 'socket.io-client';
 import { useDispatch, useSelector } from 'react-redux';
 import { getChatMessages } from '../../store/slices/ProjectSlice';
@@ -18,7 +17,7 @@ function ChatScreen() {
     const [activity, setActivity] = useState('');
 
     useEffect(() => {
-        const newSocket = io('ws://localhost:3500', { autoConnect: true });
+        const newSocket = io(import.meta.env.VITE_WEBSOCKET_URL, { autoConnect: true });
         setSocket(newSocket);
 
         console.log('⚡ Socket connected');
@@ -83,6 +82,7 @@ function ChatScreen() {
     const handleSend = (text) => {
         if (!text || typeof text !== 'string') return;
         if (!text.trim()) return;
+        console.log(currentUser);
 
         socket.emit('message', {
             userId: currentUser.id,
@@ -109,10 +109,12 @@ function ChatScreen() {
             <div className="relative overflow-y-auto flex-1 p-6">
                 <div className="space-y-4">
                     {messages.map((msg, index) => {
+                        console.log(msg);
+
                         return (
                             <ChatCard
                                 key={index}
-                                userIcon={msg.avatar || assets.image.userTemp}
+                                userIcon={msg.avatar}
                                 userName={msg.name}
                                 content={msg.message}
                                 createdAt={msg.createdAt}

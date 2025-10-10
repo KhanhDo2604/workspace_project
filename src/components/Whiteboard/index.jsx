@@ -21,13 +21,15 @@ function Whiteboard({ roomId }) {
     useEffect(() => {
         if (!roomId) return;
 
-        const socket = io('ws://localhost:3500/whiteboard', {
+        // const socket = io('ws://localhost:3500/whiteboard', {
+        //     transports: ['websocket'],
+        // });
+        const socket = io(import.meta.env.VITE_WEBSOCKET_URL + '/whiteboard', {
             transports: ['websocket'],
         });
         socketRef.current = socket;
 
         socket.emit('join-whiteboard', roomId);
-        console.log('🧠 Joined whiteboard room:', roomId);
 
         socket.on('canvas-data', (dataUrl) => {
             const canvas = fabricRef.current;
@@ -60,14 +62,12 @@ function Whiteboard({ roomId }) {
                     canvas.backgroundImage = fabricImg;
                     canvas.backgroundColor = 'white';
                     canvas.renderAll();
-                    console.log('✅ Canvas updated and rendered!');
                     isApplyingRemoteRef.current = false;
                 });
             };
         });
 
         return () => {
-            console.log('🧹 Disconnected whiteboard socket');
             socket.disconnect();
         };
     }, [roomId]);
