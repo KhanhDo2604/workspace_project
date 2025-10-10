@@ -265,7 +265,7 @@ function Whiteboard({ roomId }) {
                     <Button
                         onClick={toggleEraser}
                         className={`px-3 py-1 rounded-md ${
-                            isEraserMode ? 'bg-red-400 text-white' : 'bg-white border text-black'
+                            isEraserMode ? 'bg-red-400' : 'bg-white border text-black'
                         } hover:bg-red-400 hover:text-white`}
                     >
                         <FontAwesomeIcon icon={assets.icon.eraser} />
@@ -273,21 +273,21 @@ function Whiteboard({ roomId }) {
 
                     <Button
                         onClick={addStickyNote}
-                        className="px-3 py-1 rounded-md bg-white border hover:bg-red-400 hover:text-white"
+                        className="px-3 py-1 rounded-md bg-white text-black border hover:bg-red-400 hover:text-white"
                     >
                         <FontAwesomeIcon icon={assets.icon.sticky} />
                     </Button>
 
                     <Button
                         onClick={addTextbox}
-                        className="px-3 py-1 rounded-md bg-white border hover:bg-red-400 hover:text-white"
+                        className="px-3 py-1 rounded-md bg-white border text-black hover:bg-red-400 hover:text-white"
                     >
                         <FontAwesomeIcon icon={assets.icon.text} />
                     </Button>
 
                     <Button
                         onClick={clearAll}
-                        className="px-3 py-1 rounded-md bg-white border hover:bg-red-400 hover:text-white"
+                        className="px-3 py-1 rounded-md bg-white border text-black hover:bg-red-400 hover:text-white"
                     >
                         <FontAwesomeIcon icon={assets.icon.trash} />
                     </Button>

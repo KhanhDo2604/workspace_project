@@ -241,7 +241,6 @@ function MeetingPage() {
                     <div className="col-span-15 bg-secondary p-6 flex flex-col h-full overflow-hidden">
                         <h1 className="font-bold text-3xl mb-4 shrink-0">General Team Meeting</h1>
                         <div className="flex flex-col flex-1 min-h-0">
-                            {/* Whiteboard hoặc Video */}
                             <div className="flex-1 overflow-hidden rounded-xl">
                                 {whiteBoardMode && socketRef.current ? (
                                     <Whiteboard roomId={currentProject.id} />

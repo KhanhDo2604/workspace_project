@@ -86,7 +86,7 @@ function ProjectDetailModal({ triggerBtn, project, isHost }) {
                 <Button
                     type="button"
                     variant="text"
-                    className=" text-stroke self-start hover:shadow-white py-3 mt-1"
+                    className=" text-stroke self-start hover:shadow-white py-3"
                     onClick={() => setOpenAddMember(!openAddMember)}
                 >
                     <FontAwesomeIcon icon={assets.icon.add} size="sm" />
@@ -102,7 +102,7 @@ function ProjectDetailModal({ triggerBtn, project, isHost }) {
 
                         <Button
                             type="button"
-                            className="bg-button"
+                            className="bg-button mt-1"
                             onClick={handleAddMemberInProject}
                             disabled={isLoading || !newMemberEmail}
                         >
