@@ -257,6 +257,8 @@ const projectSlice = createSlice({
             .addCase(deleteProject.fulfilled, (state, action) => {
                 state.loading = false;
                 state.projects = state.projects.filter((proj) => proj.id !== action.payload.projectId);
+
+                state.tasks = state.tasks.filter((task) => task.project !== action.payload.projectId);
                 state.message = action.payload.message;
             })
             .addCase(deleteProject.rejected, (state, action) => {

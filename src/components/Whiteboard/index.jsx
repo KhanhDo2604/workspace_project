@@ -21,9 +21,6 @@ function Whiteboard({ roomId }) {
     useEffect(() => {
         if (!roomId) return;
 
-        // const socket = io('ws://localhost:3500/whiteboard', {
-        //     transports: ['websocket'],
-        // });
         const socket = io(import.meta.env.VITE_WEBSOCKET_URL + '/whiteboard', {
             transports: ['websocket'],
         });
@@ -240,10 +237,19 @@ function Whiteboard({ roomId }) {
             hasControls: true,
             lockRotation: true,
             objectCaching: false,
+            subTargetCheck: true,
         });
         c.add(group);
         setMode(true);
         c.setActiveObject(group);
+
+        c.on('mouse:down', (opt) => {
+            const target = opt.subTargets && opt.subTargets[0];
+            if (target && target.type === 'i-text') {
+                c.setActiveObject(target);
+                target.enterEditing();
+            }
+        });
         emitSnapshot();
     };
 

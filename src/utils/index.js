@@ -135,6 +135,13 @@ const randomColor = () => {
     return colors[randomIndex];
 };
 
+const convertToStartOfDay = (d) => dayjs(d).startOf('day');
+const dayIndexFrom = (ts, timelineStart) => convertToStartOfDay(ts).diff(convertToStartOfDay(timelineStart), 'day');
+const minutesIntoDay = (ts) => {
+    const d = dayjs(ts);
+    return d.hour() * 60 + d.minute();
+};
+
 export {
     formatDate,
     isSameDay,
@@ -150,4 +157,7 @@ export {
     randomColor,
     getDurationMinutes,
     getStartMinutes,
+    convertToStartOfDay,
+    dayIndexFrom,
+    minutesIntoDay,
 };

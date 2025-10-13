@@ -82,7 +82,6 @@ function ChatScreen() {
     const handleSend = (text) => {
         if (!text || typeof text !== 'string') return;
         if (!text.trim()) return;
-        console.log(currentUser);
 
         socket.emit('message', {
             userId: currentUser.id,
@@ -109,8 +108,6 @@ function ChatScreen() {
             <div className="relative overflow-y-auto flex-1 p-6">
                 <div className="space-y-4">
                     {messages.map((msg, index) => {
-                        console.log(msg);
-
                         return (
                             <ChatCard
                                 key={index}

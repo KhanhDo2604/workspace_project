@@ -4,7 +4,7 @@ import assets from '../../constants/icon';
 import ProjectHeader from '../../components/ProjectHeader';
 import FormField from '../../components/FormField';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { formatDate } from '../../utils';
+import { convertToStartOfDay, dayIndexFrom, formatDate, minutesIntoDay } from '../../utils';
 import { addDays, addMonths, differenceInCalendarDays } from 'date-fns';
 import { CreateTaskModal } from '../../components/CreateTaskModal';
 import { CalendarButton } from '../../components/CalendarButton';
@@ -20,8 +20,8 @@ dayjs.extend(isBetween);
 
 const DAY_PX = 161;
 const rowHeight = 60;
-const pxPerMinute = DAY_PX / (24 * 60);
-const dayInMs = 24 * 60 * 60 * 1000;
+const MIN_PER_DAY = 1440;
+const pxPerMinute = DAY_PX / MIN_PER_DAY;
 
 const UpperSection = ({
     onCreateTask,
@@ -65,7 +65,6 @@ const UpperSection = ({
                         )}
                     </div>
 
-                    {/* Filter by date */}
                     <CalendarButton
                         showTime={false}
                         onChange={(timestamp) => {
@@ -73,7 +72,6 @@ const UpperSection = ({
                         }}
                     />
 
-                    {/* Reset Filters */}
                     {filterDate && (
                         <Button variant="outline" className="ml-4 border-tertiary" onClick={onResetFilters}>
                             Reset Filters
@@ -200,32 +198,51 @@ function TimelinePage() {
                                     </div>
                                     <div className="size-full mt-1">
                                         {filteredTasks.map((task, idx) => {
-                                            const taskStartMs = Number(task.startDay) * 1000;
-                                            const taskEndMs = Number(task.dueDay) * 1000;
+                                            const taskStart = Number(task.startDay) * 1000;
+                                            const taskEnd = Number(task.dueDay) * 1000;
 
-                                            const timelineStartMs = dayjs(days[0]).startOf('day').valueOf();
-                                            const timelineEndMs = dayjs(days[days.length - 1])
-                                                .endOf('day')
-                                                .valueOf();
+                                            const timelineStart = days[0];
+                                            const timelineEnd = days[days.length - 1];
 
-                                            if (taskEndMs < timelineStartMs || taskStartMs > timelineEndMs) return null;
+                                            if (
+                                                convertToStartOfDay(taskEnd).isBefore(
+                                                    convertToStartOfDay(timelineStart),
+                                                ) ||
+                                                convertToStartOfDay(taskStart).isAfter(convertToStartOfDay(timelineEnd))
+                                            )
+                                                return null;
 
-                                            const visibleStartMs = Math.max(taskStartMs, timelineStartMs);
-                                            const visibleEndMs = Math.min(taskEndMs, timelineEndMs);
-
-                                            const minutesFromTimelineStart = Math.floor(
-                                                (visibleStartMs - timelineStartMs) / 60000,
+                                            const clampedStart = Math.max(
+                                                taskStart,
+                                                dayjs(timelineStart).startOf('day').valueOf(),
                                             );
-                                            const left = Math.max(0, minutesFromTimelineStart * pxPerMinute);
-
-                                            const durationMinutes = Math.max(
-                                                Math.ceil((visibleEndMs - visibleStartMs) / 60000),
-                                                1,
+                                            const clampedEnd = Math.min(
+                                                taskEnd,
+                                                dayjs(timelineEnd).endOf('day').valueOf(),
                                             );
-                                            const width = durationMinutes * pxPerMinute;
 
-                                            const taskBorderClass =
-                                                taskStartMs <= timelineStartMs ? 'rounded-r-md' : 'rounded-md';
+                                            const startDayIdx = Math.max(0, dayIndexFrom(clampedStart, timelineStart));
+                                            const startMinInDay = minutesIntoDay(clampedStart);
+
+                                            const endDayIdx = Math.max(0, dayIndexFrom(clampedEnd, timelineStart));
+                                            const endMinInDay = minutesIntoDay(clampedEnd);
+
+                                            const leftPx = startDayIdx * DAY_PX + startMinInDay * pxPerMinute;
+                                            let rightPx = endDayIdx * DAY_PX + endMinInDay * pxPerMinute;
+
+                                            const widthPx = Math.max(2, rightPx - leftPx);
+
+                                            const daysLeft =
+                                                Math.ceil((taskEnd - Date.now()) / (24 * 60 * 60 * 1000)) - 1;
+                                            const isOverdue = daysLeft < 0;
+                                            const isSoon = daysLeft <= 2 && daysLeft >= 0;
+                                            const bgClass = isOverdue
+                                                ? 'bg-red-100 border-l-4 border-red-400'
+                                                : isSoon
+                                                ? 'bg-yellow-50 border-l-4 border-yellow-400'
+                                                : 'bg-amber-50';
+
+                                            const isCompact = widthPx < 120;
 
                                             return (
                                                 <UpdateTaskModal
@@ -233,23 +250,28 @@ function TimelinePage() {
                                                     currentTask={task}
                                                     triggerBtn={
                                                         <div
-                                                            className={`bg-amber-50 absolute ${taskBorderClass} shadow-sm text-sm px-3 py-2 overflow-visible cursor-pointer`}
+                                                            className={`absolute ${bgClass} rounded-md shadow-sm cursor-pointer`}
                                                             style={{
                                                                 top: `${idx * rowHeight}px`,
-                                                                left: `${left}px`,
-                                                                width: `${width}px`,
+                                                                left: `${leftPx}px`,
+                                                                width: `${widthPx}px`,
+                                                                padding: isCompact ? '4px 6px' : '8px 12px',
                                                             }}
                                                         >
-                                                            <div className="font-semibold truncate">{task.title}</div>
-                                                            <span>
-                                                                {formatDate(task.startDay * 1000)} -{' '}
-                                                                {formatDate(task.dueDay * 1000)}
-                                                            </span>
-
-                                                            <div className="text-xs text-gray-600 mt-1">
-                                                                Days Remaining:{' '}
-                                                                {Math.ceil((taskEndMs - Date.now()) / dayInMs)}
+                                                            <div className="font-semibold truncate text-sm">
+                                                                {task.title}
                                                             </div>
+                                                            {!isCompact && (
+                                                                <>
+                                                                    <span className="block text-xs text-gray-700 mt-0.5">
+                                                                        {formatDate(task.startDay * 1000)} -{' '}
+                                                                        {formatDate(task.dueDay * 1000)}
+                                                                    </span>
+                                                                    <div className="text-xs text-gray-500 mt-1">
+                                                                        Days Remaining: {Math.max(0, daysLeft)}
+                                                                    </div>
+                                                                </>
+                                                            )}
                                                         </div>
                                                     }
                                                 />

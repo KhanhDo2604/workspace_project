@@ -31,6 +31,7 @@ function ProjectDetailModal({ triggerBtn, project, isHost }) {
     const [participants, setParticipants] = useState(project.participants || []);
     const [newMemberEmail, setNewMemberEmail] = useState('');
     const [openAddMember, setOpenAddMember] = useState(false);
+    const currentUser = useSelector((state) => state.auth.user);
 
     const userId = localStorage.getItem('user_id');
 
@@ -47,13 +48,11 @@ function ProjectDetailModal({ triggerBtn, project, isHost }) {
         ).unwrap();
 
         toast.success('Project updated successfully');
-        // setOpen(false);
     };
 
     const handleDeleteProject = async () => {
         await dispatch(deleteProject(project.id)).unwrap();
         toast.success('Project deleted successfully');
-        // setOpen(false);
     };
 
     const handleAddMemberInProject = async () => {
@@ -62,7 +61,7 @@ function ProjectDetailModal({ triggerBtn, project, isHost }) {
             return;
         }
 
-        if (participants.some((member) => member.email === newMemberEmail)) {
+        if (participants.some((member) => member.email === newMemberEmail) || newMemberEmail === currentUser.email) {
             toast.error('User is already a member of the project');
             return;
         } else if (!/\S+@\S+\.\S+/.test(newMemberEmail)) {

@@ -17,10 +17,7 @@ function ChatSection() {
         const newSocket = io(import.meta.env.VITE_WEBSOCKET_URL, { autoConnect: true });
         setSocket(newSocket);
 
-        console.log('⚡ Socket connected');
-
         return () => {
-            console.log('🛑 Disconnect socket');
             newSocket.disconnect();
         };
     }, []);
@@ -58,7 +55,6 @@ function ChatSection() {
     const handleSend = (text) => {
         if (!text || typeof text !== 'string') return;
         if (!text.trim()) return;
-        console.log(currentUser);
 
         socket.emit('message', {
             userId: currentUser.id,
@@ -77,23 +73,24 @@ function ChatSection() {
             </div>
 
             <div className="flex-1 overflow-y-auto pr-1">
-                {messages.map((chat, index) => (
-                    <ChatCard
-                        key={index}
-                        userIcon={chat.avatar}
-                        userName={chat.name}
-                        content={chat.message}
-                        timestamp={chat.createdAt}
-                        isMe={chat.userId === currentUser.id}
-                    />
-                ))}
+                {messages.map((msg, index) => {
+                    return (
+                        <ChatCard
+                            key={index}
+                            userIcon={msg.avatar}
+                            userName={msg.name}
+                            content={msg.message}
+                            createdAt={msg.createdAt}
+                            isMe={msg.userId === currentUser.id}
+                        />
+                    );
+                })}
             </div>
 
             {/* Input message */}
             <ChatEditor
                 placeholder="Message..."
                 onSend={handleSend}
-                onChange={(val) => console.log('Typing:', val)}
                 className={'border-gray-300 border rounded-full w-full mt-4'}
             />
         </div>
