@@ -5,11 +5,18 @@ import assets from '../../constants/icon';
 import UpdateTaskModal from '../../components/UpdateTaskModal';
 import { Button } from '../../components/ui/button';
 
+/**
+ * Displays a draggable card representing a task item in the timeline or Kanban view.
+ * Each card shows task metadata such as title, description, tags, and assignees.
+ * The card can be dragged across columns using the @dnd-kit library.
+ */
 function TaskCard({ task }) {
+    // Enable drag functionality using dnd-kit
     const { attributes, listeners, setNodeRef, transform } = useDraggable({
         id: task.id,
     });
 
+    // Apply transformation during drag to move the card visually
     const style = transform
         ? {
               transform: `translate(${transform.x}px, ${transform.y}px)`,
@@ -24,6 +31,7 @@ function TaskCard({ task }) {
             style={style}
             className="cursor-grab bg-headline p-6 rounded-lg shadow-sm w-full hover:shadow-md"
         >
+            {/* Top section: Task ID and detail button */}
             <div className="flex justify-between items-center">
                 <p className="text-gray-500 text-base">{task.id}</p>
                 <UpdateTaskModal
@@ -40,6 +48,7 @@ function TaskCard({ task }) {
 
             <p className="text-gray-500 text-base">{task.description}</p>
 
+            {/* Tag list (task types) */}
             <div className="my-4 gap-2 flex flex-wrap">
                 {task.types.map((type, index) => (
                     <span
@@ -53,6 +62,7 @@ function TaskCard({ task }) {
                 ))}
             </div>
 
+            {/* Assignees section */}
             <div className="flex justify-between">
                 {task.assignees && task.assignees.length > 0 && (
                     <div>
@@ -66,11 +76,6 @@ function TaskCard({ task }) {
                         ))}
                     </div>
                 )}
-
-                {/* <div className="flex gap-1 items-center justify-center">
-                    <FontAwesomeIcon icon={assets.icon.comment} />
-                    <p className="text-base font-semibold">3</p>
-                </div> */}
             </div>
         </div>
     );

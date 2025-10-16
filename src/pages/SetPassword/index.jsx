@@ -15,12 +15,18 @@ function SetPasswordPage() {
 
     const [searchParams] = useSearchParams();
 
+    // Form state
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
 
+    // Error messages for validation
     const [errorPassword, setErrorPassword] = useState('');
     const [errorConfirmPassword, setErrorConfirmPassword] = useState('');
 
+    /**
+     * Handles form submission for resetting password.
+     * Validates input, retrieves token and user ID from URL, and dispatches the password reset action.
+     */
     const handleSubmit = async (e) => {
         e.preventDefault();
 

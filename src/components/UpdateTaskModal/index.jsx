@@ -22,8 +22,19 @@ import { CalendarButton } from '../CalendarButton';
 import assets from '../../constants/icon';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
+/**
+ * This component provides a modal interface for updating or deleting a project task.
+ * It retrieves task data from the Redux store, allows user edits, and dispatches update or delete actions.
+ *
+ * @component
+ * @param {Object} props - Component properties
+ * @param {ReactNode} props.triggerBtn - The button element that triggers the modal.
+ * @param {Object} props.currentTask - The current task object to be edited.
+ */
 function UpdateTaskModal({ triggerBtn, currentTask }) {
     const dispatch = useDispatch();
+
+    // Local state for form fields
     const [title, setTitle] = useState(currentTask.title || '');
     const [description, setDescription] = useState(currentTask.description || '');
     const [assignees, setAssignees] = useState(currentTask.userIds || []);
@@ -32,13 +43,25 @@ function UpdateTaskModal({ triggerBtn, currentTask }) {
     const [dueDate, setDueDate] = useState(currentTask.dueDay || '');
     const [open, setOpen] = useState(false);
 
+    // Redux state
     const isLoading = useSelector((state) => state.project.loading);
     const currentProject = useSelector((state) => state.project.currentProject);
 
+    /**
+     * Convert date format to timestamp (in seconds).
+     * Ensures consistency whether the value is a Date object or a number.
+     *
+     * @param {number | string | Date} time - The date value to normalize.
+     * @returns {number} UNIX timestamp in seconds.
+     */
     const checkTimeType = (time) => {
         return typeof time === 'number' ? time : new Date(time).getTime() / 1000;
     };
 
+    /**
+     * Handle task update event.
+     * Validates required fields, dispatches update action, and provides user feedback.
+     */
     const handleUpdateTask = async () => {
         if (!title || !description || !startDate || !dueDate) {
             alert('Please fill in all required fields.');
@@ -60,6 +83,10 @@ function UpdateTaskModal({ triggerBtn, currentTask }) {
         setOpen(false);
     };
 
+    /**
+     * Handle task deletion event.
+     * Validates task existence, dispatches delete action, and updates UI.
+     */
     const handleRemoveTask = async () => {
         if (!currentTask.id) {
             alert('Task ID is missing');
@@ -71,6 +98,10 @@ function UpdateTaskModal({ triggerBtn, currentTask }) {
         setOpen(false);
     };
 
+    /**
+     * Compare current values to determine if any fields have changed.
+     * Used to disable unnecessary updates when no changes are detected.
+     */
     const isChanged =
         title !== currentTask.title ||
         description !== currentTask.description ||
@@ -79,6 +110,10 @@ function UpdateTaskModal({ triggerBtn, currentTask }) {
         assignees.length !== currentTask.userIds.length ||
         types.length !== currentTask.types.length;
 
+    /**
+     * Reset local state values back to their original task data.
+     * Typically used when cancelling an edit or closing the modal.
+     */
     const resetState = () => {
         setTitle(currentTask.title || '');
         setDescription(currentTask.description || '');

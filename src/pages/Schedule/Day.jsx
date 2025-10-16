@@ -8,9 +8,15 @@ import { getCurrentDayClass, isDaySelected } from '../../utils';
 export default function Day({ day }) {
     const dispatch = useDispatch();
     const [dayEvents, setDayEvents] = useState([]);
+
+    // Redux States
     const meetings = useSelector((state) => state.meeting.userMeetings);
     const daySelected = useSelector((state) => state.calendar.daySelected);
 
+    /**
+     * Filters meetings that belong to the current day.
+     * Updates whenever the list of meetings or displayed day changes.
+     */
     useEffect(() => {
         const events = meetings
             .filter((evt) => {

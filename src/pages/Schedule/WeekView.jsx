@@ -15,10 +15,15 @@ function WeekView({ week }) {
     const dispatch = useDispatch();
     const [events, setEvents] = useState([]);
 
+    // Redux States
     const daySelected = useSelector((state) => state.calendar.daySelected);
     const meetings = useSelector((state) => state.meeting.userMeetings);
     const projects = useSelector((state) => state.project.projects);
 
+    /**
+     * Filters meetings that belong to the current week.
+     * Updates whenever the list of meetings or displayed week changes.
+     */
     useEffect(() => {
         const events = meetings.filter((evt) => {
             const eventDate = dayjs(evt.startTime * 1000);
@@ -28,6 +33,11 @@ function WeekView({ week }) {
         setEvents(events);
     }, [meetings, week]);
 
+    /**
+     * Converts a Unix timestamp (in seconds) to formatted 12-hour time.
+     * @param {number} dateObj - Unix timestamp (seconds)
+     * @returns {string} - Formatted time (e.g., "09:30 AM")
+     */
     function formatDateTime(dateObj) {
         const date = new Date(dateObj * 1000);
 

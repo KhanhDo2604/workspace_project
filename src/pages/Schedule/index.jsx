@@ -12,15 +12,24 @@ import { getMeetingsByUserId } from '../../store/slices/MeetingSlice';
 
 function SchedulePage() {
     const dispatch = useDispatch();
+    // Local states for storing the currently displayed month, week, and day
     const [currentMonth, setCurrentMonth] = useState(getMonth());
     const [currentWeek, setCurrentWeek] = useState(getWeek());
     const [currentDay, setCurrentDay] = useState();
 
+    // Global states retrieved from Redux store
     const monthIndex = useSelector((state) => state.calendar.monthIndex);
     const year = useSelector((state) => state.calendar.year);
     const viewMode = useSelector((state) => state.calendar.viewMode);
+
+    // Retrieve the logged-in user ID from localStorage
     const userId = localStorage.getItem('user_id');
 
+    /**
+     * fetch meetings and update calendar view
+     *
+     * This runs whenever the monthIndex or year changes, ensuring the displayed calendar is synchronized with the user’s meetings.
+     */
     useEffect(() => {
         const fetchMeetings = async () => {
             await dispatch(getMeetingsByUserId(userId)).unwrap();
@@ -35,7 +44,10 @@ function SchedulePage() {
     return (
         <>
             <div className="h-full flex flex-col">
+                {/* Calendar Header with navigation controls */}
                 <CalendarHeader />
+
+                {/* Main calendar area */}
                 <div className="flex flex-1 px-4 pb-4">
                     {viewMode === MODES[2] && <MonthView month={currentMonth} />}
                     {viewMode === MODES[1] && <WeekView week={currentWeek} />}

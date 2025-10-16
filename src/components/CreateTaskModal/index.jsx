@@ -21,6 +21,7 @@ import { CalendarButton } from '../CalendarButton';
 const DEFAULT_TYPES = ['development', 'design', 'testing'];
 
 export function CreateTaskModal({ triggerBtn, onSave }) {
+    // Local state for form fields
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [assignees, setAssignees] = useState([]);
@@ -29,8 +30,13 @@ export function CreateTaskModal({ triggerBtn, onSave }) {
     const [dueDate, setDueDate] = useState();
     const [open, setOpen] = useState(false);
 
+    // Retrieve the current project from Redux store
     const currentProject = useSelector((state) => state.project.currentProject);
 
+    /**
+     * Reset the task creation form to its default state.
+     * Called after a successful task creation or when modal is closed.
+     */
     const resetForm = () => {
         setTitle('');
         setDescription('');

@@ -12,20 +12,24 @@ import { Loader2Icon } from 'lucide-react';
 
 function RegisterPage() {
     const dispatch = useDispatch();
+    const navigate = useNavigate();
+
+    // Local State Management
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [fullName, setFullName] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
 
-    const [errorPassword, setErrorPassword] = useState('');
+    // Error messages for each field
     const [errorEmail, setErrorEmail] = useState('');
+    const [errorPassword, setErrorPassword] = useState('');
     const [errorFullName, setErrorFullName] = useState('');
     const [errorConfirmPassword, setErrorConfirmPassword] = useState('');
 
-    const navigate = useNavigate();
-
+    // Track API request state (loading indicator)
     const isLoading = useSelector((state) => state.auth.loading);
 
+    // Handle User Registration
     const handleSignUp = async (e) => {
         e.preventDefault();
 
@@ -72,6 +76,7 @@ function RegisterPage() {
                 action=""
                 className="w-3/4 h-full bg-main rounded-2xl shadow-md px-32 flex flex-col items-baseline justify-center"
             >
+                {/* Header */}
                 <h1 className="text-5xl font-bold text-center mb-2">Get Started Now</h1>
                 <p className="text-2xl text-center mb-8">Let’s create your account</p>
 

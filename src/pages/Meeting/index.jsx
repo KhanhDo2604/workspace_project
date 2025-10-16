@@ -9,13 +9,25 @@ import { io } from 'socket.io-client';
 import { useNavigate } from 'react-router-dom';
 import { Loader2Icon } from 'lucide-react';
 
+/**
+ * This component represents the main meeting interface in the Collaborative Workspace application.
+ * It integrates WebRTC (PeerJS) peer connections for real-time video/audio streaming and Socket.IO
+ * for synchronization of participant states (e.g., joining, leaving, mic/camera toggling).
+ *
+ * Core Responsibilities:
+ *  - Initialize local media stream (camera + microphone)
+ *  - Connect to meeting room via Socket.IO
+ *  - Manage WebRTC peer connections between participants
+ *  - Handle user status updates (mic/camera)
+ *  - Render whiteboard or participant videos depending on the mode
+ */
 function MeetingPage() {
     const dispatch = useDispatch();
     const whiteBoardMode = useSelector((state) => state.meeting.whiteBoardMode);
     const currentUser = useSelector((state) => state.auth.user);
     const currentProject = useSelector((state) => state.project.currentProject);
-    const [isLoading, setIsLoading] = useState(true);
 
+    const [isLoading, setIsLoading] = useState(true);
     const [userList, setUserList] = useState([]);
 
     const socketRef = useRef(null);
@@ -25,6 +37,7 @@ function MeetingPage() {
 
     const server = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3500';
 
+    // Reset whiteboard mode when entering a meeting
     useEffect(() => {
         dispatch({ type: 'meeting/setWhiteBoardMode', payload: false });
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -38,9 +51,10 @@ function MeetingPage() {
 
             try {
                 setIsLoading(true);
-                stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true }); // Try to access both camera and microphone
                 // eslint-disable-next-line no-unused-vars
             } catch (err) {
+                // If camera access fails, fallback to microphone only
                 try {
                     stream = await navigator.mediaDevices.getUserMedia({ audio: true });
                 } catch (err2) {
@@ -50,6 +64,7 @@ function MeetingPage() {
             }
             localStreamRef.current = stream;
 
+            // Initialize user list with current user
             setUserList([
                 {
                     peerId: currentUser.id,
@@ -61,6 +76,7 @@ function MeetingPage() {
                 },
             ]);
 
+            // SOCKET CONNECTION SETUP
             const socket = io(server);
             socketRef.current = socket;
 
@@ -74,6 +90,7 @@ function MeetingPage() {
                 });
             });
 
+            //Handle incoming user list
             socket.on('room-users', (users) => {
                 setUserList((prev) => {
                     const me = prev.find((u) => u.peerId === currentUser.id);
@@ -82,6 +99,7 @@ function MeetingPage() {
                 });
             });
 
+            // When a new user connects
             socket.on('user-connected', async ({ peerId, userName, avatar, isMicOn, isCamOn }) => {
                 setUserList((prev) =>
                     prev.find((u) => u.peerId === peerId)
@@ -100,6 +118,7 @@ function MeetingPage() {
                 socket.emit('offer', { to: peerId, offer });
             });
 
+            // Handle incoming WebRTC signaling data
             socket.on('offer', async ({ from, offer }) => {
                 const pc = createPeerConnection(socket, from);
 
@@ -113,14 +132,17 @@ function MeetingPage() {
                 socket.emit('answer', { to: from, answer });
             });
 
+            // Handle incoming answer
             socket.on('answer', async ({ from, answer }) => {
                 await pcRef.current[from]?.setRemoteDescription(new RTCSessionDescription(answer));
             });
 
+            // Handle incoming ICE candidates
             socket.on('candidate', async ({ from, candidate }) => {
                 await pcRef.current[from]?.addIceCandidate(new RTCIceCandidate(candidate));
             });
 
+            // Handle user status updates (mic/cam toggling)
             socket.on('user-status-updated', ({ peerId, isMicOn, isCamOn }) => {
                 setUserList((prev) =>
                     prev.map((u) =>
@@ -135,6 +157,7 @@ function MeetingPage() {
                 );
             });
 
+            // When a user disconnects
             socket.on('user-disconnected', ({ peerId }) => {
                 setUserList((prev) => prev.filter((u) => u.peerId !== peerId));
                 if (pcRef.current[peerId]) {
@@ -152,6 +175,7 @@ function MeetingPage() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentProject?.id]);
 
+    // Create or retrieve existing RTCPeerConnection for a given peerId (PEER CONNECTION MANAGEMENT)
     function createPeerConnection(socket, peerId) {
         if (pcRef.current[peerId]) return pcRef.current[peerId];
 
@@ -171,6 +195,7 @@ function MeetingPage() {
         return pc;
     }
 
+    // Release all media devices and close all peer connections
     const releaseDevices = async () => {
         localStreamRef.current?.getTracks().forEach((track) => track.stop());
         localStreamRef.current = null;
@@ -191,11 +216,13 @@ function MeetingPage() {
         setUserList([]);
     };
 
+    // Handle user leaving the meeting
     const handleLeaveMeeting = async () => {
         await releaseDevices();
         navigate(`/task-board/${currentProject.id}`, { replace: true });
     };
 
+    // Toggle microphone on/off
     const toggleMic = () => {
         const audioTrack = localStreamRef.current?.getAudioTracks()[0];
         if (!audioTrack) return;
@@ -212,6 +239,7 @@ function MeetingPage() {
         });
     };
 
+    // Toggle camera on/off
     const toggleCam = () => {
         const videoTrack = localStreamRef.current?.getVideoTracks()[0];
         if (!videoTrack) return;

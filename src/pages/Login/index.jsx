@@ -9,17 +9,24 @@ import { useState } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 import { getAllProjects } from '../../store/slices/ProjectSlice';
 
+/**
+ * This component renders the login form and manages user authentication flow.
+ * It validates input fields, dispatches the login action, retrieves the user's projects,
+ * and redirects the user to their workspace upon successful login.
+ */
 function LoginPage() {
     const dispatch = useDispatch();
+    const navigate = useNavigate();
+
+    // Local states for form inputs and validation errors
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [errorPassword, setErrorPassword] = useState('');
     const [errorEmail, setErrorEmail] = useState('');
 
-    const navigate = useNavigate();
-
     const isLoading = useSelector((state) => state.auth.loading);
 
+    // Handle form submission
     const handleLogin = async (e) => {
         e.preventDefault();
 
@@ -37,6 +44,8 @@ function LoginPage() {
             const res = await dispatch(loginUser({ email, password })).unwrap();
 
             const userId = localStorage.getItem('user_id');
+
+            // Fetch all projects for the logged-in user
             await dispatch(getAllProjects(res.data.userId || userId)).unwrap();
 
             toast.success(res.message);

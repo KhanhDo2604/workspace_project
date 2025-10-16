@@ -8,6 +8,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 function ParticipantsVideo({ participants = [] }) {
     const [selected, setSelected] = useState(0);
+
+    // Redux States
     const currentUser = useSelector((s) => s.auth.user);
     const p = participants[selected];
 

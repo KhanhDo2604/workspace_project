@@ -27,23 +27,40 @@ import ConfirmDialog from '../ConfirmDialog';
 import { CalendarButton } from '../CalendarButton';
 import toast, { Toaster } from 'react-hot-toast';
 
+/**
+ * This component handles both the creation and editing of meetings within a project.
+ * It provides a form modal that allows users to set meeting details such as title,
+ * time, and participants. It supports creating, updating, and deleting meetings.
+ *
+ * @component
+ * @param {Object} props
+ * @param {Object} [props.meeting] - The meeting object to edit (if editing an existing meeting)
+ * @param {ReactNode} props.triggerBtn - The button or UI element that triggers the modal
+ */
 function MeetingModal({ meeting, triggerBtn }) {
     const dispatch = useDispatch();
+
+    // Redux state containing the current project and loading status
     const currentProject = useSelector((state) => state.project.currentProject);
     const isLoading = useSelector((state) => state.meeting.loading);
     const projects = useSelector((state) => state.project.projects);
     const userId = localStorage.getItem('user_id');
 
+    // Local state for managing form inputs and modal visibility
     const [open, setOpen] = useState(false);
     const [title, setTitle] = useState(meeting ? meeting.title : '');
     const [startTime, setStartTime] = useState(meeting ? meeting.startTime : 0);
     const [endTime, setEndTime] = useState(meeting ? meeting.endTime : 0);
     const [participants, setParticipants] = useState(meeting ? meeting.participants : currentProject.participants);
 
+    // Retrieve list of participants depending on meeting mode (edit/create)
     const listParticipants = meeting
         ? projects.find((p) => p.id === meeting.projectId)?.participants
         : currentProject.participants;
 
+    /**
+     * Reset the meeting form to its initial state.
+     */
     const resetForm = () => {
         setTitle(meeting ? meeting.title : '');
         setStartTime(meeting ? meeting.startTime : 0);
@@ -51,12 +68,19 @@ function MeetingModal({ meeting, triggerBtn }) {
         setParticipants(meeting ? meeting.participants : currentProject.participants);
     };
 
+    /**
+     * Create a new meeting.
+     * @param {Object} meetingInfo - Information about the meeting to create.
+     */
     const handleCreateMeeting = async (meetingInfo) => {
         await dispatch(createMeeting({ ...meetingInfo })).unwrap();
         setOpen(false);
         resetForm();
     };
 
+    /**
+     * Update an existing meeting with modified details.
+     */
     const handleUpdateMeeting = async () => {
         if (title.trim() === '' || !startTime || !endTime || participants.length === 0) {
             alert('Please fill in all required fields.');
@@ -79,6 +103,9 @@ function MeetingModal({ meeting, triggerBtn }) {
         resetForm();
     };
 
+    /**
+     * Delete the current meeting from the database.
+     */
     const handleDeleteMeeting = async () => {
         await dispatch(deleteMeeting(meeting.id)).unwrap();
         toast.success('Meeting deleted successfully');

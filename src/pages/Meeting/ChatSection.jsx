@@ -5,14 +5,23 @@ import { useEffect, useState } from 'react';
 import ChatModel from '../../model/ChatModel';
 import { io } from 'socket.io-client';
 
+/**
+ * This component handles the real-time chat functionality
+ * for each project room using Socket.IO.
+ * It allows users to join a chat room, receive messages,
+ * and send new messages to other participants.
+ */
 function ChatSection() {
     const dispatch = useDispatch();
+    // Redux States
     const currentUser = useSelector((state) => state.auth.user);
     const currentProject = useSelector((state) => state.project.currentProject);
 
+    // Store the socket instance and list of messages
     const [socket, setSocket] = useState(null);
     const [messages, setMessages] = useState([]);
 
+    // Connect to the WebSocket server on component mount
     useEffect(() => {
         const newSocket = io(import.meta.env.VITE_WEBSOCKET_URL, { autoConnect: true });
         setSocket(newSocket);
@@ -22,6 +31,7 @@ function ChatSection() {
         };
     }, []);
 
+    // Once socket is available, join the project room
     useEffect(() => {
         if (!socket) return;
         socket.emit('enterRoom', {
@@ -30,9 +40,11 @@ function ChatSection() {
         });
     }, [socket, currentUser, currentProject, dispatch]);
 
+    // Listen for "message" events and append new chat messages to local state
     useEffect(() => {
         if (!socket) return;
 
+        // Handle incoming chat messages
         const handleMessage = (data) => {
             const chatData = new ChatModel({
                 projectId: data.projectId,
@@ -52,6 +64,7 @@ function ChatSection() {
         };
     }, [socket, currentUser, currentProject]);
 
+    // Send a new chat message to the server
     const handleSend = (text) => {
         if (!text || typeof text !== 'string') return;
         if (!text.trim()) return;

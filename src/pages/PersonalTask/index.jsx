@@ -10,10 +10,13 @@ import { Button } from '../../components/ui/button';
 function PersonalTaskPage() {
     const dispatch = useDispatch();
     const userId = localStorage.getItem('user_id');
+
+    // Redux States
     const isLoading = useSelector((state) => state.project.loading);
     const userTasks = useSelector((state) => state.auth.usersTask);
     const projects = useSelector((state) => state.project.projects);
 
+    // Fetch user tasks when the component mounts
     useEffect(() => {
         const fetchData = async () => {
             await dispatch(getAllUsersTask(userId)).unwrap();

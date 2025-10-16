@@ -6,6 +6,8 @@ import MeetingModal from '../../components/MeetingModal';
 
 function EventCard({ index, event, isShowTime = false }) {
     const dispatch = useDispatch();
+
+    // Redux States
     const projects = useSelector((state) => state.project.projects);
     const project = projects.find((proj) => proj.id === event.projectId);
     if (!project) return null;

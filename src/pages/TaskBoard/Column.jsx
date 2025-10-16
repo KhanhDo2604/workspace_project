@@ -2,11 +2,13 @@ import { useDroppable } from '@dnd-kit/core';
 import TaskCard from './TaskCard';
 
 function Column({ column, tasks }) {
+    // Hook from dnd-kit to define a droppable area for drag-and-drop functionality
     const { setNodeRef } = useDroppable({
         id: column.id,
     });
     let colorClass = '';
 
+    // Determine color theme dynamically based on task category
     if (tasks.color === 'blue') colorClass = 'bg-blue-300 text-blue-950';
     else if (tasks.color === 'red') colorClass = 'bg-red-200 text-red-950';
     else if (tasks.color === 'orange') colorClass = 'bg-yellow-100 text-yellow-950';
@@ -14,13 +16,16 @@ function Column({ column, tasks }) {
 
     return (
         <div className="flex-1 min-h-0 flex flex-col">
+            {/* Column Header */}
             <div className="flex items-center mb-2 flex-shrink-0">
                 <div className={`rounded-full ${colorClass} size-9 text-lg mr-2 flex justify-center items-center`}>
                     <p className="leading-0">{tasks.filter((task) => task.status === column.id).length}</p>
                 </div>
+                {/* Column title */}
                 <h2 className="text-xl font-bold">{column.title}</h2>
             </div>
 
+            {/* Task List */}
             <div ref={setNodeRef} className="flex-1 min-h-0 overflow-y-auto flex flex-col gap-4 p-1">
                 {tasks
                     .filter((task) => task.status === column.id)

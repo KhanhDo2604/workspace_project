@@ -9,6 +9,7 @@ import {
 import UserModel from '../../model/UserModel';
 import TaskModel from '../../model/TaskModel';
 
+/** Authenticates a user using email and password. */
 export const loginUser = createAsyncThunk('api/auth/login', async ({ email, password }, thunkAPI) => {
     try {
         const res = await login(email, password);
@@ -26,6 +27,7 @@ export const loginUser = createAsyncThunk('api/auth/login', async ({ email, pass
     }
 });
 
+/** Registers a new user account. */
 export const signupUser = createAsyncThunk('api/auth/signup', async ({ email, password, userName }, thunkAPI) => {
     try {
         const res = await signup(email, password, userName);
@@ -36,6 +38,7 @@ export const signupUser = createAsyncThunk('api/auth/signup', async ({ email, pa
     }
 });
 
+/** Requests a password reset email. */
 export const requestPasswordResetUser = createAsyncThunk('api/auth/forgot-password', async (email, thunkAPI) => {
     try {
         return await requestPasswordReset(email); //token
@@ -44,6 +47,7 @@ export const requestPasswordResetUser = createAsyncThunk('api/auth/forgot-passwo
     }
 });
 
+/** Resets user password using token verification. */
 export const resetPasswordUser = createAsyncThunk(
     'api/auth/reset-password',
     async ({ userId, token, password }, thunkAPI) => {
@@ -55,6 +59,7 @@ export const resetPasswordUser = createAsyncThunk(
     },
 );
 
+/** Logs out the current user. */
 export const logoutUser = createAsyncThunk('auth/logout', async (_, thunkAPI) => {
     try {
         await logout();
@@ -64,6 +69,7 @@ export const logoutUser = createAsyncThunk('auth/logout', async (_, thunkAPI) =>
     }
 });
 
+/** Retrieves information about the logged-in user. */
 export const getUserInformation = createAsyncThunk('api/user', async (userId, thunkAPI) => {
     try {
         const response = await getUserInfoService(userId);
@@ -73,6 +79,7 @@ export const getUserInformation = createAsyncThunk('api/user', async (userId, th
     }
 });
 
+/** Retrieves all tasks related to the current user. */
 export const getAllUsersTask = createAsyncThunk('api/users', async (userId, thunkAPI) => {
     try {
         const response = await getAllUsersTaskService(userId);
@@ -82,6 +89,7 @@ export const getAllUsersTask = createAsyncThunk('api/users', async (userId, thun
     }
 });
 
+/** Updates a user's name or personal information. */
 export const changeUserInfo = createAsyncThunk('api/user/change_name', async ({ userId, newName }, thunkAPI) => {
     try {
         const response = await changeUserInfoService(userId, newName);
@@ -91,6 +99,7 @@ export const changeUserInfo = createAsyncThunk('api/user/change_name', async ({ 
     }
 });
 
+/** Updates the user's profile avatar image. */
 export const updateUserAvatar = createAsyncThunk('api/user/change-avatar', async ({ userId, file }, thunkAPI) => {
     try {
         const updatedUser = await updateUserAvatarService(userId, file);
@@ -111,6 +120,10 @@ const authSlice = createSlice({
         message: null,
     },
     reducers: {},
+    /**
+     * Handles extra reducers for async thunks.
+     * Each case manages loading, success, and error states.
+     */
     extraReducers: (builder) => {
         builder
             .addCase(loginUser.pending, (state) => {

@@ -9,8 +9,9 @@ function LoadingPage() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
+    // On component mount, check for token and user ID in localStorage
     useEffect(() => {
-        const fetchUser = async () => {
+        const fetchUserData = async () => {
             const token = localStorage.getItem('token');
             const userId = localStorage.getItem('user_id');
 
@@ -27,7 +28,7 @@ function LoadingPage() {
             }
         };
 
-        fetchUser();
+        fetchUserData();
     }, [navigate, dispatch]);
     return (
         <div className="flex justify-center items-center h-screen">

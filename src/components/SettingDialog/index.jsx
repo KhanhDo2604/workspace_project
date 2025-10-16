@@ -19,13 +19,22 @@ import {
     DialogTrigger,
 } from '@/components/ui/dialog';
 
-const appearances = ['Default', 'Dark', 'Light'];
-const languages = ['English', 'Vietnamese', 'Japanese'];
+/**
+ * This component displays the user settings dialog,
+ * allowing the user to customize appearance, language,
+ * and update personal information such as name and avatar.
+ */
+
+const appearances = ['Default', 'Dark', 'Light']; // UI theme options
+const languages = ['English', 'Vietnamese']; // Language options
 
 function SettingDialog({ triggerBtn }) {
     const dispatch = useDispatch();
 
+    // Retrieve the current logged-in user from Redux store
     const user = useSelector((state) => state.auth.user);
+
+    // Local state variables to store user settings and input
     const [appearance, setAppearance] = useState('Default');
     const [language, setLanguage] = useState('English');
     const [name, setName] = useState(user.name || '');
@@ -33,14 +42,21 @@ function SettingDialog({ triggerBtn }) {
 
     const isLoading = useSelector((state) => state.auth.loading);
 
+    /**
+     * Triggered when the user selects a new avatar image.
+     * Previews the selected image locally and uploads it
+     * to update the user's avatar in the database.
+     */
     const handleFileChange = async (event) => {
         const file = event.target.files[0];
         if (!file) return;
 
+        // Display preview before uploading
         const previewUrl = URL.createObjectURL(file);
         setAvatar(previewUrl);
 
         try {
+            // Dispatch Redux action to upload new avatar
             const updatedUser = await dispatch(updateUserAvatar({ userId: user.id, file })).unwrap();
 
             setAvatar(updatedUser.avatar);

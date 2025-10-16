@@ -14,23 +14,38 @@ function Sidebar() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
+    // Redux States & Local Storage
     const sidebarState = useSelector((state) => state.sideBar.currentTab);
     const userId = localStorage.getItem('user_id');
     const projects = useSelector((state) => state.project.projects);
     const user = useSelector((state) => state.auth.user);
+
+    // Track which project sections are expanded
     const [openProjects, setOpenProjects] = useState({});
 
+    /**
+     * Handles sidebar navigation clicks:
+     * - Closes any open dialogs
+     * - Updates sidebar state
+     * - Optionally executes custom callback (e.g., navigation)
+     */
     const handleSidebarClick = async (path, onClick) => {
         dispatch(dialogActions.closeAllDialogs());
         dispatch({ type: 'sideBar/setCurrentTab', payload: path });
         if (onClick) await onClick();
     };
 
+    /**
+     * Signs the user out and redirects to login page
+     */
     const handleSignOut = () => {
         dispatch(logoutUser());
         navigate(`/login`, { replace: true });
     };
 
+    /**
+     * Toggles expansion state for a specific project
+     */
     const toggleProject = (projectId) => {
         setOpenProjects((prev) => ({
             ...prev,
@@ -40,6 +55,7 @@ function Sidebar() {
 
     return (
         <aside className="w-1/5 bg-primary py-9 px-7 flex flex-col h-screen">
+            {/* User Information */}
             <div className="flex items-center">
                 <Avatar className="w-21 h-21 mr-3 rounded-full object-cover border border-gray-300">
                     <AvatarImage src={user?.avatar} />
@@ -49,10 +65,13 @@ function Sidebar() {
                     {user?.name}
                 </h4>
             </div>
+
+            {/* Settings Dialog */}
             <div className="my-10 w-full">
                 <SettingDialog triggerBtn={<SidebarBtn icon={assets.icon.setting} label="Settings" />} />
             </div>
 
+            {/* Workspace Section */}
             <div className="mb-10">
                 <h5 className="text-headline font-medium overflow-hidden text-ellipsis whitespace-nowrap">Workspace</h5>
                 <div className="mb-2">
@@ -73,6 +92,7 @@ function Sidebar() {
                 </div>
             </div>
 
+            {/* Projects Section */}
             <div className="flex-1 overflow-y-auto mb-10">
                 <div className="flex items-center justify-between mb-2">
                     <h5 className="text-headline font-medium mr-2 overflow-hidden text-ellipsis whitespace-nowrap">
@@ -136,6 +156,8 @@ function Sidebar() {
                     );
                 })}
             </div>
+
+            {/* Sign Out Button */}
             <div className="mt-auto">
                 <SidebarBtn
                     icon={assets.icon.leftChevron}

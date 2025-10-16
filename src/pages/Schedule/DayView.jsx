@@ -6,9 +6,15 @@ import { useSelector } from 'react-redux';
 
 function DayView({ day }) {
     const [events, setEvents] = useState([]);
+
+    // Redux States
     const meetings = useSelector((state) => state.meeting.userMeetings);
     const projects = useSelector((state) => state.project.projects);
 
+    /**
+     * Filters meetings that belong to the current day.
+     * Updates whenever the list of meetings or displayed day changes.
+     */
     useEffect(() => {
         const events = meetings.filter((evt) => {
             return dayjs(evt.startTime * 1000).format('DD-MM-YY') === day.format('DD-MM-YY');
@@ -16,6 +22,11 @@ function DayView({ day }) {
         setEvents(events);
     }, [meetings, day]);
 
+    /**
+     * Converts a Unix timestamp (in seconds) to formatted 12-hour time.
+     * @param {number} dateObj - Unix timestamp (seconds)
+     * @returns {string} - Formatted time (e.g., "09:30 AM")
+     */
     function formatDateTime(dateObj) {
         const date = new Date(dateObj * 1000);
 

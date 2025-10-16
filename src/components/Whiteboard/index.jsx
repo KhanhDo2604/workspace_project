@@ -5,14 +5,27 @@ import { Button } from '../ui/button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import assets from '../../constants/icon';
 
+/**
+ * This component provides a collaborative whiteboard
+ * synchronized in real-time across multiple users using
+ * Fabric.js (for canvas drawing) and Socket.IO (for communication).
+ *
+ * Features:
+ *  - Real-time drawing synchronization
+ *  - Drawing, erasing, and editing modes
+ *  - Adding text boxes and sticky notes
+ *  - Clear-all canvas functionality
+ *
+ * @param {string} roomId - The unique ID of the whiteboard room.
+ */
 function Whiteboard({ roomId }) {
-    const canvasRef = useRef(null);
-    const fabricRef = useRef(null);
-    const socketRef = useRef(null);
+    const canvasRef = useRef(null); // HTML canvas reference
+    const fabricRef = useRef(null); // Fabric.js canvas instance
+    const socketRef = useRef(null); // Socket.IO connection reference
 
-    const isApplyingRemoteRef = useRef(false);
-    const eraserHandlersRef = useRef({ bound: false, onDown: null });
-    const snapshotTimerRef = useRef(null);
+    const isApplyingRemoteRef = useRef(false); // Prevents feedback loops
+    const eraserHandlersRef = useRef({ bound: false, onDown: null }); // Tracks eraser events
+    const snapshotTimerRef = useRef(null); // Debounce timer for snapshot emission
 
     const [brushColor, setBrushColor] = useState('#000000');
     const [isEraserMode, setIsEraserMode] = useState(false);
@@ -26,12 +39,13 @@ function Whiteboard({ roomId }) {
         });
         socketRef.current = socket;
 
+        // Join whiteboard room
         socket.emit('join-whiteboard', roomId);
 
+        // Listen for remote canvas data
         socket.on('canvas-data', (dataUrl) => {
             const canvas = fabricRef.current;
             if (!canvas || !dataUrl) return;
-            console.log('🖼️ Received canvas update from server');
 
             isApplyingRemoteRef.current = true;
 
@@ -74,6 +88,8 @@ function Whiteboard({ roomId }) {
         if (!el || !el.parentElement) return;
 
         const parent = el.parentElement;
+
+        // Create Fabric canvas
         const canvas = new fabric.Canvas(el, {
             backgroundColor: 'white',
             width: parent.clientWidth,
@@ -82,6 +98,7 @@ function Whiteboard({ roomId }) {
             selection: false,
         });
 
+        // Initialize drawing brush
         const brush = new fabric.PencilBrush(canvas);
         brush.width = 5;
         brush.color = brushColor;
@@ -89,6 +106,7 @@ function Whiteboard({ roomId }) {
 
         fabricRef.current = canvas;
 
+        /** Adjusts canvas size dynamically on window resize */
         const handleResize = () => {
             canvas.setWidth(parent.clientWidth);
             canvas.setHeight(parent.clientHeight);
@@ -96,12 +114,14 @@ function Whiteboard({ roomId }) {
         };
         window.addEventListener('resize', handleResize);
 
+        /** Debounce snapshot emission */
         const scheduleSnapshot = (delay = 200) => {
             if (isApplyingRemoteRef.current) return;
             if (snapshotTimerRef.current) clearTimeout(snapshotTimerRef.current);
             snapshotTimerRef.current = setTimeout(emitSnapshot, delay);
         };
 
+        // Capture drawing modifications
         canvas.on('path:created', () => scheduleSnapshot());
         canvas.on('object:modified', () => scheduleSnapshot());
         canvas.on('object:removed', () => scheduleSnapshot());
@@ -116,6 +136,7 @@ function Whiteboard({ roomId }) {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
+    // Emits current canvas snapshot to peers
     const emitSnapshot = () => {
         const canvas = fabricRef.current;
         const socket = socketRef.current;
@@ -124,6 +145,7 @@ function Whiteboard({ roomId }) {
         socket.emit('drawing-data', data);
     };
 
+    // Eraser Mode (attach / detach)
     const attachEraser = () => {
         const c = fabricRef.current;
         if (!c || eraserHandlersRef.current.bound) return;
@@ -145,6 +167,7 @@ function Whiteboard({ roomId }) {
         eraserHandlersRef.current = { bound: false, onDown: null };
     };
 
+    // Toggles between eraser and drawing
     const toggleEraser = () => {
         const c = fabricRef.current;
         if (!c) return;
@@ -163,6 +186,7 @@ function Whiteboard({ roomId }) {
         }
     };
 
+    // Switches between Edit / Draw
     const setMode = (editMode) => {
         const c = fabricRef.current;
         if (!c) return;
@@ -186,6 +210,7 @@ function Whiteboard({ roomId }) {
 
     const toggleDrawEdit = () => setMode(!isEditMode);
 
+    // Clears all canvas items
     const clearAll = () => {
         const c = fabricRef.current;
         if (!c) return;
@@ -195,6 +220,7 @@ function Whiteboard({ roomId }) {
         emitSnapshot();
     };
 
+    // Adds editable textbox to canvas
     const addTextbox = () => {
         const c = fabricRef.current;
         if (!c) return;
@@ -212,6 +238,7 @@ function Whiteboard({ roomId }) {
         emitSnapshot();
     };
 
+    // Adds sticky note to canvas
     const addStickyNote = () => {
         const c = fabricRef.current;
         if (!c) return;
@@ -315,7 +342,7 @@ function Whiteboard({ roomId }) {
                 </Button>
             </div>
 
-            {/* Canvas */}
+            {/* Canvas board */}
             <div className="border border-gray-300 rounded-xl bg-white flex-1 overflow-hidden">
                 <canvas ref={canvasRef} className="w-full h-full" />
             </div>

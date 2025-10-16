@@ -8,22 +8,25 @@ import { getChatMessages } from '../../store/slices/ProjectSlice';
 import ChatModel from '../../model/ChatModel';
 
 function ChatScreen() {
+    // Redux hooks
     const dispatch = useDispatch();
     const currentUser = useSelector((state) => state.auth.user);
     const currentProject = useSelector((state) => state.project.currentProject);
 
+    // Local states
     const [socket, setSocket] = useState(null);
     const [messages, setMessages] = useState([]);
     const [activity, setActivity] = useState('');
 
+    /**
+     * Initialize and connect to WebSocket server once when component mounts.
+     * Automatically disconnects on unmount.
+     */
     useEffect(() => {
         const newSocket = io(import.meta.env.VITE_WEBSOCKET_URL, { autoConnect: true });
         setSocket(newSocket);
 
-        console.log('⚡ Socket connected');
-
         return () => {
-            console.log('🛑 Disconnect socket');
             newSocket.disconnect();
         };
     }, []);
@@ -46,6 +49,10 @@ function ChatScreen() {
         });
     }, [socket, currentUser, currentProject, dispatch]);
 
+    /**
+     * Fetch chat messages for the current project
+     * and join the corresponding socket room.
+     */
     useEffect(() => {
         if (!socket) return;
 
@@ -79,6 +86,10 @@ function ChatScreen() {
         };
     }, [socket, currentUser, currentProject]);
 
+    /**
+     * Send message through the socket.
+     * Validates text input and includes sender metadata.
+     */
     const handleSend = (text) => {
         if (!text || typeof text !== 'string') return;
         if (!text.trim()) return;
@@ -93,18 +104,23 @@ function ChatScreen() {
         });
     };
 
+    /**
+     * Emit typing event to inform other users.
+     */
     const handleTyping = () => {
         socket.emit('activity', currentUser.name);
     };
 
     return (
         <div className="bg-secondary h-screen flex flex-col">
+            {/* Project Header Section */}
             <ProjectHeader
                 teamName={currentProject.title}
                 teamDescription={currentProject.description}
                 teamMembers={currentProject.participants}
             />
 
+            {/* Chat Messages Area */}
             <div className="relative overflow-y-auto flex-1 p-6">
                 <div className="space-y-4">
                     {messages.map((msg, index) => {

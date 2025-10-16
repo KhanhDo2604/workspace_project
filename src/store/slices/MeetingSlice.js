@@ -1,3 +1,9 @@
+/**
+ * Manages meeting-related operations including:
+ * - Meeting creation, update, and deletion
+ * - Loading user and project-specific meeting lists
+ * - Managing whiteboard mode within meeting sessions
+ */
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import {
     createMeetingService,
@@ -8,6 +14,10 @@ import {
 } from '../../services/MeetingService';
 import MeetingModel from '../../model/MeetingModel';
 
+/**
+ * Async thunk: Create a new meeting event.
+ * Calls backend API and returns meeting data on success.
+ */
 export const createMeeting = createAsyncThunk('project/create-meeting', async (meetingData, thunkAPI) => {
     try {
         const res = await createMeetingService(meetingData);
@@ -18,6 +28,10 @@ export const createMeeting = createAsyncThunk('project/create-meeting', async (m
     }
 });
 
+/**
+ * Async thunk: Delete meeting.
+ * Calls backend API and returns meeting id on success.
+ */
 export const deleteMeeting = createAsyncThunk('project/delete-meeting', async (meetingId, thunkAPI) => {
     try {
         const res = await deleteMeetingService(meetingId);
@@ -27,6 +41,10 @@ export const deleteMeeting = createAsyncThunk('project/delete-meeting', async (m
     }
 });
 
+/**
+ * Async thunk: Update meeting.
+ * Calls backend API and returns meeting data on success.
+ */
 export const updateMeeting = createAsyncThunk('project/update-meeting', async (meetingData, thunkAPI) => {
     try {
         const res = await updateMeetingService(meetingData);
@@ -36,6 +54,10 @@ export const updateMeeting = createAsyncThunk('project/update-meeting', async (m
     }
 });
 
+/**
+ * Async thunk: Get meetings by user ID.
+ * Calls backend API and returns list of meetings on success.
+ */
 export const getMeetingsByUserId = createAsyncThunk('project/get-meetings', async (userId, thunkAPI) => {
     try {
         const data = await getMeetingsByUserIdService(userId);
@@ -46,6 +68,10 @@ export const getMeetingsByUserId = createAsyncThunk('project/get-meetings', asyn
     }
 });
 
+/**
+ * Async thunk: Get meetings by project ID.
+ * Calls backend API and returns list of meetings on success.
+ */
 export const getMeetingsByProjectId = createAsyncThunk('project/get-meetings-project', async (projectId, thunkAPI) => {
     try {
         const data = await getMeetingsByProjectIdService(projectId);
@@ -67,16 +93,29 @@ const meetingSlice = createSlice({
         currentMeeting: null,
     },
     reducers: {
+        /**
+         * Toggles whiteboard mode within a meeting.
+         */
         toggleWhiteBoardMode: (state) => {
             state.whiteBoardMode = !state.whiteBoardMode;
         },
+        /**
+         * Sets the current active meeting for display or edit.
+         */
         setCurrentMeeting: (state, action) => {
             state.currentMeeting = action.payload;
         },
+        /**
+         * Explicitly sets whiteboard mode to a specific value.
+         */
         setWhiteBoardMode: (state, action) => {
             state.whiteBoardMode = action.payload;
         },
     },
+    /**
+     * Handles extra reducers for async thunks.
+     * Each case manages loading, success, and error states.
+     */
     extraReducers: (builder) => {
         builder
             .addCase(createMeeting.pending, (state) => {

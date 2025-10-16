@@ -7,17 +7,20 @@ import { Button } from '../ui/button';
 export default function ChatEditor({ placeholder, value = '', onChange, onSend, showOptions = false, className }) {
     const [message, setMessage] = useState(value);
 
+    // Function to handle message submission
     const submitMessage = (text) => {
         if (!text || !text.trim()) return;
         onSend(text);
         setMessage('');
     };
 
+    // Handle form submission
     const handleSubmit = (e) => {
         if (e && typeof e.preventDefault === 'function') e.preventDefault();
         submitMessage(message);
     };
 
+    // Handle input change
     const handleInputChange = (e) => {
         const val = e.target.value;
         setMessage(val);

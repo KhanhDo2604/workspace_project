@@ -7,6 +7,7 @@ import { Button } from '../../components/ui/button';
 function RoomButtonsController({ onLeave, onToggleMic, onToggleCam, isMicOn, isCamOn }) {
     const dispatch = useDispatch();
 
+    // Handler to toggle whiteboard mode in the meeting
     const handleWhiteBoardToggle = () => {
         dispatch(meetingActions.toggleWhiteBoardMode());
     };

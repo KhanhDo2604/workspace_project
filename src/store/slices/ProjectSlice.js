@@ -1,3 +1,11 @@
+/**
+ * Handles project-related state management, including:
+ * - Project creation, updates, and deletion
+ * - Task management (CRUD operations)
+ * - Member invitations and removals
+ * - Chat message retrieval and synchronization
+ */
+
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import {
     addMemberToProjectService,
@@ -16,6 +24,10 @@ import {
 import ProjectModel from '../../model/ProjectModel';
 import TaskModel from '../../model/TaskModel';
 
+/**
+ * Async thunk: Create a new project.
+ * Calls backend API and returns project data on success.
+ */
 export const createProject = createAsyncThunk(
     'api/project/create',
     async ({ title, projectName, userId, color }, thunkAPI) => {
@@ -28,6 +40,10 @@ export const createProject = createAsyncThunk(
     },
 );
 
+/**
+ * Async thunk: Update project.
+ * Calls backend API and returns project data on success.
+ */
 export const updateProject = createAsyncThunk('api/project/update', async (projectData, thunkAPI) => {
     try {
         const res = await updateProjectService(
@@ -43,6 +59,10 @@ export const updateProject = createAsyncThunk('api/project/update', async (proje
     }
 });
 
+/**
+ * Async thunk: Delete project.
+ * Calls backend API and returns project id on success.
+ */
 export const deleteProject = createAsyncThunk('api/project/delete', async (projectId, thunkAPI) => {
     try {
         const res = await deleteProjectService(projectId);
@@ -52,6 +72,10 @@ export const deleteProject = createAsyncThunk('api/project/delete', async (proje
     }
 });
 
+/**
+ * Async thunk: Get projects by user ID.
+ * Calls backend API and returns list of projects on success.
+ */
 export const getAllProjects = createAsyncThunk('api/project/user', async (userId, thunkAPI) => {
     try {
         const res = await getAllProjectsService(userId);
@@ -61,6 +85,10 @@ export const getAllProjects = createAsyncThunk('api/project/user', async (userId
     }
 });
 
+/**
+ * Async thunk: Get chat history in current project.
+ * Calls backend API and returns list of messages on success.
+ */
 export const getChatMessages = createAsyncThunk('api/chat/messages', async (projectId, thunkAPI) => {
     try {
         const res = await getChatMessagesService(projectId);
@@ -70,6 +98,10 @@ export const getChatMessages = createAsyncThunk('api/chat/messages', async (proj
     }
 });
 
+/**
+ * Async thunk: Add new member into current project.
+ * Calls backend API and returns new version of project and new user information on success.
+ */
 export const addMemberToProject = createAsyncThunk('api/project/add-member', async ({ projectId, email }, thunkAPI) => {
     try {
         const res = await addMemberToProjectService(projectId, email);
@@ -79,6 +111,10 @@ export const addMemberToProject = createAsyncThunk('api/project/add-member', asy
     }
 });
 
+/**
+ * Async thunk: Remove member in current project.
+ * Calls backend API and returns new version of project on success.
+ */
 export const removeMemberFromProject = createAsyncThunk(
     'api/project/remove-member',
     async ({ projectId, memberId }, thunkAPI) => {
@@ -91,6 +127,10 @@ export const removeMemberFromProject = createAsyncThunk(
     },
 );
 
+/**
+ * Async thunk: Create a new task in project.
+ * Calls backend API and returns task on success.
+ */
 export const createTask = createAsyncThunk('api/project/create-task', async (taskData, thunkAPI) => {
     try {
         const res = await createTaskService(
@@ -109,6 +149,10 @@ export const createTask = createAsyncThunk('api/project/create-task', async (tas
     }
 });
 
+/**
+ * Async thunk: Update task information in project.
+ * Calls backend API and returns new version of task on success.
+ */
 export const updateTask = createAsyncThunk('api/project/update-task', async (taskData, thunkAPI) => {
     try {
         const res = await updateTaskService(
@@ -127,6 +171,10 @@ export const updateTask = createAsyncThunk('api/project/update-task', async (tas
     }
 });
 
+/**
+ * Async thunk: Update task status in project.
+ * Calls backend API and returns new version of task on success.
+ */
 export const updateTaskStatus = createAsyncThunk(
     'api/project/update-status',
     async ({ taskId, newStatus }, thunkAPI) => {
@@ -139,6 +187,10 @@ export const updateTaskStatus = createAsyncThunk(
     },
 );
 
+/**
+ * Async thunk: Delete task in project.
+ * Calls backend API and returns task id on success.
+ */
 export const deleteTask = createAsyncThunk('api/project/delete-task', async (taskId, thunkAPI) => {
     try {
         const res = await deleteTaskService(taskId);
@@ -148,6 +200,10 @@ export const deleteTask = createAsyncThunk('api/project/delete-task', async (tas
     }
 });
 
+/**
+ * Async thunk: Get project tasks in current project.
+ * Calls backend API and returns list of tasks on success.
+ */
 export const getProjectTasks = createAsyncThunk('api/project/get-task', async (projectId, thunkAPI) => {
     try {
         const res = await getProjectTasksService(projectId);
@@ -184,6 +240,7 @@ const projectSlice = createSlice({
         chat: [],
     },
     reducers: {
+        //Sets the currently active project in the workspace
         setCurrentProject(state, action) {
             state.currentProject = new ProjectModel(
                 action.payload.id,
@@ -193,11 +250,16 @@ const projectSlice = createSlice({
                 action.payload.participants || [],
             );
         },
+        //Updates the status of a specific task in the state
         setNewStatus(state, action) {
             const { taskId, newStatus } = action.payload;
             state.tasks = state.tasks.map((task) => (task.id === taskId ? { ...task, status: newStatus } : task));
         },
     },
+    /**
+     * Handles extra reducers for async thunks.
+     * Each case manages loading, success, and error states.
+     */
     extraReducers: (builder) => {
         builder
             .addCase(createProject.pending, (state) => {
@@ -451,5 +513,6 @@ const projectSlice = createSlice({
     },
 });
 
+// Export actions and reducer
 export const projectActions = projectSlice.actions;
 export default projectSlice.reducer;

@@ -1,46 +1,28 @@
 import { createSlice } from '@reduxjs/toolkit';
 
+/**
+ * Redux slice to manage dialog visibility states across the application.
+ */
 const dialogSlice = createSlice({
     name: 'dialog',
     initialState: {
-        openSetting: false,
-        openNotification: false,
-        openAddScheduleDialog: false,
-        openTaskCreationDialog: false,
+        openAddScheduleDialog: false /** Indicates whether the Add Schedule dialog is open */,
     },
     reducers: {
-        toggleSetting: (state) => {
-            state.openSetting = !state.openSetting;
-            if (state.openSetting) {
-                state.openNotification = false;
-            }
-        },
-        closeSetting: (state) => {
-            state.openSetting = false;
-        },
+        /**
+         * Closes all dialogs in the UI.
+         * Useful for global reset actions (e.g., navigation or logout).
+         */
         closeAllDialogs: (state) => {
-            state.openSetting = false;
-            state.openNotification = false;
             state.openAddScheduleDialog = false;
         },
-        toggleNotification: (state) => {
-            state.openNotification = !state.openNotification;
-            if (state.openNotification) {
-                state.openSetting = false;
-            }
-        },
+        /** Opens the Add Schedule dialog. */
         openAddScheduleDialog: (state) => {
             state.openAddScheduleDialog = true;
         },
-
+        /** Closes the Add Schedule dialog. */
         closeAddScheduleDialog: (state) => {
             state.openAddScheduleDialog = false;
-        },
-        openTaskCreationDialog: (state) => {
-            state.openTaskCreationDialog = true;
-        },
-        closeTaskCreationDialog: (state) => {
-            state.openTaskCreationDialog = false;
         },
     },
 });

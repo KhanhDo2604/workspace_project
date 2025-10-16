@@ -1,6 +1,18 @@
+/**
+ * This module defines service-layer functions responsible for communicatingwith the backend API regarding project, task, and collaboration operations.
+ * Each function returns server responses for higher-level components to consume.
+ */
 import http from '../api/http';
 import ChatModel from '../model/ChatModel';
 
+/**
+ * Creates a new project for a user.
+ * @param {string} title - The project title displayed in the dashboard.
+ * @param {string} projectName - Internal project identifier or slug.
+ * @param {string} userId - ID of the user who owns the project.
+ * @param {string} color - Color code used to represent the project visually.
+ * @returns {Promise<Object>} Newly created project data.
+ */
 export const createProjectService = async (title, projectName, userId, color) => {
     try {
         const { data } = await http.post('api/project/create', {
@@ -17,6 +29,14 @@ export const createProjectService = async (title, projectName, userId, color) =>
     }
 };
 
+/**
+ * Updates an existing project’s basic information or participants.
+ * @param {string} projectId - The project’s unique identifier.
+ * @param {string} title - Updated title of the project.
+ * @param {string} projectName - Updated internal name.
+ * @param {Array} participants - Updated list of user objects.
+ * @returns {Promise<Object>} Updated project data.
+ */
 export const updateProjectService = async (projectId, title, projectName, participants) => {
     try {
         const { data } = await http.put(`api/project/update/${projectId}`, {
@@ -31,6 +51,11 @@ export const updateProjectService = async (projectId, title, projectName, partic
     }
 };
 
+/**
+ * Deletes a project by ID.
+ * @param {string} projectId - ID of the project to delete.
+ * @returns {Promise<Object>} Deletion confirmation.
+ */
 export const deleteProjectService = async (projectId) => {
     try {
         const { data } = await http.delete(`api/project/delete/${projectId}`);
@@ -41,6 +66,11 @@ export const deleteProjectService = async (projectId) => {
     }
 };
 
+/**
+ * Fetches all projects owned or joined by a specific user.
+ * @param {string} userId - The user’s unique identifier.
+ * @returns {Promise<Array>} List of project objects.
+ */
 export const getAllProjectsService = async (userId) => {
     try {
         const { data } = await http.get(`api/project/user/${userId}`);
@@ -51,6 +81,11 @@ export const getAllProjectsService = async (userId) => {
     }
 };
 
+/**
+ * Retrieves all chat messages associated with a project.
+ * @param {string} projectId - ID of the project.
+ * @returns {Promise<Array>} Array of ChatModel objects sorted by creation time.
+ */
 export const getChatMessagesService = async (projectId) => {
     try {
         const { data } = await http.get(`api/project/get-chat/${projectId}`);
@@ -62,6 +97,12 @@ export const getChatMessagesService = async (projectId) => {
     }
 };
 
+/**
+ * Adds a new member to an existing project by email.
+ * @param {string} projectId - Project identifier.
+ * @param {string} email - Email address of the member to add.
+ * @returns {Promise<Object>} Updated project data.
+ */
 export const addMemberToProjectService = async (projectId, email) => {
     try {
         const { data } = await http.put('api/project/add-member', {
@@ -75,6 +116,12 @@ export const addMemberToProjectService = async (projectId, email) => {
     }
 };
 
+/**
+ * Removes a member from a project.
+ * @param {string} projectId - The project’s ID.
+ * @param {string} memberId - The ID of the member to remove.
+ * @returns {Promise<Object>} Updated project data.
+ */
 export const removeMemberFromProjectService = async (projectId, memberId) => {
     try {
         const { data } = await http.put('api/project/remove-member', {
@@ -88,6 +135,17 @@ export const removeMemberFromProjectService = async (projectId, memberId) => {
     }
 };
 
+/**
+ * Creates a new task within a project.
+ * @param {string} project - Project ID.
+ * @param {string} title - Task title.
+ * @param {string} description - Task description.
+ * @param {Array} assignedTo - Array of user objects assigned to this task.
+ * @param {Array} types - Task category or tag types.
+ * @param {number} startDay - Unix timestamp for task start date.
+ * @param {number} dueDay - Unix timestamp for task deadline.
+ * @returns {Promise<Object>} Newly created task data.
+ */
 export const createTaskService = async (project, title, description, assignedTo, types, startDay, dueDay) => {
     try {
         const getUserIds = assignedTo.map((user) => user._id);
@@ -106,6 +164,18 @@ export const createTaskService = async (project, title, description, assignedTo,
     }
 };
 
+/**
+ * Update an existing task.
+ * @async
+ * @param {string} taskId - Task ID.
+ * @param {string} title - Updated title.
+ * @param {string} description - Updated description.
+ * @param {Array<string>} userIds - Assigned user IDs.
+ * @param {Array<string>} types - Updated task types.
+ * @param {number} startDay - New start date.
+ * @param {number} dueDay - New due date.
+ * @returns {Promise<Object>} The updated task data.
+ */
 export const updateTaskService = async (taskId, title, description, userIds, types, startDay, dueDay) => {
     try {
         const { data } = await http.put(`api/project/update-task/${taskId}`, {
@@ -123,6 +193,13 @@ export const updateTaskService = async (taskId, title, description, userIds, typ
     }
 };
 
+/**
+ * Update the status of a task (e.g., “To Do”, “In Progress”, “Done”).
+ * @async
+ * @param {string} taskId - Task ID.
+ * @param {string} status - New status label.
+ * @returns {Promise<Object>} Updated task data.
+ */
 export const updateTaskStatusService = async (taskId, status) => {
     try {
         const { data } = await http.put(`api/project/update-status/${taskId}`, {
@@ -135,6 +212,12 @@ export const updateTaskStatusService = async (taskId, status) => {
     }
 };
 
+/**
+ * Delete a task permanently.
+ * @async
+ * @param {string} taskId - Task ID.
+ * @returns {Promise<Object>} Deletion confirmation include taskId.
+ */
 export const deleteTaskService = async (taskId) => {
     try {
         const { data } = await http.delete(`api/project/delete-task/${taskId}`);
@@ -145,6 +228,12 @@ export const deleteTaskService = async (taskId) => {
     }
 };
 
+/**
+ * Retrieve all tasks associated with a specific project.
+ * @async
+ * @param {string} projectId - Project ID.
+ * @returns {Promise<Array>} List of project tasks.
+ */
 export const getProjectTasksService = async (projectId) => {
     try {
         const { data } = await http.get(`api/project/get-task/${projectId}`);

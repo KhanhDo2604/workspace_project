@@ -3,6 +3,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 function ChatCard({ userIcon, userName, content, createdAt, isMe }) {
     const side = isMe ? 'justify-end' : 'justify-start';
 
+    // Helper function to format timestamp to "HH:MM"
     const formatTime = (timestamp) => {
         const date = new Date(timestamp);
         const hours = date.getHours().toString().padStart(2, '0');
@@ -12,7 +13,6 @@ function ChatCard({ userIcon, userName, content, createdAt, isMe }) {
 
     return (
         <div className={`flex ${side} items-start gap-4 mb-4`}>
-            {/* {!isMe && <img src={userIcon} alt="" className="w-10 h-10 rounded-full" />} */}
             {!isMe && (
                 <Avatar className="w-10 h-10 rounded-full border-2 border-white" key={userName}>
                     <AvatarImage src={userIcon} />

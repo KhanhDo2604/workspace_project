@@ -9,11 +9,14 @@ import { calendarActions } from '../../store/slices/CalendarSlice';
 
 function CalendarHeader() {
     const dispatch = useDispatch();
+
+    // Redux States
     const monthIndex = useSelector((state) => state.calendar.monthIndex);
     const viewMode = useSelector((state) => state.calendar.viewMode);
     const year = useSelector((state) => state.calendar.year);
     const currentDate = dayjs().year(year).month(monthIndex);
 
+    // Handlers for navigating months
     const handlePrevMonth = () => {
         let newMonth = monthIndex - 1;
         let newYear = year;
@@ -24,6 +27,7 @@ function CalendarHeader() {
         dispatch(calendarActions.setMonthYear({ month: newMonth, year: newYear }));
     };
 
+    // Handler for navigating to the next month
     const handleNextMonth = () => {
         let newMonth = monthIndex + 1;
         let newYear = year;

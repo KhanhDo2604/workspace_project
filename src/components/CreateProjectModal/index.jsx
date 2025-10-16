@@ -16,27 +16,48 @@ import { Button } from '../ui/button';
 import { Loader2Icon } from 'lucide-react';
 import { randomColor } from '../../utils';
 
+/**
+ * This component renders a modal that allows the user
+ * to create a new project within the Collaborative Workspace.
+ */
 function CreateProjectModal({ triggerBtn }) {
     const dispatch = useDispatch();
+
+    // Local state for form fields
     const [title, setTitle] = useState('');
-    const [open, setOpen] = useState(false);
     const [description, setDescription] = useState('');
+
+    // Modal open/close state
+    const [open, setOpen] = useState(false);
+
+    // Retrieve the current user's ID from local storage
     const userId = localStorage.getItem('user_id');
 
+    // Loading state from Redux store for showing spinner or disabling UI
     const isLoading = useSelector((state) => state.project.loading);
 
+    /**
+     * Clears all input fields in the form when the modal
+     * is closed or after the project is successfully created.
+     */
     const resetForm = () => {
         setTitle('');
         setDescription('');
     };
 
+    /**
+     * Dispatches an asynchronous Redux action to create
+     * a new project in the backend database. The function
+     * automatically unwraps the promise to handle rejections.
+     * It also assigns a random color to the project for UI labeling.
+     */
     const createNewProject = async () => {
         await dispatch(
             createProject({
                 title: title,
                 projectName: description,
                 userId: userId,
-                color: randomColor(),
+                color: randomColor(), // Assigns a random UI color
             }),
         ).unwrap();
     };

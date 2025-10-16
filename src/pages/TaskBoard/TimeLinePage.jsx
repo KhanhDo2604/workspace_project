@@ -18,11 +18,16 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 dayjs.extend(isBetween);
 
-const DAY_PX = 161;
-const rowHeight = 60;
-const MIN_PER_DAY = 1440;
-const pxPerMinute = DAY_PX / MIN_PER_DAY;
+//  CONSTANTS AND DIMENSIONS
+const DAY_PX = 161; // Width (in pixels) allocated per day
+const rowHeight = 60; // Height per task row
+const MIN_PER_DAY = 1440; // Number of minutes in a day
+const pxPerMinute = DAY_PX / MIN_PER_DAY; // Scale ratio for time to pixels
 
+/**
+ * UpperSection Component
+ * Renders search, filter, and task creation controls above the timeline.
+ */
 const UpperSection = ({
     onCreateTask,
     users,
@@ -34,6 +39,7 @@ const UpperSection = ({
 }) => {
     return (
         <div>
+            {/* Header Information */}
             <div className="flex justify-between items-center mb-5">
                 <div>
                     <h1 className="text-3xl font-bold">Project {projectDescription}</h1>
@@ -51,6 +57,7 @@ const UpperSection = ({
                         onChange={(e) => onSearchChange(e.target.value)}
                     />
 
+                    {/* Display first 3 team avatars */}
                     <div className="flex items-center -space-x-2 mr-4">
                         {users.slice(0, 3).map((user, idx) => (
                             <Avatar className="w-10 h-10 rounded-full border-2 border-white" key={idx}>
@@ -65,6 +72,7 @@ const UpperSection = ({
                         )}
                     </div>
 
+                    {/* Date Filter */}
                     <CalendarButton
                         showTime={false}
                         onChange={(timestamp) => {
@@ -72,12 +80,15 @@ const UpperSection = ({
                         }}
                     />
 
+                    {/* Reset Filters Button */}
                     {filterDate && (
                         <Button variant="outline" className="ml-4 border-tertiary" onClick={onResetFilters}>
                             Reset Filters
                         </Button>
                     )}
                 </div>
+
+                {/* Create Task Button */}
                 <CreateTaskModal
                     onSave={onCreateTask}
                     triggerBtn={
@@ -92,27 +103,37 @@ const UpperSection = ({
     );
 };
 
+/**
+ * The main page component responsible for rendering the visual timeline grid.
+ * Displays each task’s duration and position based on its start and due dates.
+ */
 function TimelinePage() {
     const dispatch = useDispatch();
 
+    // Define timeline range (current date → +1 month)
     const startDate = useMemo(() => new Date(), []);
     const endDate = useMemo(() => addMonths(startDate, 1), [startDate]);
+
+    // Generate all days within the range
     const totalDays = useMemo(() => differenceInCalendarDays(endDate, startDate), [startDate, endDate]);
     const days = useMemo(
         () => Array.from({ length: totalDays }, (_, i) => addDays(startDate, i)),
         [totalDays, startDate],
     );
+
+    //  STATE MANAGEMENT
     const [searchQuery, setSearchQuery] = useState('');
     const [filterDate, setFilterDate] = useState(null);
-
     const tasks = useSelector((state) => state.project.tasks);
     const currentProject = useSelector((state) => state.project.currentProject);
 
+    // Reset Filters
     const resetFilters = () => {
         setSearchQuery('');
         setFilterDate(null);
     };
 
+    // Filter tasks based on search query and selected date
     const filteredTasks = useMemo(() => {
         return tasks.filter((task) => {
             const matchesSearch = task.title.toLowerCase().includes(searchQuery.trim().toLowerCase());
@@ -130,12 +151,14 @@ function TimelinePage() {
         });
     }, [tasks, searchQuery, filterDate]);
 
+    // Dynamically adjust height based on task count
     const flexibleHeight = useMemo(() => {
         return filteredTasks.length * rowHeight > window.innerHeight - 260
             ? `${filteredTasks.length * rowHeight}px`
             : '100%';
     }, [filteredTasks]);
 
+    // Handle creating a new task
     async function createNewTask(args) {
         try {
             const response = await dispatch(createTask(args)).unwrap();
@@ -154,6 +177,7 @@ function TimelinePage() {
             />
 
             <div className="p-5 flex flex-col flex-1 min-h-0 relative">
+                {/* Search and Filter Section */}
                 <UpperSection
                     users={currentProject.participants}
                     onCreateTask={createNewTask}
@@ -164,6 +188,7 @@ function TimelinePage() {
                     filterDate={filterDate}
                 />
 
+                {/* Timeline Grid */}
                 <div className="flex flex-col flex-1 min-h-0">
                     <div className="overflow-x-auto">
                         <div className="w-max">
@@ -196,6 +221,8 @@ function TimelinePage() {
                                             />
                                         ))}
                                     </div>
+
+                                    {/* Render each task block */}
                                     <div className="size-full mt-1">
                                         {filteredTasks.map((task, idx) => {
                                             const taskStart = Number(task.startDay) * 1000;

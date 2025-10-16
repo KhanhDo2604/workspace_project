@@ -11,14 +11,32 @@ import { getMeetingsByProjectId } from '../../store/slices/MeetingSlice';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { io } from 'socket.io-client';
 
+/**
+ * Displays the top header section for a project workspace, showing:
+ *  - Project name and description
+ *  - Team member avatars
+ *  - Meeting control buttons
+ */
 function ProjectHeader({ teamName, teamDescription, teamMembers }) {
     const dispatch = useDispatch();
     const { projectId } = useParams();
+
+    // State for storing the current active meeting room, if any
     const [meetingRoom, setMeetingRoom] = useState(null);
+
+    // Redux state containing all project meetings
     const projectMeetings = useSelector((state) => state.meeting.projectMeetings);
+
+    // Fallback: ensure teamMembers is always an array
     const userList = teamMembers || [];
+
+    // Local state for managing the active WebSocket connection
     const [socket, setSocket] = useState(null);
 
+    /**
+     * Fetch all meetings related to the current project on component mount.
+     * The useEffect hook runs when projectId changes.
+     */
     useEffect(() => {
         const fetchProjectMeetings = async () => {
             await dispatch(getMeetingsByProjectId(projectId)).unwrap();
@@ -27,12 +45,19 @@ function ProjectHeader({ teamName, teamDescription, teamMembers }) {
         fetchProjectMeetings();
     }, [dispatch, projectId]);
 
+    /**
+     * Establish a WebSocket connection to the project namespace.
+     * Listens for any updates to meeting state in real-time.
+     * Disconnects the socket automatically when the component unmounts.
+     */
     useEffect(() => {
         const socket = io(import.meta.env.VITE_WEBSOCKET_URL, { transports: ['websocket'] });
         setSocket(socket);
 
+        // Join the project room on the WebSocket server
         socket.emit('join_project', projectId);
 
+        // Listen for meeting updates from the backend
         socket.on('meeting_state_update', (state) => {
             console.log('📡 Meeting state updated:', state);
             setMeetingRoom(state);
