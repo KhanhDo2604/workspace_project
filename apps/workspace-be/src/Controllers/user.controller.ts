@@ -17,7 +17,7 @@ export const getUserController = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
-    const user = await getUserById(id || "");
+    const user = await getUserById((id as string) || "");
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -45,7 +45,7 @@ export const changeUserNameController = async (req: Request, res: Response) => {
       return res.status(401).json({ message: "Invalid param" });
     }
 
-    const data = await changeUserName(userId, newName);
+    const data = await changeUserName(userId as string, newName);
     if (!data.user) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -71,7 +71,7 @@ export const getUserTasksController = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "No userId provided" });
     }
 
-    const result = await getUserTasks(userId);
+    const result = await getUserTasks(userId as string);
     res.status(result.status).json({ tasks: result.tasks });
   } catch (error: Error | any) {
     res
@@ -89,7 +89,7 @@ export const getUserTasksController = async (req: Request, res: Response) => {
  */
 export const updateUserAvatarController = async (
   req: Request,
-  res: Response
+  res: Response,
 ) => {
   try {
     const { userId } = req.body;
@@ -98,7 +98,26 @@ export const updateUserAvatarController = async (
     if (!file) return res.status(400).json({ message: "No file uploaded" });
     if (!userId) return res.status(400).json({ message: "User ID required" });
 
-    const updatedUser = await updateUserAvatar(userId, file);
+    const uploadData = {
+      buffer: file.buffer,
+      mimeType: file.mimetype,
+      originalName: file.originalname,
+      size: file.size,
+    };
+
+    if (uploadData.size > 5 * 1024 * 1024) {
+      // Limit file size to 5MB
+      return res.status(400).json({ message: "File size exceeds 5MB limit" });
+    } else if (
+      !["image/jpeg", "image/png", "image/jpg"].includes(uploadData.mimeType)
+    ) {
+      // Validate file type
+      return res.status(400).json({
+        message: "Invalid file type. Only JPEG, JPG, and PNG are allowed.",
+      });
+    }
+
+    const updatedUser = await updateUserAvatar(userId, uploadData);
 
     return res.status(200).json({
       message: "Avatar updated successfully",

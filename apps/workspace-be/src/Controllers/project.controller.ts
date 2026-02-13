@@ -29,7 +29,7 @@ export const getAllProjectsController = async (req: Request, res: Response) => {
     return res.status(400).json({ message: "No token provided" });
   }
 
-  const projects = await getAllProject(userId);
+  const projects = await getAllProject(userId as string);
 
   res.status(200).json({ message: "Success", projects: projects });
 };
@@ -40,7 +40,7 @@ export const getAllProjectsController = async (req: Request, res: Response) => {
  */
 export const getChatInProjectController = async (
   req: Request,
-  res: Response
+  res: Response,
 ) => {
   try {
     const { projectId } = req.params;
@@ -48,7 +48,7 @@ export const getChatInProjectController = async (
       return res.status(400).json({ message: "No projectId provided" });
     }
 
-    const chat = await getChatInProject(projectId);
+    const chat = await getChatInProject(projectId as string);
     res.status(200).json({ message: "Success", chat });
   } catch (error: Error | any) {
     res
@@ -87,10 +87,10 @@ export const updateProjectController = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "Missing required fields" });
     }
     const result = await updateProject(
-      projectId,
+      projectId as string,
       title,
       projectName,
-      participants
+      participants,
     );
     res
       .status(result.status)
@@ -113,7 +113,7 @@ export const deleteProjectController = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "No projectId provided" });
     }
 
-    const result = await deleteProject(projectId);
+    const result = await deleteProject(projectId as string);
     res
       .status(result.status)
       .json({ message: result.message, projectId: result.projectId });
@@ -130,7 +130,7 @@ export const deleteProjectController = async (req: Request, res: Response) => {
  */
 export const addMemberToProjectController = async (
   req: Request,
-  res: Response
+  res: Response,
 ) => {
   try {
     const { projectId, email } = req.body;
@@ -157,7 +157,7 @@ export const addMemberToProjectController = async (
  */
 export const removeMemberFromProjectController = async (
   req: Request,
-  res: Response
+  res: Response,
 ) => {
   try {
     const { projectId, memberId } = req.body;
@@ -183,7 +183,7 @@ export const removeMemberFromProjectController = async (
  */
 export const getProjectTasksController = async (
   req: Request,
-  res: Response
+  res: Response,
 ) => {
   try {
     const { projectId } = req.params;
@@ -191,7 +191,7 @@ export const getProjectTasksController = async (
       return res.status(400).json({ message: "No projectId provided" });
     }
 
-    const result = await getProjectTasks(projectId);
+    const result = await getProjectTasks(projectId as string);
 
     res.status(result.status).json({ tasks: result.tasks });
   } catch (error: Error | any) {
@@ -222,12 +222,12 @@ export const createTaskController = async (req: Request, res: Response) => {
     }
     const result = await createTask(
       userIds,
-      project,
+      project as string,
       title,
       description,
       startDay,
       dueDay,
-      types
+      types,
     );
 
     res
@@ -256,14 +256,14 @@ export const updateTaskController = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "No taskId provided" });
     }
     const result = await updateTask(
-      taskId,
+      taskId as string,
       userIds,
       title,
       description,
       startDay,
       dueDay,
       types,
-      status
+      status,
     );
 
     res
@@ -287,7 +287,7 @@ export const deleteTaskController = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "No taskId provided" });
     }
 
-    const result = await deleteTask(taskId);
+    const result = await deleteTask(taskId as string);
     res
       .status(result.status)
       .json({ message: result.message, taskId: result.taskId });
@@ -304,7 +304,7 @@ export const deleteTaskController = async (req: Request, res: Response) => {
  */
 export const updateTaskStatusController = async (
   req: Request,
-  res: Response
+  res: Response,
 ) => {
   try {
     const { taskId } = req.params;
@@ -313,7 +313,7 @@ export const updateTaskStatusController = async (
     if (!taskId) {
       return res.status(400).json({ message: "No taskId provided" });
     }
-    const result = await updateTaskStatus(taskId, status);
+    const result = await updateTaskStatus(taskId as string, status);
     res.status(result.status).json({ message: "Task status updated" });
   } catch (error) {
     console.error("Error in updateTaskStatusController:", error);
@@ -346,7 +346,7 @@ export const createMeetingController = async (req: Request, res: Response) => {
       startTime,
       endTime,
       participants,
-      userId
+      userId,
     );
 
     res
@@ -372,7 +372,7 @@ export const updateMeetingController = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "No meetingId provided" });
     }
 
-    const result = await updateMeeting(meetingId, {
+    const result = await updateMeeting(meetingId as string, {
       title,
       startTime,
       endTime,
@@ -414,7 +414,7 @@ export const deleteMeetingController = async (req: Request, res: Response) => {
  */
 export const getProjectMeetingsByUserIdController = async (
   req: Request,
-  res: Response
+  res: Response,
 ) => {
   try {
     const { userId } = req.params;
@@ -422,7 +422,7 @@ export const getProjectMeetingsByUserIdController = async (
       return res.status(400).json({ message: "No userId provided" });
     }
 
-    const result = await getProjectMeetingsByUserId(userId);
+    const result = await getProjectMeetingsByUserId(userId as string);
 
     if (result.status === 404) {
       return res.status(200).json({ meetings: [] });
@@ -442,7 +442,7 @@ export const getProjectMeetingsByUserIdController = async (
  */
 export const getProjectMeetingsController = async (
   req: Request,
-  res: Response
+  res: Response,
 ) => {
   try {
     const { projectId } = req.params;
@@ -450,7 +450,7 @@ export const getProjectMeetingsController = async (
       return res.status(400).json({ message: "No projectId provided" });
     }
 
-    const result = await getProjectMeetings(projectId);
+    const result = await getProjectMeetings(projectId as string);
 
     if (result.status === 404) {
       return res.status(200).json({ meetings: [] });

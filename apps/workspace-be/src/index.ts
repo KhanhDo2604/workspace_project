@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 
 import "express-async-errors";
-import express, { type NextFunction } from "express";
+import express from "express";
 import cors, { type CorsOptions } from "cors";
 import http from "http";
 import { Server } from "socket.io";

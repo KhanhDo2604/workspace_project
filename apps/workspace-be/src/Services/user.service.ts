@@ -1,21 +1,13 @@
 import "dotenv/config";
-import { BlobServiceClient } from "@azure/storage-blob";
 import taskModel from "../Models/task.model.js";
 import userModel from "../Models/user.model.js";
-
-/**
- * Initialize Azure Blob Service Client
- */
-const AZURE_STORAGE_CONNECTION_STRING =
-  process.env.AZURE_STORAGE_CONNECTION_STRING;
-if (!AZURE_STORAGE_CONNECTION_STRING)
-  throw new Error("Azure Storage connection string not found");
-
-const blobServiceClient = BlobServiceClient.fromConnectionString(
-  AZURE_STORAGE_CONNECTION_STRING
-);
-
-const containerClient = blobServiceClient.getContainerClient("pictures");
+import {
+  getDownloadURL,
+  getStorage,
+  ref,
+  uploadBytesResumable,
+} from "firebase/storage";
+import type { UploadImageInput } from "../Models/type.js";
 
 /**
  * Retrieve user information by ID.
@@ -48,7 +40,7 @@ export const changeUserName = async (userId: String, newName: String) => {
     const user = await userModel.findByIdAndUpdate(
       userId,
       { name: newName },
-      { new: true }
+      { new: true },
     );
 
     return { message: "Update successfully", user };
@@ -78,26 +70,65 @@ export const getUserTasks = async (userId: string) => {
 // Upload and update the user's avatar in Azure Blob Storage.
 export const updateUserAvatar = async (
   userId: string,
-  file: Express.Multer.File
+  file: UploadImageInput,
 ) => {
   try {
     if (!file) throw new Error("No file uploaded");
+    const storage = getStorage();
 
-    const blobName = `${userId}-${file.originalname}`;
-    const blockBlobClient = containerClient.getBlockBlobClient(blobName);
+    // Create the file metadata
+    /** @type {any} */
+    const metadata = {
+      contentType: file.mimeType,
+    };
 
-    // Upload file data to Azure Blob Storage
-    await blockBlobClient.uploadData(file.buffer, {
-      blobHTTPHeaders: { blobContentType: file.mimetype },
-    });
-
-    // Retrieve the URL of the uploaded blob
-    const avatarUrl = blockBlobClient.url;
+    // Upload file and metadata to the object 'images/mountains.jpg'
+    const storageRef = ref(storage, "images/" + file.originalName);
+    const uploadTask = uploadBytesResumable(storageRef, file.buffer, metadata);
 
     // Update user document with new avatar URL
-    const updatedUser = await userModel
-      .findByIdAndUpdate(userId, { avatar: avatarUrl }, { new: true })
-      .lean();
+    let updatedUser;
+
+    // Listen for state changes, errors, and completion of the upload.
+    uploadTask.on(
+      "state_changed",
+      (snapshot) => {
+        const progress =
+          (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        console.log("Upload is " + progress + "% done");
+        switch (snapshot.state) {
+          case "paused":
+            console.log("Upload is paused");
+            break;
+          case "running":
+            console.log("Upload is running");
+            break;
+        }
+      },
+      (error) => {
+        switch (error.code) {
+          case "storage/unauthorized":
+            console.log("User doesn't have permission to access the object");
+            break;
+          case "storage/canceled":
+            console.log("User canceled the upload");
+            break;
+          case "storage/unknown":
+            console.log("Unknown error occurred, inspect error.serverResponse");
+            break;
+        }
+      },
+      () => {
+        // Upload completed successfully, now we can get the download URL
+        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+          updatedUser = userModel.findByIdAndUpdate(
+            userId,
+            { avatar: downloadURL },
+            { new: true },
+          );
+        });
+      },
+    );
 
     return updatedUser;
   } catch (error: any) {
