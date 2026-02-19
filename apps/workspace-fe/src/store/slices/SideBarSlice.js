@@ -8,7 +8,7 @@ import { createSlice } from '@reduxjs/toolkit';
 const sideBarSlice = createSlice({
     name: 'sideBar',
     initialState: {
-        currentTab: '',
+        currentTab: '/my-space',
     },
     reducers: {
         // Updates the currently active sidebar tab.

@@ -79,14 +79,14 @@ function Sidebar() {
                         icon={assets.icon.myTask}
                         label="My space"
                         to={`/my-space/${userId}`}
-                        isActive={sidebarState === `/my-space/${userId}`}
+                        isActive={sidebarState.includes(`/my-space`)}
                         onClick={() => handleSidebarClick(`/my-space/${userId}`)}
                     />
                     <SidebarBtn
                         icon={assets.icon.calendar}
                         label="Calendar"
                         to={`/calendar/${userId}`}
-                        isActive={sidebarState === `/calendar/${userId}`}
+                        isActive={sidebarState.includes(`/calendar`)}
                         onClick={() => handleSidebarClick(`/calendar/${userId}`)}
                     />
                 </div>
@@ -112,7 +112,7 @@ function Sidebar() {
                                 <div className="flex items-center flex-1 min-w-0">
                                     <FontAwesomeIcon
                                         icon={assets.icon.hashtag}
-                                        className="mr-3 flex-shrink-0"
+                                        className="mr-3 shrink-0"
                                         color={colors.button}
                                     />
                                     <p className="text-main text-2xl truncate overflow-hidden text-ellipsis whitespace-nowrap">

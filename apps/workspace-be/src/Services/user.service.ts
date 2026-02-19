@@ -1,13 +1,9 @@
 import "dotenv/config";
 import taskModel from "../Models/task.model.js";
 import userModel from "../Models/user.model.js";
-import {
-  getDownloadURL,
-  getStorage,
-  ref,
-  uploadBytesResumable,
-} from "firebase/storage";
+
 import type { UploadImageInput } from "../Models/type.js";
+import bucket from "../firebase.js";
 
 /**
  * Retrieve user information by ID.
@@ -74,64 +70,30 @@ export const updateUserAvatar = async (
 ) => {
   try {
     if (!file) throw new Error("No file uploaded");
-    const storage = getStorage();
 
-    // Create the file metadata
-    /** @type {any} */
-    const metadata = {
-      contentType: file.mimeType,
-    };
+    const fileName = `avatars/${userId}-${Date.now()}`;
+    const fileUpload = bucket.file(fileName);
 
-    // Upload file and metadata to the object 'images/mountains.jpg'
-    const storageRef = ref(storage, "images/" + file.originalName);
-    const uploadTask = uploadBytesResumable(storageRef, file.buffer, metadata);
-
-    // Update user document with new avatar URL
-    let updatedUser;
-
-    // Listen for state changes, errors, and completion of the upload.
-    uploadTask.on(
-      "state_changed",
-      (snapshot) => {
-        const progress =
-          (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        console.log("Upload is " + progress + "% done");
-        switch (snapshot.state) {
-          case "paused":
-            console.log("Upload is paused");
-            break;
-          case "running":
-            console.log("Upload is running");
-            break;
-        }
+    await fileUpload.save(file.buffer, {
+      metadata: {
+        contentType: file.mimeType,
       },
-      (error) => {
-        switch (error.code) {
-          case "storage/unauthorized":
-            console.log("User doesn't have permission to access the object");
-            break;
-          case "storage/canceled":
-            console.log("User canceled the upload");
-            break;
-          case "storage/unknown":
-            console.log("Unknown error occurred, inspect error.serverResponse");
-            break;
-        }
-      },
-      () => {
-        // Upload completed successfully, now we can get the download URL
-        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-          updatedUser = userModel.findByIdAndUpdate(
-            userId,
-            { avatar: downloadURL },
-            { new: true },
-          );
-        });
-      },
+    });
+
+    // Make file public (optional)
+    await fileUpload.makePublic();
+
+    const publicUrl = `https://storage.googleapis.com/${bucket.name}/${fileName}`;
+
+    const updatedUser = await userModel.findByIdAndUpdate(
+      userId,
+      { avatar: publicUrl },
+      { new: true },
     );
 
     return updatedUser;
   } catch (error: any) {
+    console.log("backend:", error);
     throw { status: 500, message: error.message || error };
   }
 };

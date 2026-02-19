@@ -92,8 +92,8 @@ function ProjectTasks({ teamName, taskCount, endDate, tasks }) {
 
                                 {/* Assignee */}
                                 <div>
-                                    {task.userIds.map((id) => {
-                                        return <span key={id.id}>{id.name} </span>;
+                                    {task.userIds.map((id, index) => {
+                                        return <span key={index}>{id.name} </span>;
                                     })}
                                 </div>
                                 {/* Start Dates */}
