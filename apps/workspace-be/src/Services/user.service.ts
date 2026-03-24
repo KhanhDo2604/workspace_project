@@ -56,7 +56,7 @@ export const getUserTasks = async (userId: string) => {
     const tasks = await taskModel
       .find({ userIds: userId })
       .populate("userIds", "name email _id")
-      .populate("project", "title projectName _id");
+      .populate("project", "title description _id");
     return { status: 200, tasks };
   } catch (error) {
     throw { status: 500, message: "Internal server error" };

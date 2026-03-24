@@ -4,25 +4,29 @@
  */
 import http from '../api/http';
 import ChatModel from '../model/ChatModel';
+import ProjectModel from '../model/ProjectModel';
+import TaskModel from '../model/TaskModel';
 
 /**
  * Creates a new project for a user.
  * @param {string} title - The project title displayed in the dashboard.
- * @param {string} projectName - Internal project identifier or slug.
+ * @param {string} description - A brief description of the project.
  * @param {string} userId - ID of the user who owns the project.
  * @param {string} color - Color code used to represent the project visually.
  * @returns {Promise<Object>} Newly created project data.
  */
-export const createProjectService = async (title, projectName, userId, color) => {
+export const createProjectService = async (title, description, userId, color) => {
     try {
         const { data } = await http.post('api/project/create', {
             title: title,
-            projectName: projectName,
+            description: description,
             userId: userId,
             color: color,
         });
 
-        return data;
+        console.log(data.project);
+
+        return ProjectModel.fromObject(data.project);
     } catch (error) {
         console.error('Error creating project:', error);
         throw error;
@@ -33,18 +37,18 @@ export const createProjectService = async (title, projectName, userId, color) =>
  * Updates an existing project’s basic information or participants.
  * @param {string} projectId - The project’s unique identifier.
  * @param {string} title - Updated title of the project.
- * @param {string} projectName - Updated internal name.
+ * @param {string} description - Updated description of the project.
  * @param {Array} participants - Updated list of user objects.
  * @returns {Promise<Object>} Updated project data.
  */
-export const updateProjectService = async (projectId, title, projectName, participants) => {
+export const updateProjectService = async (projectId, title, description, participants) => {
     try {
         const { data } = await http.put(`api/project/update/${projectId}`, {
             title: title,
-            projectName: projectName,
+            description: description,
             participants: participants,
         });
-        return data;
+        return ProjectModel.fromObject(data.project);
     } catch (error) {
         console.error('Error updating project:', error);
         throw error;
@@ -90,7 +94,7 @@ export const getChatMessagesService = async (projectId) => {
     try {
         const { data } = await http.get(`api/project/get-chat/${projectId}`);
 
-        return data.chat.map((msg) => ChatModel.fromJson(msg)).sort((a, b) => a.createdAt - b.createdAt);
+        return data.chat.map((msg) => ChatModel.fromObject(msg)).sort((a, b) => a.createdAt - b.createdAt);
     } catch (error) {
         console.error('Error fetching chat messages:', error);
         throw error;
@@ -148,6 +152,8 @@ export const removeMemberFromProjectService = async (projectId, memberId) => {
  */
 export const createTaskService = async (project, title, description, assignedTo, types, startDay, dueDay) => {
     try {
+        console.log(assignedTo);
+
         const getUserIds = assignedTo.map((user) => user._id);
         const { data } = await http.post('api/project/create-task/' + project, {
             title: title,
@@ -157,7 +163,7 @@ export const createTaskService = async (project, title, description, assignedTo,
             startDay: startDay,
             dueDay: dueDay,
         });
-        return data;
+        return TaskModel.fromObject(data.task);
     } catch (error) {
         console.error('Error creating task:', error);
         throw error;
@@ -186,7 +192,7 @@ export const updateTaskService = async (taskId, title, description, userIds, typ
             startDay: startDay,
             dueDay: dueDay,
         });
-        return data;
+        return TaskModel.fromObject(data);
     } catch (error) {
         console.error('Error updating task:', error);
         throw error;

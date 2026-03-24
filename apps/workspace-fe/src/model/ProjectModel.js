@@ -3,15 +3,6 @@
  * including metadata such as title, description, and participants.
  */
 class ProjectModel {
-    /**
-     * @constructor
-     * @param {string} id - Unique identifier of the project.
-     * @param {string} title - Project title.
-     * @param {string} description - Short description of the project.
-     * @param {Object} host - Host or owner information.
-     * @param {Array<Object>} participants - List of project participants.
-     * @param {string} color - Theme color of the project card.
-     */
     constructor(id = '', title = '', description = '', host = {}, participants = [], color = '') {
         this.id = id;
         this.title = title;
@@ -19,6 +10,19 @@ class ProjectModel {
         this.host = host;
         this.participants = participants;
         this.color = color;
+    }
+
+    static fromObject(obj) {
+        if (!obj) return null;
+
+        return new ProjectModel(
+            obj.id ?? obj._id ?? null,
+            obj.title ?? null,
+            obj.description ?? null,
+            obj.host ?? {},
+            obj.participants ?? [],
+            obj.color ?? '',
+        );
     }
 }
 

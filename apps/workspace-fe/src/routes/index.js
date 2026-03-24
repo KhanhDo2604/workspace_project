@@ -1,11 +1,7 @@
-import LoginPage from '../pages/Login';
 import MeetingPage from '../pages/Meeting';
 import PersonalTaskPage from '../pages/PersonalTask';
 import SchedulePage from '../pages/Schedule';
 import TaskBoardPage from '../pages/TaskBoard';
-import SignupPage from '../pages/Register';
-import ForgotPasswordPage from '../pages/ForgotPassword';
-import SetPasswordPage from '../pages/SetPassword';
 import ChatScreen from '../pages/Chat';
 import TimelinePage from '../pages/TaskBoard/TimeLinePage';
 import LoadingPage from '../pages/LoadingPage';
@@ -16,10 +12,6 @@ const privateRoutes = [
     { path: '/task-board/:projectId', component: TaskBoardPage },
     { path: '/chat/:projectId/:userId', component: ChatScreen },
     { path: '/task-board/time-line/:projectId', component: TimelinePage },
-    { path: '/login', component: LoginPage, thread: 'auth' },
-    { path: '/signup', component: SignupPage, thread: 'auth' },
-    { path: '/forgot-password', component: ForgotPasswordPage, thread: 'auth' },
-    { path: '/set-new-password', component: SetPasswordPage, thread: 'auth' },
     { path: '/meeting/:projectId', component: MeetingPage, thread: 'none-layout' },
     { path: '/', component: LoadingPage, thread: 'none-layout' },
 ];

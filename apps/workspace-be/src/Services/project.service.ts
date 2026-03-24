@@ -5,6 +5,7 @@ import userModel from "../Models/user.model.js";
 import meetingModel from "../Models/meeting.model.js";
 import chatModel from "../Models/chat.model.js";
 import type { Server, Socket } from "socket.io";
+import schedule from "node-schedule";
 
 /** Represents the payload when a user joins a meeting room. */
 interface JoinRoomPayload {
@@ -81,7 +82,7 @@ export function registerWhiteboardHandlers(io: Server) {
         "🖌️ Received drawing-data from",
         socket.id,
         "→ broadcast to",
-        roomId
+        roomId,
       );
 
       socket.to(roomId).emit("canvas-data", data);
@@ -200,7 +201,7 @@ export function registerMeetingHandlers(io: Server) {
 
           console.log(`❌ ${peerId} left meeting room ${roomId}`);
         });
-      }
+      },
     );
   });
 }
@@ -224,7 +225,7 @@ export const instantiateMeetingState = (io: Server) => {
 
       io.to(projectId).emit("meeting_state_update", meetingStates[projectId]);
       console.log(
-        `🔄 Meeting state for ${projectId}: ${meetingStates[projectId]}`
+        `🔄 Meeting state for ${projectId}: ${meetingStates[projectId]}`,
       );
     });
 
@@ -280,7 +281,7 @@ export const addMemberToProject = async (projectId: string, email: string) => {
       .findByIdAndUpdate(
         projectId,
         { $addToSet: { participants: new mongoose.Types.ObjectId(user._id) } },
-        { new: true }
+        { new: true },
       )
       .populate("participants", "name email _id avatar");
 
@@ -303,13 +304,13 @@ export const addMemberToProject = async (projectId: string, email: string) => {
  */
 export const removeMemberFromProject = async (
   projectId: string,
-  memberId: string
+  memberId: string,
 ) => {
   try {
     const result = await projectModel.findByIdAndUpdate(
       { _id: projectId },
       { $pull: { participants: new mongoose.Types.ObjectId(memberId) } },
-      { new: true }
+      { new: true },
     );
 
     if (!result) {
@@ -318,12 +319,12 @@ export const removeMemberFromProject = async (
 
     await taskModel.updateMany(
       { project: projectId },
-      { $pull: { userIds: new mongoose.Types.ObjectId(memberId) } }
+      { $pull: { userIds: new mongoose.Types.ObjectId(memberId) } },
     );
 
     await meetingModel.updateMany(
       { projectId: projectId },
-      { $pull: { participants: new mongoose.Types.ObjectId(memberId) } }
+      { $pull: { participants: new mongoose.Types.ObjectId(memberId) } },
     );
 
     return {
@@ -340,23 +341,20 @@ export const removeMemberFromProject = async (
 /**
  * Retrieves all projects associated with a specific user, including host and participant details.
  * @param userId - The ID of the user whose projects are to be fetched.
- * @param projectName - The name of the new project.
  * @param title - The title of the new project.
  * @param color - The color associated with the new project.
  * @returns new project.
  */
 export const createProject = async (
   userId: string,
-  projectName: string,
+  description: string,
   title: string,
-  color: string
+  color: string,
 ) => {
   try {
-    await userModel.findById(userId).select("-password");
-
     const project = await new projectModel({
       title: title,
-      projectName: projectName,
+      description: description,
       color: color,
       host: new mongoose.Types.ObjectId(userId),
       participants: [new mongoose.Types.ObjectId(userId)],
@@ -376,25 +374,24 @@ export const createProject = async (
  * Updates project details including title, name, and participants.
  * @param projectId - The ID of the project to update.
  * @param title - The new title for the project.
- * @param projectName - The new name for the project.
  * @param participants - The updated list of participants.
  * @returns The updated project information or an error message.
  */
 export const updateProject = async (
   projectId: string,
   title: string,
-  projectName: string,
-  participants: [string]
+  description: string,
+  participants: [string],
 ) => {
   try {
     const project = await projectModel.findByIdAndUpdate(
       projectId,
       {
         title,
-        projectName,
+        description,
         participants: participants.map((id) => new mongoose.Types.ObjectId(id)),
       },
-      { new: true }
+      { new: true },
     );
     if (!project) {
       return { status: 404, message: "Project not found" };
@@ -444,7 +441,7 @@ export const getProjectTasks = async (projectId: string) => {
     const tasks = await taskModel
       .find({ project: new mongoose.Types.ObjectId(projectId) })
       .populate("userIds", "name email _id")
-      .populate("project", "title projectName _id");
+      .populate("project", "title description _id");
     return { status: 200, tasks };
   } catch (error) {
     throw { status: 500, message: "Internal server error" };
@@ -469,7 +466,7 @@ export const createTask = async (
   description: string,
   startDay: number,
   dueDay: number,
-  types?: [string]
+  types?: [string],
 ) => {
   try {
     const newUserIds = userIds.map((id) => new mongoose.Types.ObjectId(id));
@@ -513,7 +510,7 @@ export const updateTask = async (
   startDay?: number,
   dueDay?: number,
   types?: [string],
-  status?: number
+  status?: number,
 ) => {
   try {
     const updatedTask = await taskModel.findByIdAndUpdate(
@@ -527,7 +524,7 @@ export const updateTask = async (
         types: types || [],
         status: status,
       },
-      { new: true }
+      { new: true },
     );
     if (!updatedTask) {
       return { status: 404, message: "Task not found" };
@@ -550,7 +547,7 @@ export const updateTaskStatus = async (taskId: string, status: number) => {
     const updatedTask = await taskModel.findByIdAndUpdate(
       taskId,
       { status: status },
-      { new: true }
+      { new: true },
     );
 
     if (!updatedTask) {
@@ -642,7 +639,7 @@ export const createMeeting = async (
   startTime: number,
   endTime: number,
   participants: [string],
-  userId: string
+  userId: string,
 ) => {
   try {
     const newMeeting = await new meetingModel({
@@ -655,10 +652,23 @@ export const createMeeting = async (
     }).save();
 
     await newMeeting.populate("participants", "name email avatar _id");
+
+    const date = new Date(startTime * 1000);
+
+    // schedule.scheduleJob(date, scheduledMeetingStart.);
+
     return { status: 201, meeting: newMeeting };
   } catch (error) {
     console.error("Error in createMeeting:", error);
     throw { status: 500, message: "Internal server error" };
+  }
+};
+
+export const scheduledMeetingStart = async (meetingId: string) => {
+  try {
+    return true;
+  } catch (error) {
+    console.error("Error in scheduledMeetingStart:", error);
   }
 };
 

@@ -88,7 +88,7 @@ function WeekView({ week }) {
                         {HOURS.map((hour, i) => (
                             <div
                                 key={i}
-                                className="border-b border-l border-gray-200 h-[44px] text-base flex items-center justify-center pr-2"
+                                className="border-b border-l border-gray-200 h-11 text-base flex items-center justify-center pr-2"
                             >
                                 {hour}
                             </div>
@@ -98,7 +98,7 @@ function WeekView({ week }) {
                     {week.map((day, idx) => (
                         <div key={idx} className="border-r border-gray-200 relative">
                             {HOURS.map((_, i) => (
-                                <div key={i} className="h-[44px] border-b border-gray-200"></div>
+                                <div key={i} className="h-11 border-b border-gray-200"></div>
                             ))}
 
                             {events

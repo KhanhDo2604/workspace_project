@@ -155,7 +155,7 @@ function SettingDialog({ triggerBtn }) {
                                 <p className="text-base text-gray-500">Customize your workspace theme.</p>
                             </div>
                             <DropdownMenu>
-                                <DropdownMenuTrigger className="min-w-[100px]">
+                                <DropdownMenuTrigger className="min-w-25">
                                     <Button
                                         variant="outline"
                                         className="border px-3 py-2 text-base hover:shadow-none rounded-md w-full"
@@ -163,7 +163,7 @@ function SettingDialog({ triggerBtn }) {
                                         {appearance} <FontAwesomeIcon icon={assets.icon.dropdown} className="ml-2" />
                                     </Button>
                                 </DropdownMenuTrigger>
-                                <DropdownMenuContent className="bg-white min-w-[100px]">
+                                <DropdownMenuContent className="bg-white min-w-25">
                                     <DropdownMenuGroup className="w-full border border-gray-300 rounded-md">
                                         {appearances.map((item) => (
                                             <DropdownMenuItem
@@ -188,7 +188,7 @@ function SettingDialog({ triggerBtn }) {
                                 </p>
                             </div>
                             <DropdownMenu>
-                                <DropdownMenuTrigger className="min-w-[100px]">
+                                <DropdownMenuTrigger className="min-w-25">
                                     <Button
                                         variant="outline"
                                         className="border px-3 py-2 text-base hover:shadow-none rounded-md w-full"
@@ -196,7 +196,7 @@ function SettingDialog({ triggerBtn }) {
                                         {language} <FontAwesomeIcon icon={assets.icon.dropdown} className="ml-2" />
                                     </Button>
                                 </DropdownMenuTrigger>
-                                <DropdownMenuContent className="bg-white min-w-[100px] rounded-md">
+                                <DropdownMenuContent className="bg-white min-w-25 rounded-md">
                                     <DropdownMenuGroup className="w-full border border-gray-300 rounded-md">
                                         {languages.map((item) => (
                                             <DropdownMenuItem

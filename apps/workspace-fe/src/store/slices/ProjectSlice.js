@@ -30,9 +30,9 @@ import TaskModel from '../../model/TaskModel';
  */
 export const createProject = createAsyncThunk(
     'api/project/create',
-    async ({ title, projectName, userId, color }, thunkAPI) => {
+    async ({ title, description, userId, color }, thunkAPI) => {
         try {
-            const res = await createProjectService(title, projectName, userId, color);
+            const res = await createProjectService(title, description, userId, color);
             return res;
         } catch (error) {
             return thunkAPI.rejectWithValue(error.message || 'Create project failed');
@@ -49,7 +49,7 @@ export const updateProject = createAsyncThunk('api/project/update', async (proje
         const res = await updateProjectService(
             projectData.projectId,
             projectData.title,
-            projectData.projectName,
+            projectData.description,
             projectData.participants,
         );
 
@@ -269,17 +269,8 @@ const projectSlice = createSlice({
             })
             .addCase(createProject.fulfilled, (state, action) => {
                 state.loading = false;
-                state.projects.push(
-                    new ProjectModel(
-                        action.payload.project._id,
-                        action.payload.project.title,
-                        action.payload.project.projectName,
-                        action.payload.project.host,
-                        action.payload.project.participants || [],
-                        action.payload.project.color,
-                    ),
-                );
-                state.message = action.payload.message;
+                state.projects.push(action.payload);
+                state.message = 'Project created successfully';
             })
             .addCase(createProject.rejected, (state, action) => {
                 state.loading = false;
@@ -295,16 +286,9 @@ const projectSlice = createSlice({
                 state.loading = false;
                 const index = state.projects.findIndex((proj) => proj.id === action.payload.project._id);
                 if (index !== -1) {
-                    state.projects[index] = new ProjectModel(
-                        action.payload.project._id,
-                        action.payload.project.title,
-                        action.payload.project.projectName,
-                        action.payload.project.host,
-                        action.payload.project.participants || [],
-                        action.payload.project.color,
-                    );
+                    state.projects[index] = action.payload;
                 }
-                state.message = action.payload.message;
+                state.message = 'Project updated successfully';
             })
             .addCase(updateProject.rejected, (state, action) => {
                 state.loading = false;
@@ -340,7 +324,7 @@ const projectSlice = createSlice({
                         new ProjectModel(
                             proj._id,
                             proj.title,
-                            proj.projectName,
+                            proj.description,
                             proj.host,
                             proj.participants || [],
                             proj.color,
@@ -365,7 +349,7 @@ const projectSlice = createSlice({
                     state.projects[index] = new ProjectModel(
                         action.payload.project._id,
                         action.payload.project.title,
-                        action.payload.project.projectName,
+                        action.payload.project.description,
                         action.payload.project.host,
                         action.payload.project.participants || [],
                         action.payload.project.color,
@@ -390,7 +374,7 @@ const projectSlice = createSlice({
                     state.projects[index] = new ProjectModel(
                         action.payload.project._id,
                         action.payload.project.title,
-                        action.payload.project.projectName,
+                        action.payload.project.description,
                         action.payload.project.host,
                         action.payload.project.participants || [],
                     );
@@ -409,8 +393,8 @@ const projectSlice = createSlice({
             })
             .addCase(createTask.fulfilled, (state, action) => {
                 state.loading = false;
-                state.tasks.push(TaskModel.fromPayload(action.payload.task));
-                state.message = action.payload.message;
+                state.tasks.push(action.payload);
+                state.message = 'Task created successfully';
             })
             .addCase(createTask.rejected, (state, action) => {
                 state.loading = false;
@@ -457,20 +441,9 @@ const projectSlice = createSlice({
                 state.loading = false;
                 const index = state.tasks.findIndex((task) => task.id === action.payload.task._id);
                 if (index !== -1) {
-                    state.tasks[index] = new TaskModel(
-                        action.payload.task._id,
-                        action.payload.task.title,
-                        action.payload.task.description,
-                        action.payload.task.startDay,
-                        action.payload.task.dueDay,
-                        action.payload.task.userIds,
-                        action.payload.task.status,
-                        action.payload.task.types,
-                        action.payload.task.subTasks,
-                        action.payload.task.project,
-                    );
+                    state.tasks[index] = action.payload;
                 }
-                state.message = action.payload.message;
+                state.message = 'Task updated successfully';
             })
             .addCase(updateTask.rejected, (state, action) => {
                 state.loading = false;

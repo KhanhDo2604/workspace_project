@@ -9,20 +9,20 @@ import { Button } from '../../components/ui/button';
 
 function PersonalTaskPage() {
     const dispatch = useDispatch();
-    const userId = localStorage.getItem('user_id');
 
     // Redux States
     const isLoading = useSelector((state) => state.project.loading);
     const userTasks = useSelector((state) => state.auth.usersTask);
     const projects = useSelector((state) => state.project.projects);
+    const user = useSelector((state) => state.auth.user);
 
     // Fetch user tasks when the component mounts
     useEffect(() => {
         const fetchData = async () => {
-            await dispatch(getAllUsersTask(userId)).unwrap();
+            await dispatch(getAllUsersTask(user.id)).unwrap();
         };
         fetchData();
-    }, [dispatch, userId]);
+    }, [dispatch, user.id]);
 
     return (
         <div className="bg-secondary size-full p-6">

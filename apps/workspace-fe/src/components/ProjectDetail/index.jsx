@@ -33,8 +33,6 @@ function ProjectDetailModal({ triggerBtn, project, isHost }) {
     const [openAddMember, setOpenAddMember] = useState(false);
     const currentUser = useSelector((state) => state.auth.user);
 
-    const userId = localStorage.getItem('user_id');
-
     const handleUpdateProject = async () => {
         const participantsIds = participants.map((member) => member._id);
 
@@ -42,7 +40,7 @@ function ProjectDetailModal({ triggerBtn, project, isHost }) {
             updateProject({
                 projectId: project.id,
                 title: title,
-                projectName: description,
+                description: description,
                 participants: participantsIds,
             }),
         ).unwrap();
@@ -147,32 +145,40 @@ function ProjectDetailModal({ triggerBtn, project, isHost }) {
                     <div className="grid gap-3">
                         <h1 className="text-lg font-semibold">Member list</h1>
                         <div className="max-h-40 overflow-y-auto border p-2 rounded">
-                            {participants.map((member) => {
-                                return (
-                                    <div key={member._id} className="flex items-center justify-between py-1">
-                                        <span className="text-sm">{member.name}</span>
-                                        {isHost && member._id !== userId && participants.length > 1 && (
-                                            <ConfirmDialog
-                                                message={`Are you sure you want to remove ${member.name} from this project?`}
-                                                onCancel={() => {}}
-                                                onConfirm={async () => {
-                                                    setParticipants(participants.filter((m) => m._id !== member._id));
-                                                    await handleRemoveMemberInProject(member._id);
-                                                    toast.success(`${member.name} has been removed from the project.`);
-                                                }}
-                                                triggerBtn={
-                                                    <Button variant="text" className="p-0 hover:bg-transparent">
-                                                        <FontAwesomeIcon
-                                                            icon={assets.icon.close}
-                                                            className="text-red-500"
-                                                        />
-                                                    </Button>
-                                                }
-                                            />
-                                        )}
-                                    </div>
-                                );
-                            })}
+                            {participants.length > 0 ? (
+                                participants.map((member) => {
+                                    return (
+                                        <div key={member._id} className="flex items-center justify-between py-1">
+                                            <span className="text-sm">{member.name}</span>
+                                            {isHost && member._id !== currentUser.id && participants.length > 1 && (
+                                                <ConfirmDialog
+                                                    message={`Are you sure you want to remove ${member.name} from this project?`}
+                                                    onCancel={() => {}}
+                                                    onConfirm={async () => {
+                                                        setParticipants(
+                                                            participants.filter((m) => m._id !== member._id),
+                                                        );
+                                                        await handleRemoveMemberInProject(member._id);
+                                                        toast.success(
+                                                            `${member.name} has been removed from the project.`,
+                                                        );
+                                                    }}
+                                                    triggerBtn={
+                                                        <Button variant="text" className="p-0 hover:bg-transparent">
+                                                            <FontAwesomeIcon
+                                                                icon={assets.icon.close}
+                                                                className="text-red-500"
+                                                            />
+                                                        </Button>
+                                                    }
+                                                />
+                                            )}
+                                        </div>
+                                    );
+                                })
+                            ) : (
+                                <p className="text-sm text-gray-500">No members in this project yet.</p>
+                            )}
                             {isHost && addMemberWidget()}
                         </div>
                     </div>

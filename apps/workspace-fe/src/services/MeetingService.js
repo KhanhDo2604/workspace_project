@@ -34,6 +34,17 @@ export const createMeetingService = async (meetingData) => {
     }
 };
 
+export const scheduledMeetingStartService = async (meetingId) => {
+    try {
+        const { data } = await http.get(`/api/project/scheduled-meeting-start/${meetingId}`);
+
+        return data;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+};
+
 /**
  * Update an existing meeting.
  * @async

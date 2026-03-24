@@ -5,18 +5,16 @@ import { dialogActions } from '../../../../store/slices/DialogSlice';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { colors } from '../../../../constants/color';
 import { logoutUser } from '../../../../store/slices/AuthSlice';
-import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import SettingDialog from '../../../SettingDialog';
+import toast from 'react-hot-toast';
 
 function Sidebar() {
     const dispatch = useDispatch();
-    const navigate = useNavigate();
 
     // Redux States & Local Storage
     const sidebarState = useSelector((state) => state.sideBar.currentTab);
-    const userId = localStorage.getItem('user_id');
     const projects = useSelector((state) => state.project.projects);
     const user = useSelector((state) => state.auth.user);
 
@@ -39,8 +37,8 @@ function Sidebar() {
      * Signs the user out and redirects to login page
      */
     const handleSignOut = () => {
-        dispatch(logoutUser());
-        navigate(`/login`, { replace: true });
+        const message = dispatch(logoutUser());
+        toast.success(message);
     };
 
     /**
@@ -78,16 +76,16 @@ function Sidebar() {
                     <SidebarBtn
                         icon={assets.icon.myTask}
                         label="My space"
-                        to={`/my-space/${userId}`}
+                        to={`/my-space/${user.id}`}
                         isActive={sidebarState.includes(`/my-space`)}
-                        onClick={() => handleSidebarClick(`/my-space/${userId}`)}
+                        onClick={() => handleSidebarClick(`/my-space/${user.id}`)}
                     />
                     <SidebarBtn
                         icon={assets.icon.calendar}
                         label="Calendar"
-                        to={`/calendar/${userId}`}
+                        to={`/calendar/${user.id}`}
                         isActive={sidebarState.includes(`/calendar`)}
-                        onClick={() => handleSidebarClick(`/calendar/${userId}`)}
+                        onClick={() => handleSidebarClick(`/calendar/${user.id}`)}
                     />
                 </div>
             </div>
@@ -132,10 +130,10 @@ function Sidebar() {
                                         <SidebarBtn
                                             icon={assets.icon.chat}
                                             label="Chat"
-                                            to={`/chat/${project.id}/${userId}`}
-                                            isActive={sidebarState === `/chat/${project.id}/${userId}`}
+                                            to={`/chat/${project.id}/${user.id}`}
+                                            isActive={sidebarState === `/chat/${project.id}/${user.id}`}
                                             onClick={() => {
-                                                handleSidebarClick(`/chat/${project.id}/${userId}`);
+                                                handleSidebarClick(`/chat/${project.id}/${user.id}`);
                                                 dispatch({ type: 'project/setCurrentProject', payload: project });
                                             }}
                                         />

@@ -21,9 +21,7 @@ function SchedulePage() {
     const monthIndex = useSelector((state) => state.calendar.monthIndex);
     const year = useSelector((state) => state.calendar.year);
     const viewMode = useSelector((state) => state.calendar.viewMode);
-
-    // Retrieve the logged-in user ID from localStorage
-    const userId = localStorage.getItem('user_id');
+    const user = useSelector((state) => state.auth.user);
 
     /**
      * fetch meetings and update calendar view
@@ -32,14 +30,14 @@ function SchedulePage() {
      */
     useEffect(() => {
         const fetchMeetings = async () => {
-            await dispatch(getMeetingsByUserId(userId)).unwrap();
+            await dispatch(getMeetingsByUserId(user.id)).unwrap();
         };
 
         fetchMeetings();
         setCurrentMonth(getMonth(monthIndex, year));
         setCurrentWeek(getWeek());
         setCurrentDay(dayjs());
-    }, [monthIndex, year, dispatch, userId]);
+    }, [monthIndex, year, dispatch, user]);
 
     return (
         <>

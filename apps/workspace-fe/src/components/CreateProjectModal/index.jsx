@@ -30,11 +30,9 @@ function CreateProjectModal({ triggerBtn }) {
     // Modal open/close state
     const [open, setOpen] = useState(false);
 
-    // Retrieve the current user's ID from local storage
-    const userId = localStorage.getItem('user_id');
-
     // Loading state from Redux store for showing spinner or disabling UI
     const isLoading = useSelector((state) => state.project.loading);
+    const user = useSelector((state) => state.auth.user);
 
     /**
      * Clears all input fields in the form when the modal
@@ -55,8 +53,8 @@ function CreateProjectModal({ triggerBtn }) {
         await dispatch(
             createProject({
                 title: title,
-                projectName: description,
-                userId: userId,
+                description: description,
+                userId: user.id,
                 color: randomColor(), // Assigns a random UI color
             }),
         ).unwrap();
@@ -71,7 +69,7 @@ function CreateProjectModal({ triggerBtn }) {
             }}
         >
             <DialogTrigger asChild>{triggerBtn}</DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
+            <DialogContent className="sm:max-w-106.25">
                 <form
                     onSubmit={async (e) => {
                         e.preventDefault();

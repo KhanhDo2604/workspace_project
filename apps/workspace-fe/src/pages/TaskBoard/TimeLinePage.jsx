@@ -52,7 +52,7 @@ const UpperSection = ({
                     {/* Search by title */}
                     <FormField
                         icon={assets.icon.search}
-                        className="px-3 min-w-[200px] w-[400px] mr-4"
+                        className="px-3 min-w-50 w-100 mr-4"
                         placeholder="Search by title"
                         onChange={(e) => onSearchChange(e.target.value)}
                     />
@@ -161,8 +161,7 @@ function TimelinePage() {
     // Handle creating a new task
     async function createNewTask(args) {
         try {
-            const response = await dispatch(createTask(args)).unwrap();
-            TaskModel.fromPayload(response.task);
+            await dispatch(createTask(args)).unwrap();
         } catch (error) {
             console.error('Failed to create task:', error);
         }
@@ -266,8 +265,8 @@ function TimelinePage() {
                                             const bgClass = isOverdue
                                                 ? 'bg-red-100 border-l-4 border-red-400'
                                                 : isSoon
-                                                ? 'bg-yellow-50 border-l-4 border-yellow-400'
-                                                : 'bg-amber-50';
+                                                  ? 'bg-yellow-50 border-l-4 border-yellow-400'
+                                                  : 'bg-amber-50';
 
                                             const isCompact = widthPx < 120;
 

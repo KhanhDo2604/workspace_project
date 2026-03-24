@@ -44,7 +44,7 @@ function MeetingModal({ meeting, triggerBtn }) {
     const currentProject = useSelector((state) => state.project.currentProject);
     const isLoading = useSelector((state) => state.meeting.loading);
     const projects = useSelector((state) => state.project.projects);
-    const userId = localStorage.getItem('user_id');
+    const user = useSelector((state) => state.auth.user);
 
     // Local state for managing form inputs and modal visibility
     const [open, setOpen] = useState(false);
@@ -254,7 +254,7 @@ function MeetingModal({ meeting, triggerBtn }) {
                                         startTime: startTime,
                                         endTime: endTime,
                                         participants: participants.map((p) => p._id),
-                                        userId: userId,
+                                        userId: user.id,
                                     };
                                 }
                                 meeting ? handleUpdateMeeting(meetingInfo) : handleCreateMeeting(meetingInfo);

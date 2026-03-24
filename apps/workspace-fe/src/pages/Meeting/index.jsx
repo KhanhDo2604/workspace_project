@@ -299,19 +299,21 @@ function MeetingPage() {
                             </div>
 
                             <div className="flex-1 overflow-y-auto pr-1 space-y-2">
-                                {userList.map((u, i) => (
-                                    <ParticipantTag
-                                        key={i}
-                                        userIcon={u.avatar}
-                                        userName={u.userName}
-                                        isHost={currentProject.host._id === currentUser.id}
-                                        canControl={u.peerId === currentUser.id}
-                                        onToggleMic={u.peerId === currentUser.id ? toggleMic : undefined}
-                                        onToggleCam={u.peerId === currentUser.id ? toggleCam : undefined}
-                                        isMicOn={u.isMicOn}
-                                        isCamOn={u.isCamOn}
-                                    />
-                                ))}
+                                {userList.map((u, i) => {
+                                    return (
+                                        <ParticipantTag
+                                            key={i}
+                                            userIcon={u.avatar}
+                                            userName={u.userName}
+                                            isHost={currentProject.host._id === u.peerId}
+                                            canControl={u.peerId === currentUser.id}
+                                            onToggleMic={u.peerId === currentUser.id ? toggleMic : undefined}
+                                            onToggleCam={u.peerId === currentUser.id ? toggleCam : undefined}
+                                            isMicOn={u.isMicOn}
+                                            isCamOn={u.isCamOn}
+                                        />
+                                    );
+                                })}
                             </div>
                         </div>
 

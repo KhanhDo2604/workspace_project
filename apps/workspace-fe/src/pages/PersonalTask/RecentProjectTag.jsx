@@ -1,11 +1,12 @@
+import { useSelector } from 'react-redux';
 import Button from '../../components/Button';
 import ProjectDetailModal from '../../components/ProjectDetail';
 
 function RecentProjectTag({ icon, project }) {
-    const userId = localStorage.getItem('user_id');
+    const user = useSelector((state) => state.auth.user);
 
     const checkIsHost = () => {
-        return project.host === userId;
+        return project.host === user.id;
     };
 
     return (

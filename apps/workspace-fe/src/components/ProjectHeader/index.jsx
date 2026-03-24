@@ -135,9 +135,9 @@ function ProjectHeader({ teamName, teamDescription, teamMembers }) {
                     )}
                     <DropdownMenu>
                         <DropdownMenuTrigger>
-                            <Button className="rounded-lg min-w-[100px] text-lg text-headline">Create Meeting</Button>
+                            <Button className="rounded-lg min-w-25 text-lg text-headline">Create Meeting</Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent className="bg-white rounded-md" sideOffset={5} align="end">
+                        <DropdownMenuContent className="bg-white rounded-md z-50" sideOffset={5} align="end">
                             <DropdownMenuGroup className="border border-gray-300 rounded-md">
                                 <DropdownMenuItem
                                     className="cursor-pointer hover:bg-gray-100"

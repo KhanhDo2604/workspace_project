@@ -2,34 +2,44 @@ import { Loader2Icon } from 'lucide-react';
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { getUserInformation } from '../../store/slices/AuthSlice';
 import { getAllProjects } from '../../store/slices/ProjectSlice';
 
+import { useKeycloak } from '@react-keycloak/web';
+import { syncUser } from '../../store/slices/AuthSlice';
+
 function LoadingPage() {
+    const { keycloak, initialized } = useKeycloak();
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    // On component mount, check for token and user ID in localStorage
     useEffect(() => {
-        const fetchUserData = async () => {
-            const token = localStorage.getItem('token');
-            const userId = localStorage.getItem('user_id');
+        if (!initialized) {
+            return;
+        }
 
-            if ((token && userId) || token === 'undefined' || userId === 'undefined') {
-                try {
-                    await Promise.all([dispatch(getUserInformation(userId)), dispatch(getAllProjects(userId))]);
-                    navigate(`/my-space/${userId}`, { replace: true });
-                } catch (err) {
-                    console.error(err);
-                    navigate('/login');
-                }
-            } else {
-                navigate('/login');
+        if (!keycloak.authenticated) {
+            keycloak.login();
+            return;
+        }
+
+        const fetchUserData = async () => {
+            try {
+                // const token = keycloak.token;
+                // const userId = keycloak.tokenParsed?.sub;
+
+                const user = await dispatch(syncUser(keycloak.token)).unwrap();
+
+                await dispatch(getAllProjects(user.id));
+                navigate(`/my-space/${user.id}`, { replace: true });
+            } catch (error) {
+                console.error('Error fetching user data:', error);
             }
         };
 
         fetchUserData();
-    }, [navigate, dispatch]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [initialized, keycloak.authenticated]);
+
     return (
         <div className="flex justify-center items-center h-screen">
             <Loader2Icon className="animate-spin h-20 w-20 text-gray-500" />

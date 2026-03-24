@@ -63,9 +63,9 @@ export const getChatInProjectController = async (
  */
 export const createProjectController = async (req: Request, res: Response) => {
   try {
-    const { userId, projectName, title, color } = req.body;
+    const { userId, description, title, color } = req.body;
 
-    const result = await createProject(userId, projectName, title, color);
+    const result = await createProject(userId, description, title, color);
     res.json({ message: result.message, project: result.project });
   } catch (error: Error | any) {
     res
@@ -80,16 +80,16 @@ export const createProjectController = async (req: Request, res: Response) => {
  */
 export const updateProjectController = async (req: Request, res: Response) => {
   try {
-    const { title, projectName, participants } = req.body;
+    const { title, description, participants } = req.body;
     const { projectId } = req.params;
 
-    if (!projectId || !title || !projectName || !participants) {
+    if (!projectId || !title || !description || !participants) {
       return res.status(400).json({ message: "Missing required fields" });
     }
     const result = await updateProject(
       projectId as string,
       title,
-      projectName,
+      description,
       participants,
     );
     res

@@ -10,6 +10,7 @@ import {
     deleteMeetingService,
     getMeetingsByProjectIdService,
     getMeetingsByUserIdService,
+    scheduledMeetingStartService,
     updateMeetingService,
 } from '../../services/MeetingService';
 import MeetingModel from '../../model/MeetingModel';
@@ -27,6 +28,18 @@ export const createMeeting = createAsyncThunk('project/create-meeting', async (m
         return thunkAPI.rejectWithValue(error.message);
     }
 });
+
+export const scheduledMeetingStart = createAsyncThunk(
+    'project/scheduled-meeting-start',
+    async (meetingId, thunkAPI) => {
+        try {
+            const res = await scheduledMeetingStartService(meetingId);
+            return res;
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error.message);
+        }
+    },
+);
 
 /**
  * Async thunk: Delete meeting.
@@ -125,8 +138,8 @@ const meetingSlice = createSlice({
             })
             .addCase(createMeeting.fulfilled, (state, action) => {
                 state.isLoading = false;
-                state.userMeetings.push(MeetingModel.fromPayload(action.payload.meeting));
-                state.projectMeetings.push(MeetingModel.fromPayload(action.payload.meeting));
+                state.userMeetings.push(MeetingModel.fromObject(action.payload.meeting));
+                state.projectMeetings.push(MeetingModel.fromObject(action.payload.meeting));
 
                 state.message = 'Meeting created successfully';
             })
@@ -166,10 +179,10 @@ const meetingSlice = createSlice({
                 );
 
                 if (index !== -1) {
-                    state.userMeetings[index] = MeetingModel.fromPayload(action.payload.meeting);
+                    state.userMeetings[index] = MeetingModel.fromObject(action.payload.meeting);
                 }
                 if (projectIndex !== -1) {
-                    state.projectMeetings[projectIndex] = MeetingModel.fromPayload(action.payload.meeting);
+                    state.projectMeetings[projectIndex] = MeetingModel.fromObject(action.payload.meeting);
                 }
                 state.message = 'Meeting updated successfully';
             })
@@ -186,7 +199,7 @@ const meetingSlice = createSlice({
             .addCase(getMeetingsByUserId.fulfilled, (state, action) => {
                 state.isLoading = false;
                 state.userMeetings = action.payload.meetings
-                    .map((meeting) => MeetingModel.fromPayload(meeting))
+                    .map((meeting) => MeetingModel.fromObject(meeting))
                     .sort((a, b) => b.startTime - a.startTime);
             })
             .addCase(getMeetingsByUserId.rejected, (state, action) => {
@@ -204,7 +217,7 @@ const meetingSlice = createSlice({
                 const now = Math.floor(Date.now() / 1000);
 
                 state.projectMeetings = action.payload.meetings
-                    .map((meeting) => MeetingModel.fromPayload(meeting))
+                    .map((meeting) => MeetingModel.fromObject(meeting))
                     .filter((meeting) => meeting.startTime >= now)
                     .sort((a, b) => a.startTime - b.startTime);
             })

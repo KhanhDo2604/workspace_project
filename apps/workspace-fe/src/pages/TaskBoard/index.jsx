@@ -89,7 +89,7 @@ function TaskBoardPage() {
     async function createNewTask(args) {
         try {
             const response = await dispatch(createTask(args)).unwrap();
-            TaskModel.fromPayload(response.task);
+            TaskModel.fromObject(response.task);
         } catch (error) {
             console.error('Failed to create task:', error);
         }
