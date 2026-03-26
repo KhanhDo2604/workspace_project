@@ -10,7 +10,6 @@ import {
     deleteMeetingService,
     getMeetingsByProjectIdService,
     getMeetingsByUserIdService,
-    scheduledMeetingStartService,
     updateMeetingService,
 } from '../../services/MeetingService';
 import MeetingModel from '../../model/MeetingModel';
@@ -28,18 +27,6 @@ export const createMeeting = createAsyncThunk('project/create-meeting', async (m
         return thunkAPI.rejectWithValue(error.message);
     }
 });
-
-export const scheduledMeetingStart = createAsyncThunk(
-    'project/scheduled-meeting-start',
-    async (meetingId, thunkAPI) => {
-        try {
-            const res = await scheduledMeetingStartService(meetingId);
-            return res;
-        } catch (error) {
-            return thunkAPI.rejectWithValue(error.message);
-        }
-    },
-);
 
 /**
  * Async thunk: Delete meeting.
@@ -104,6 +91,7 @@ const meetingSlice = createSlice({
         userMeetings: [],
         projectMeetings: [],
         currentMeeting: null,
+        activeMeetings: [],
     },
     reducers: {
         /**
@@ -123,6 +111,15 @@ const meetingSlice = createSlice({
          */
         setWhiteBoardMode: (state, action) => {
             state.whiteBoardMode = action.payload;
+        },
+        addActiveMeeting: (state, action) => {
+            const exists = state.activeMeetings.find((m) => m.meetingId === action.payload.meetingId);
+            if (!exists) {
+                state.activeMeetings.push(action.payload);
+            }
+        },
+        removeActiveMeeting: (state, action) => {
+            state.activeMeetings = state.activeMeetings.filter((m) => m.meetingId !== action.payload);
         },
     },
     /**
@@ -220,6 +217,12 @@ const meetingSlice = createSlice({
                     .map((meeting) => MeetingModel.fromObject(meeting))
                     .filter((meeting) => meeting.startTime >= now)
                     .sort((a, b) => a.startTime - b.startTime);
+
+                const onGoingMeetings = action.payload.meetings.filter(
+                    (meeting) => meeting.startTime <= now && meeting.endTime >= now,
+                );
+
+                state.activeMeetings = onGoingMeetings;
             })
             .addCase(getMeetingsByProjectId.rejected, (state, action) => {
                 state.isLoading = false;

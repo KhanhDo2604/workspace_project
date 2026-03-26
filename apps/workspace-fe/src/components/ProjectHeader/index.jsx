@@ -26,6 +26,7 @@ function ProjectHeader({ teamName, teamDescription, teamMembers }) {
 
     // Redux state containing all project meetings
     const projectMeetings = useSelector((state) => state.meeting.projectMeetings);
+    const meetingActions = useSelector((state) => state.meeting);
 
     // Fallback: ensure teamMembers is always an array
     const userList = teamMembers || [];
@@ -63,8 +64,14 @@ function ProjectHeader({ teamName, teamDescription, teamMembers }) {
             setMeetingRoom(state);
         });
 
+        socket.on('meeting_started', (data) => {
+            console.log('📡 Meeting started:', data);
+            dispatch(meetingActions.addActiveMeeting(data));
+        });
+
         return () => socket.disconnect();
-    }, [projectId]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [projectId, dispatch]);
 
     return (
         <div className="w-full flex flex-col bg-white shadow-sm">

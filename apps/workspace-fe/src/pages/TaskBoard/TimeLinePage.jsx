@@ -9,7 +9,6 @@ import { addDays, addMonths, differenceInCalendarDays } from 'date-fns';
 import { CreateTaskModal } from '../../components/CreateTaskModal';
 import { CalendarButton } from '../../components/CalendarButton';
 import { createTask } from '../../store/slices/ProjectSlice';
-import TaskModel from '../../model/TaskModel';
 import UpdateTaskModal from '../../components/UpdateTaskModal';
 import { Button } from '../../components/ui/button';
 import dayjs from 'dayjs';
@@ -19,7 +18,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 dayjs.extend(isBetween);
 
 //  CONSTANTS AND DIMENSIONS
-const DAY_PX = 161; // Width (in pixels) allocated per day
+const DAY_PX = 160; // Width (in pixels) allocated per day
 const rowHeight = 60; // Height per task row
 const MIN_PER_DAY = 1440; // Number of minutes in a day
 const pxPerMinute = DAY_PX / MIN_PER_DAY; // Scale ratio for time to pixels
@@ -254,9 +253,11 @@ function TimelinePage() {
                                             const endMinInDay = minutesIntoDay(clampedEnd);
 
                                             const leftPx = startDayIdx * DAY_PX + startMinInDay * pxPerMinute;
-                                            let rightPx = endDayIdx * DAY_PX + endMinInDay * pxPerMinute;
-
-                                            const widthPx = Math.max(2, rightPx - leftPx);
+                                            const widthPx = Math.max(
+                                                2,
+                                                (endDayIdx - startDayIdx) * DAY_PX +
+                                                    (endMinInDay - startMinInDay) * pxPerMinute,
+                                            );
 
                                             const daysLeft =
                                                 Math.ceil((taskEnd - Date.now()) / (24 * 60 * 60 * 1000)) - 1;

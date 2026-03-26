@@ -6,6 +6,7 @@ import meetingModel from "../Models/meeting.model.js";
 import chatModel from "../Models/chat.model.js";
 import type { Server, Socket } from "socket.io";
 import schedule from "node-schedule";
+import { getIO } from "../utils/socket.js";
 
 /** Represents the payload when a user joins a meeting room. */
 interface JoinRoomPayload {
@@ -654,8 +655,17 @@ export const createMeeting = async (
     await newMeeting.populate("participants", "name email avatar _id");
 
     const date = new Date(startTime * 1000);
+    schedule.scheduleJob(date, async () => {
+      const io = getIO();
 
-    // schedule.scheduleJob(date, scheduledMeetingStart.);
+      io.to(projectId).emit("meeting_started", {
+        meetingId: newMeeting._id,
+        projectId: projectId,
+        title: title,
+        startTime: startTime,
+        endTime: endTime,
+      });
+    });
 
     return { status: 201, meeting: newMeeting };
   } catch (error) {
@@ -664,13 +674,13 @@ export const createMeeting = async (
   }
 };
 
-export const scheduledMeetingStart = async (meetingId: string) => {
-  try {
-    return true;
-  } catch (error) {
-    console.error("Error in scheduledMeetingStart:", error);
-  }
-};
+// export const scheduledMeetingStart = async (meetingId: string) => {
+//   try {
+//     return true;
+//   } catch (error) {
+//     console.error("Error in scheduledMeetingStart:", error);
+//   }
+// };
 
 /**
  * Update an existing meeting’s details such as title, time, or participants.

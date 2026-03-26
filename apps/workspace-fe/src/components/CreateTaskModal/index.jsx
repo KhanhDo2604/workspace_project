@@ -18,7 +18,29 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import assets from '../../constants/icon';
 import { CalendarButton } from '../CalendarButton';
 
-const DEFAULT_TYPES = ['development', 'design', 'testing'];
+const DEFAULT_TYPES = [
+    'Development',
+    'Backend',
+    'Frontend',
+    'Full Stack',
+    'DevOps',
+    'Database',
+    'Design',
+    'UI/UX',
+    'Graphics',
+    'Branding',
+    'Testing',
+    'Q&A',
+    'Bug Fix',
+    'Research',
+    'Planning',
+    'Documentation',
+    'Analysis',
+    'Meeting',
+    'Review',
+    'Deployment',
+    'Maintenance',
+];
 
 export function CreateTaskModal({ triggerBtn, onSave }) {
     // Local state for form fields
