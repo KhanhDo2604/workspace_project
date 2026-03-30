@@ -32,7 +32,7 @@ function PersonalTaskPage() {
                 <h2 className="font-semibold mb-4">Recent projects</h2>
                 <CreateProjectModal
                     triggerBtn={
-                        <Button className="my-4 p-6 rounded-lg">
+                        <Button className="my-4 p-6 rounded-lg" data-testid="create-project-btn">
                             <p className=" text-lg leading-0">Create Project</p>
                         </Button>
                     }

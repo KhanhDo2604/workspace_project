@@ -83,20 +83,28 @@ function CreateProjectModal({ triggerBtn }) {
                     </DialogHeader>
                     <div className="grid gap-4">
                         <div className="grid gap-3">
-                            <h1 className="text-lg font-semibold">Project Name</h1>
+                            {/* <h1 className="text-lg font-semibold">Project Name</h1> */}
+                            <label htmlFor="name-1" className="text-lg font-semibold">
+                                Project Name
+                            </label>
                             <Input
                                 id="name-1"
                                 name="name"
-                                defaultValue={title}
+                                data-testid="project-name-input"
+                                value={title}
                                 onChange={(e) => setTitle(e.target.value)}
                             />
                         </div>
                         <div className="grid gap-3">
-                            <h1 className="text-lg font-semibold">Description</h1>
+                            {/* <h1 className="text-lg font-semibold">Description</h1> */}
+                            <label htmlFor="description-1" className="text-lg font-semibold">
+                                Description
+                            </label>
                             <Input
                                 id="description-1"
                                 name="description"
-                                defaultValue={description}
+                                data-testid="project-desc-input"
+                                value={description}
                                 onChange={(e) => setDescription(e.target.value)}
                             />
                         </div>

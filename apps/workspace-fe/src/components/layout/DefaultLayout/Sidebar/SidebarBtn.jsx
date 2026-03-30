@@ -1,8 +1,9 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Link } from 'react-router-dom';
 import { colors } from '../../../../constants/color';
+import { forwardRef } from 'react';
 
-function SidebarBtn({ icon, label, endIcon, to, isActive, onClick }) {
+const SidebarBtn = forwardRef(({ icon, label, endIcon, to, isActive, onClick }, ref) => {
     let Element = to ? Link : 'button';
 
     const className = isActive
@@ -11,6 +12,7 @@ function SidebarBtn({ icon, label, endIcon, to, isActive, onClick }) {
 
     return (
         <Element
+            ref={ref}
             className={`flex items-center justify-between mb-2 py-2 px-2 text-xl w-full ${className}`}
             to={to}
             onClick={onClick}
@@ -26,6 +28,6 @@ function SidebarBtn({ icon, label, endIcon, to, isActive, onClick }) {
             ) : null}
         </Element>
     );
-}
+});
 
 export default SidebarBtn;

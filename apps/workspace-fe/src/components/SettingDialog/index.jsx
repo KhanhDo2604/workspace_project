@@ -77,7 +77,9 @@ function SettingDialog({ triggerBtn }) {
 
     return (
         <Dialog>
-            <DialogTrigger className="w-full">{triggerBtn}</DialogTrigger>
+            <DialogTrigger asChild className="w-full">
+                {triggerBtn}
+            </DialogTrigger>
             <DialogContent className="w-1/2">
                 <DialogHeader>
                     <DialogTitle>
