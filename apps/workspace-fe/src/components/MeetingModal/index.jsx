@@ -123,7 +123,7 @@ function MeetingModal({ meeting, triggerBtn }) {
         >
             <Toaster position="top-right" reverseOrder={false} />
             <DialogTrigger asChild>{triggerBtn}</DialogTrigger>
-            <DialogContent>
+            <DialogContent data-testid={'create-meeting-modal'}>
                 <DialogHeader className="mb-4">
                     <DialogTitle>{meeting ? 'Edit Meeting' : 'Create Meeting'}</DialogTitle>
                 </DialogHeader>
@@ -133,7 +133,7 @@ function MeetingModal({ meeting, triggerBtn }) {
                         <Input placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} />
                     </div>
 
-                    <div className="grid gap-3">
+                    <div className="grid gap-3" data-testid={'start-date-input'}>
                         <h1 className="text-lg font-semibold">Start Date</h1>
                         <CalendarButton
                             value={startTime}
@@ -144,7 +144,7 @@ function MeetingModal({ meeting, triggerBtn }) {
                         />
                     </div>
 
-                    <div className="grid gap-3">
+                    <div className="grid gap-3" data-testid="end-date-input">
                         <h1 className="text-lg font-semibold">End Date</h1>
                         <CalendarButton
                             value={endTime}
@@ -158,7 +158,10 @@ function MeetingModal({ meeting, triggerBtn }) {
                     <div className="grid gap-3">
                         <h1 className="text-lg font-semibold">Assignees</h1>
                         <DropdownMenu>
-                            <DropdownMenuTrigger className="w-full border border-gray-300 rounded-md">
+                            <DropdownMenuTrigger
+                                className="w-full border border-gray-300 rounded-md"
+                                data-testid="meeting-assignees-trigger"
+                            >
                                 <Button
                                     variant="outline"
                                     className="w-full border-none flex flex-wrap gap-2 justify-start shadow-none"
@@ -187,7 +190,10 @@ function MeetingModal({ meeting, triggerBtn }) {
                                         : 'Select Assignees'}
                                 </Button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent>
+                            <DropdownMenuContent
+                                data-testid="meeting-assignees-menu"
+                                onCloseAutoFocus={(e) => e.preventDefault()}
+                            >
                                 <DropdownMenuGroup className="bg-white w-full max-h-60 overflow-y-auto border border-x-gray-300 rounded-b-md border-b-gray-300">
                                     {listParticipants.map((member) => (
                                         <DropdownMenuItem
@@ -232,6 +238,7 @@ function MeetingModal({ meeting, triggerBtn }) {
                         </DialogClose>
 
                         <Button
+                            data-testid="create-meeting-save-btn"
                             onClick={() => {
                                 if (endTime <= startTime) {
                                     alert('Start date cannot be after End date');

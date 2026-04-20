@@ -45,7 +45,10 @@ export default function Day({ day }) {
                     {day.format('DD')}
                 </p>
             </header>
-            <div className="flex flex-col flex-1 gap-2">
+            <div
+                className="flex flex-col flex-1 gap-2 overflow-y-auto max-h-24"
+                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+            >
                 {dayEvents.map((evt, idx) => (
                     <EventCard key={idx} index={idx} event={evt} />
                 ))}

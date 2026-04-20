@@ -25,7 +25,7 @@ function PersonalTaskPage() {
     }, [dispatch, user.id]);
 
     return (
-        <div className="bg-secondary size-full p-6">
+        <div className="bg-secondary w-full min-h-full p-6">
             <h1 className="font-bold text-3xl">For you</h1>
             <hr className="my-4 border border-[#D9D9D9]" />
             <div className="flex items-center justify-between">
@@ -38,7 +38,7 @@ function PersonalTaskPage() {
                     }
                 />
             </div>
-            <div className="flex flex-wrap gap-8 mb-18">
+            <div className="grid grid-cols-[repeat(auto-fill,minmax(160px,1fr))] gap-4 mb-18">
                 {projects.map((proj) => {
                     return <RecentProjectTag key={proj.id} icon={cloudIcon} project={proj} />;
                 })}

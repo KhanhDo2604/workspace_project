@@ -52,7 +52,7 @@ function Sidebar() {
     };
 
     return (
-        <aside className="w-1/5 bg-primary py-9 px-7 flex flex-col h-screen">
+        <aside className="w-1/5 bg-primary py-9 px-7 flex flex-col shrink-0">
             {/* User Information */}
             <div className="flex items-center">
                 <Avatar className="w-21 h-21 mr-3 rounded-full object-cover border border-gray-300">
@@ -106,6 +106,7 @@ function Sidebar() {
                             <div
                                 className="flex items-center mb-2 cursor-pointer select-none"
                                 onClick={() => toggleProject(project.id)}
+                                data-testid="sidebar-project-item"
                             >
                                 <div className="flex items-center flex-1 min-w-0">
                                     <FontAwesomeIcon

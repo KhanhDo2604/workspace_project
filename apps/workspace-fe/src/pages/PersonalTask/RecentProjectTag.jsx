@@ -12,9 +12,10 @@ function RecentProjectTag({ icon, project }) {
     return (
         <ProjectDetailModal
             project={project}
-            isHost={checkIsHost}
+            isHost={checkIsHost()}
+            data-testid={'project-detail-modal'}
             triggerBtn={
-                <Button variant="text">
+                <Button variant="text" data-testid="project-card">
                     <div className="flex rounded-lg shadow-sm w-full h-fit bg-white">
                         <div className="relative">
                             <div className="grid grid-cols-2 w-16 h-full">
@@ -25,10 +26,12 @@ function RecentProjectTag({ icon, project }) {
                                 <img src={icon} alt="icon" className="object-cover w-8 h-8" />
                             </div>
                         </div>
-                        <div className="py-4 pr-4 flex flex-col items-start">
-                            <div className="mb-9 flex flex-col items-start">
+                        <div className="py-4 pr-4 flex flex-col items-start min-w-0">
+                            <div className="mb-9 flex flex-col items-start w-full">
                                 <h3 className="font-semibold text-stroke">{project.number}</h3>
-                                <p className="text-sm text-gray-500">{project.title}</p>
+                                <p className="text-sm text-gray-500 truncate w-full" data-testid="project-card-title">
+                                    {project.title}
+                                </p>
                             </div>
                             <p className="text-sm text-gray-500">{project.participants.length} members</p>
                         </div>

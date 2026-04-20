@@ -40,6 +40,7 @@ export function CalendarButton({ value, onChange, placeholder, showTime = true }
                 <Button
                     variant="outline"
                     className="justify-between font-normal w-full border border-gray-300 rounded-md shadow-none"
+                    data-testid="calendar-trigger"
                 >
                     {formatDateTime(dateTime)}
                     <CalendarIcon className="h-4 w-4" />

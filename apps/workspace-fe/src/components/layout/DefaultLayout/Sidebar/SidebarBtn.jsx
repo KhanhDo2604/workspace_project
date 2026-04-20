@@ -16,6 +16,7 @@ const SidebarBtn = forwardRef(({ icon, label, endIcon, to, isActive, onClick }, 
             className={`flex items-center justify-between mb-2 py-2 px-2 text-xl w-full ${className}`}
             to={to}
             onClick={onClick}
+            data-testid={'sidebar-project-btn'}
         >
             <div className="flex items-center">
                 <FontAwesomeIcon icon={icon} className="mr-3 " color={colors.button} size="lg" />

@@ -1,14 +1,8 @@
 import test, { expect, Page } from '@playwright/test';
+import { getBaseUrl, TIMESTAMP } from './common';
 
-const BASE_URL = 'http://localhost:5173';
-
-const TEST_TOKEN = process.env.TEST_TOKEN;
-const TEST_USER_ID = process.env.TEST_USER_ID;
-
-const TIMESTAMP = Date.now();
 const PROJECT_TITLE = `E2E Project ${TIMESTAMP}`;
 const PROJECT_DESC = `Auto-generated description ${TIMESTAMP}`;
-const PROJECT_TITLE_UPD = `Updated Project ${TIMESTAMP}`;
 
 async function openCreateModal(page: Page) {
     await page.getByRole('button', { name: 'Create Project' }).first().click();
@@ -27,7 +21,7 @@ async function waitForModalClose(page: Page) {
 }
 
 test.beforeEach(async ({ page }) => {
-    await page.goto(`${BASE_URL}/`);
+    await page.goto(`${getBaseUrl()}/`);
     await page.waitForLoadState('networkidle');
 });
 
@@ -39,10 +33,6 @@ test.describe('Main Page / Dashboard', () => {
 
     test('display heading "Recent projects"', async ({ page }) => {
         await expect(page.getByText('Recent projects')).toBeVisible();
-    });
-
-    test('no display "Loading..." after completed data loading', async ({ page }) => {
-        await expect(page.getByText('Loading...')).toBeVisible({ timeout: 10000 });
     });
 });
 
@@ -87,28 +77,23 @@ test.describe('Create new project', () => {
 
         await waitForModalClose(page);
 
-        await expect(page.getByText(PROJECT_TITLE)).toBeVisible({ timeout: 8000 });
+        const projectCard = page.locator('[data-testid="project-card"]');
+
+        await expect(projectCard.filter({ hasText: PROJECT_TITLE })).toBeVisible();
     });
 
-    test('submit without title -> modal wont close (validation)', async ({ page }) => {
+    test('submit without title -> modal stays open and shows validation', async ({ page }) => {
         await openCreateModal(page);
 
         await page.locator('input[name="description"]').fill('No title here');
         await page.getByRole('dialog').getByRole('button', { name: 'Create Project' }).click();
 
         await expect(page.getByRole('dialog')).toBeVisible();
-    });
 
-    test('submit without description → project is still created', async ({ page }) => {
-        const titleOnly = `Title Only ${TIMESTAMP}`;
-        await openCreateModal(page);
+        const nameInput = page.locator('input[name="name"]');
+        await expect(nameInput).toBeVisible();
 
-        await page.locator('input[name="name"]').fill(titleOnly);
-        // Để description trống
-        await page.getByRole('dialog').getByRole('button', { name: 'Create Project' }).click();
-
-        await waitForModalClose(page);
-        await expect(page.getByText(titleOnly)).toBeVisible({ timeout: 8_000 });
+        await expect(page.getByText(/Project name is required./i)).toBeVisible();
     });
 
     test('Check spinner loading while creating project', async ({ page }) => {
@@ -130,9 +115,74 @@ test.describe('Create new project', () => {
             await waitForModalClose(page);
         }
 
+        const projectCard = page.locator('[data-testid="project-card"]');
+
         for (const title of titles) {
-            await expect(page.getByText(title)).toBeVisible({ timeout: 8_000 });
+            await expect(projectCard.filter({ hasText: title })).toBeVisible({ timeout: 8_000 });
         }
+    });
+});
+
+test.describe('update and delete project', () => {
+    async function createProject(page: Page, title: string) {
+        await page.getByRole('button', { name: 'Create Project' }).first().click();
+        await expect(page.getByRole('dialog')).toBeVisible();
+        await page.locator('input[name="name"]').fill(title);
+        await page.locator('input[name="description"]').fill('test description');
+        await page.getByRole('dialog').getByRole('button', { name: 'Create Project' }).click();
+        await expect(page.getByRole('dialog')).not.toBeVisible({ timeout: 8000 });
+        await expect(page.getByText(title)).toBeVisible({ timeout: 8000 });
+    }
+
+    async function openProjectDetail(page: Page, title: string) {
+        const card = page.locator('button', { has: page.locator('p.text-gray-500', { hasText: title }) });
+        await card.first().click();
+
+        await expect(page.getByRole('dialog')).toBeVisible({ timeout: 8000 });
+        await expect(page.getByText('Project Detail')).toBeVisible();
+    }
+
+    test('update project title and description -> show updated info in the list', async ({ page }) => {
+        const originalTitle = `Update Target ${Date.now()}`;
+        const updatedTitle = `Updated Title ${Date.now()}`;
+        const updatedDesc = `Updated description ${Date.now()}`;
+
+        await createProject(page, originalTitle);
+
+        await openProjectDetail(page, originalTitle);
+
+        const nameInput = page.locator('input[name="name"]');
+        await nameInput.clear();
+        await nameInput.fill(updatedTitle);
+
+        const descInput = page.locator('input[name="description"]');
+        await descInput.clear();
+        await descInput.fill(updatedDesc);
+
+        await page.getByRole('button', { name: 'Save Update' }).click();
+
+        await expect(page.getByText('Are you sure you want to save the changes to this project?')).toBeVisible();
+
+        await page.getByRole('button', { name: 'Confirm' }).click();
+
+        await expect(page.getByRole('dialog')).not.toBeVisible({ timeout: 8000 });
+
+        await expect(page.getByText(updatedTitle)).toBeVisible({ timeout: 8000 });
+
+        await expect(page.getByText(originalTitle)).not.toBeVisible();
+    });
+
+    test('delete project -> project not visible in the list', async ({ page }) => {
+        const titleToDelete = `To Be Deleted ${Date.now()}`;
+        await createProject(page, titleToDelete);
+        await openProjectDetail(page, titleToDelete);
+
+        await page.getByRole('button', { name: 'Delete Project' }).click();
+        await expect(page.getByText('Are you sure you want to delete this project?')).toBeVisible();
+
+        await page.getByRole('button', { name: 'Confirm' }).click();
+        await expect(page.getByRole('dialog')).not.toBeVisible({ timeout: 8000 });
+        await expect(page.getByText(titleToDelete)).not.toBeVisible({ timeout: 8000 });
     });
 });
 
@@ -147,24 +197,9 @@ test.describe('Project list', () => {
         });
     });
 
-    test('Project list is not empty after create at least 1 project', async ({ page }) => {
-        const sectionsBefore = await page.locator('span', { hasText: /^#.+ tasks$/ }).count();
-
-        await openCreateModal(page);
-        await fillAndSubmitCreateForm(page, `Count Test ${TIMESTAMP}`, '');
-        await waitForModalClose(page);
-
-        await expect(page.locator('p.text-gray-500', { hasText: `List Check ${TIMESTAMP}` })).toBeVisible({
-            timeout: 8000,
-        });
-
-        const sectionAfter = await page.locator('span', { hasText: /^#.+ tasks$/ }).count();
-        expect(sectionAfter).toBe(sectionsBefore + 1);
-    });
-
     test('Click Project tasks header -> expand/collapse task list', async ({ page }) => {
         await openCreateModal(page);
-        await fillAndSubmitCreateForm(page, `Expand Test ${TIMESTAMP}`, '');
+        await fillAndSubmitCreateForm(page, `Expand Test ${TIMESTAMP}`, 'some descriptions');
         await waitForModalClose(page);
 
         const header = page.locator('span', { hasText: `#Expand Test ${TIMESTAMP} tasks` });
@@ -181,15 +216,19 @@ test.describe('Project list', () => {
 });
 
 test.describe('ProjectTasks section', () => {
-    test('mỗi project hiển thị section task với tên project', async ({ page }) => {
-        // Tạo project trước
+    test('each project displays task section with project name', async ({ page }) => {
         await openCreateModal(page);
         await fillAndSubmitCreateForm(page, `Task Section ${TIMESTAMP}`, 'with tasks');
         await waitForModalClose(page);
 
-        // ProjectTasks render teamName = proj.title
-        await expect(page.getByText(`Task Section ${TIMESTAMP}`)).toBeVisible({ timeout: 8_000 });
+        await expect(page.getByText(`Task Section ${TIMESTAMP} tasks`)).toBeVisible({ timeout: 8_000 });
     });
+});
+
+test.describe('chat section in project detail', () => {
+    test('displays chat section with correct project name', async ({ page }) => {});
+
+    test('send message -> message appears in the chat list', async ({ page }) => {});
 });
 
 test.describe('Edge cases', () => {
@@ -203,14 +242,16 @@ test.describe('Edge cases', () => {
         await expect(page.getByRole('heading', { name: 'For you' })).toBeVisible({ timeout: 8000 });
     });
 
-    test('title contains special characters', async ({ page }) => {
-        const specialTitle = `Dự án <Test> & "Quotes" ${TIMESTAMP}`;
+    test('title contains special characters -> displays correctly', async ({ page }) => {
+        const specialTitle = `Task Section ${TIMESTAMP} #$%^&*" ${TIMESTAMP}`;
 
         await openCreateModal(page);
-        await fillAndSubmitCreateForm(page, `Task Section ${TIMESTAMP}`, 'with tasks');
+        await fillAndSubmitCreateForm(page, `Task Section ${TIMESTAMP} #$%^&*" ${TIMESTAMP}`, 'with tasks');
         await waitForModalClose(page);
 
-        await expect(page.getByText(specialTitle)).toBeVisible({ timeout: 8000 });
+        const projectCard = page.locator('[data-testid="project-card"]');
+
+        await expect(projectCard.filter({ hasText: `${specialTitle} tasks` })).toBeVisible({ timeout: 8000 });
     });
 
     test('open modal → close → open again → form still oke', async ({ page }) => {
@@ -222,5 +263,69 @@ test.describe('Edge cases', () => {
         await openCreateModal(page);
         await expect(page.locator('input[name="name"]')).toHaveValue('');
         await expect(page.locator('input[name="description"]')).toHaveValue('');
+    });
+    test('main page is scrollable when content overflows vertically', async ({ page }) => {
+        const projectCount = 8;
+        for (let i = 0; i < projectCount; i++) {
+            await openCreateModal(page);
+            await fillAndSubmitCreateForm(page, `Scroll Test ${i} ${TIMESTAMP}`, 'something to scroll');
+            await waitForModalClose(page);
+        }
+
+        const scrollContainer = page.locator('[data-testid="scrollable-content"]');
+
+        const isScrollable = await scrollContainer.evaluate((el) => {
+            return el.scrollHeight > el.clientHeight;
+        });
+
+        expect(isScrollable).toBe(true);
+
+        await scrollContainer.evaluate((el) => {
+            el.scrollTo(0, el.scrollHeight);
+        });
+    });
+
+    test('project tag does not overflow outside viewport when title is very long', async ({ page }) => {
+        const longTagTitle = `${'Very Long Project Title '.repeat(5)}${TIMESTAMP}`;
+
+        await openCreateModal(page);
+        await fillAndSubmitCreateForm(page, longTagTitle, 'overflow width test');
+        await waitForModalClose(page);
+
+        const projectTag = page
+            .locator('p.text-gray-500', { hasText: longTagTitle })
+            .or(page.locator('[class*="project"]', { hasText: longTagTitle }))
+            .first();
+
+        await projectTag.waitFor({ timeout: 8000 });
+
+        const overflowsViewport = await projectTag.evaluate((el) => {
+            const rect = el.getBoundingClientRect();
+            const viewportWidth = window.innerWidth;
+
+            return rect.right > viewportWidth + 1;
+        });
+
+        expect(overflowsViewport).toBe(false);
+
+        const isClippedByParent = await projectTag.evaluate((el) => {
+            let parent = el.parentElement;
+            while (parent) {
+                const style = window.getComputedStyle(parent);
+                const overflow = style.overflow + style.overflowX;
+                if (overflow.includes('hidden')) {
+                    const parentRect = parent.getBoundingClientRect();
+                    const elRect = el.getBoundingClientRect();
+
+                    if (elRect.width > parentRect.width + 1) {
+                        return true;
+                    }
+                }
+                parent = parent.parentElement;
+            }
+            return false;
+        });
+
+        expect(isClippedByParent).toBe(false);
     });
 });

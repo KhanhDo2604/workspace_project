@@ -23,9 +23,9 @@ import { randomColor } from '../../utils';
 function CreateProjectModal({ triggerBtn }) {
     const dispatch = useDispatch();
 
-    // Local state for form fields
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
+    const [error, setError] = useState({ title: '', description: '' });
 
     // Modal open/close state
     const [open, setOpen] = useState(false);
@@ -41,23 +41,31 @@ function CreateProjectModal({ triggerBtn }) {
     const resetForm = () => {
         setTitle('');
         setDescription('');
+        setError({ title: '', description: '' });
     };
 
-    /**
-     * Dispatches an asynchronous Redux action to create
-     * a new project in the backend database. The function
-     * automatically unwraps the promise to handle rejections.
-     * It also assigns a random color to the project for UI labeling.
-     */
+    const validate = () => {
+        const newErrors = { title: '', description: '' };
+        if (!title.trim()) newErrors.title = 'Project name is required.';
+        if (!description.trim()) newErrors.description = 'Description is required.';
+        setError(newErrors);
+        return !newErrors.title && !newErrors.description;
+    };
+
     const createNewProject = async () => {
+        if (!validate()) {
+            return;
+        }
         await dispatch(
             createProject({
                 title: title,
                 description: description,
                 userId: user.id,
-                color: randomColor(), // Assigns a random UI color
+                color: randomColor(),
             }),
         ).unwrap();
+        resetForm();
+        setOpen(false);
     };
 
     return (
@@ -74,8 +82,6 @@ function CreateProjectModal({ triggerBtn }) {
                     onSubmit={async (e) => {
                         e.preventDefault();
                         await createNewProject();
-                        resetForm();
-                        setOpen(false);
                     }}
                 >
                     <DialogHeader className="mb-4">
@@ -92,7 +98,11 @@ function CreateProjectModal({ triggerBtn }) {
                                 name="name"
                                 data-testid="project-name-input"
                                 value={title}
-                                onChange={(e) => setTitle(e.target.value)}
+                                error={error.title}
+                                onChange={(e) => {
+                                    setTitle(e.target.value);
+                                    if (error.title) setError((prev) => ({ ...prev, title: '' }));
+                                }}
                             />
                         </div>
                         <div className="grid gap-3">
@@ -105,7 +115,11 @@ function CreateProjectModal({ triggerBtn }) {
                                 name="description"
                                 data-testid="project-desc-input"
                                 value={description}
-                                onChange={(e) => setDescription(e.target.value)}
+                                error={error.description}
+                                onChange={(e) => {
+                                    setDescription(e.target.value);
+                                    if (error.description) setError((prev) => ({ ...prev, description: '' }));
+                                }}
                             />
                         </div>
                     </div>

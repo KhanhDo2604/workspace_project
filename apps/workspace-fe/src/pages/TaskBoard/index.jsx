@@ -131,7 +131,11 @@ function TaskBoardPage() {
                 <CreateTaskModal
                     onSave={createNewTask}
                     triggerBtn={
-                        <Button variant="text" className="my-4 text-stroke self-start hover:shadow-white">
+                        <Button
+                            variant="text"
+                            className="my-4 text-stroke self-start hover:shadow-white"
+                            data-testid={'task-create-btn'}
+                        >
                             <FontAwesomeIcon icon={assets.icon.add} size="sm" />
                             <p className="font-bold text-2xl leading-0">Create</p>
                         </Button>

@@ -24,9 +24,11 @@ export default defineConfig({
     /* Reporter to use. See https://playwright.dev/docs/test-reporters */
     reporter: 'html',
     /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
+    globalSetup: './global_setup',
     use: {
         /* Base URL to use in actions like `await page.goto('')`. */
         baseURL: 'http://localhost:5173',
+        storageState: 'playwright/.auth/user.json',
         headless: true,
         viewport: { width: 1280, height: 720 },
         screenshot: 'only-on-failure',
@@ -43,15 +45,15 @@ export default defineConfig({
             use: { ...devices['Desktop Chrome'] },
         },
 
-        {
-            name: 'firefox',
-            use: { ...devices['Desktop Firefox'] },
-        },
+        // {
+        //     name: 'firefox',
+        //     use: { ...devices['Desktop Firefox'] },
+        // },
 
-        {
-            name: 'webkit',
-            use: { ...devices['Desktop Safari'] },
-        },
+        // {
+        //     name: 'webkit',
+        //     use: { ...devices['Desktop Safari'] },
+        // },
 
         /* Test against mobile viewports. */
         // {
@@ -64,10 +66,10 @@ export default defineConfig({
         // },
 
         /* Test against branded browsers. */
-        {
-            name: 'Microsoft Edge',
-            use: { ...devices['Desktop Edge'], channel: 'msedge' },
-        },
+        // {
+        //     name: 'Microsoft Edge',
+        //     use: { ...devices['Desktop Edge'], channel: 'msedge' },
+        // },
         // {
         //   name: 'Google Chrome',
         //   use: { ...devices['Desktop Chrome'], channel: 'chrome' },

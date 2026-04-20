@@ -10,8 +10,14 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { useState } from 'react';
-import { DropdownMenu, DropdownMenuGroup, DropdownMenuItem, DropdownMenuTrigger } from '../ui/dropdown-menu';
-import { DropdownMenuContent } from '@radix-ui/react-dropdown-menu';
+import {
+    DropdownMenu,
+    DropdownMenuGroup,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+    DropdownMenuContent,
+} from '../ui/dropdown-menu';
+// import { DropdownMenuContent } from '@radix-ui/react-dropdown-menu';
 import { typeColorMap } from '../../constants/color';
 import { useSelector } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -68,6 +74,25 @@ export function CreateTaskModal({ triggerBtn, onSave }) {
         setDueDate('');
     };
 
+    // {
+    //     import.meta.env.MODE === 'test' && (
+    //         <>
+    //             <input
+    //                 type="hidden"
+    //                 data-testid="assignees-value"
+    //                 value={JSON.stringify(assignees)}
+    //                 onChange={(e) => setAssignees(JSON.parse(e.target.value))}
+    //             />
+    //             <input
+    //                 type="hidden"
+    //                 data-testid="types-value"
+    //                 value={JSON.stringify(types)}
+    //                 onChange={(e) => setTypes(JSON.parse(e.target.value))}
+    //             />
+    //         </>
+    //     );
+    // }
+
     return (
         <Dialog
             open={open}
@@ -80,7 +105,7 @@ export function CreateTaskModal({ triggerBtn, onSave }) {
         >
             <DialogTrigger asChild>{triggerBtn}</DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">
-                <DialogHeader className="mb-4">
+                <DialogHeader className="mb-4" data-testid="create-task-modal-header">
                     <DialogTitle>Create new task</DialogTitle>
                 </DialogHeader>
 
@@ -106,7 +131,11 @@ export function CreateTaskModal({ triggerBtn, onSave }) {
                     <div className="grid gap-3">
                         <h1 className="text-lg font-semibold">Assignees</h1>
                         <DropdownMenu>
-                            <DropdownMenuTrigger className="w-full border border-gray-300 rounded-md">
+                            <DropdownMenuTrigger
+                                className="w-full border border-gray-300 rounded-md"
+                                data-testid="assignees-trigger"
+                                tabIndex={-1}
+                            >
                                 <Button
                                     variant="outline"
                                     className="w-full border-none flex flex-wrap gap-2 justify-start shadow-none"
@@ -133,12 +162,16 @@ export function CreateTaskModal({ triggerBtn, onSave }) {
                                         : 'Select Assignees'}
                                 </Button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent>
+                            <DropdownMenuContent
+                                data-testid="assignees-menu"
+                                onCloseAutoFocus={(e) => e.preventDefault()}
+                            >
                                 <DropdownMenuGroup className="bg-white w-full max-h-60 overflow-y-auto border border-x-gray-300 rounded-b-md border-b-gray-300">
                                     {currentProject.participants.map((member) => (
                                         <DropdownMenuItem
                                             key={member._id}
                                             className="cursor-pointer text-base flex justify-between"
+                                            data-testid="assignees-menu-item"
                                             onClick={() =>
                                                 setAssignees((prev) =>
                                                     prev.find((m) => m._id === member._id)
@@ -162,7 +195,11 @@ export function CreateTaskModal({ triggerBtn, onSave }) {
                     <div className="grid gap-3">
                         <h1 className="text-lg font-semibold">Types</h1>
                         <DropdownMenu>
-                            <DropdownMenuTrigger className="w-full border border-gray-300 rounded-md">
+                            <DropdownMenuTrigger
+                                className="w-full border border-gray-300 rounded-md"
+                                data-testid="types-trigger"
+                                tabIndex={-1}
+                            >
                                 <Button
                                     variant="outline"
                                     className="w-full border-none flex flex-wrap gap-2 justify-start shadow-none"
@@ -191,12 +228,13 @@ export function CreateTaskModal({ triggerBtn, onSave }) {
                                         : 'Select Types'}
                                 </Button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent>
+                            <DropdownMenuContent data-testid="types-menu" onCloseAutoFocus={(e) => e.preventDefault()}>
                                 <DropdownMenuGroup className="bg-white w-full max-h-60 overflow-y-auto border border-x-gray-300 rounded-b-md border-b-gray-300 ">
                                     {DEFAULT_TYPES.map((type) => (
                                         <DropdownMenuItem
                                             key={type}
                                             className="cursor-pointer text-base flex justify-between"
+                                            data-testid="types-menu-item"
                                             onClick={() =>
                                                 setTypes((prev) =>
                                                     prev.includes(type)
