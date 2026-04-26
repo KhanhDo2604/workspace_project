@@ -45,7 +45,6 @@ async function selectDate(page: Page, sectionTitle: string, cellSelector: 'first
 }
 
 async function clickDropdownItem(page: Page, triggerTestId: string, menuTestId: string, itemTestId: string) {
-    // Click trigger bằng JS dispatch — không trigger focus management
     await page.evaluate((id) => {
         const el = document.querySelector(`[data-testid="${id}"]`) as HTMLElement;
         el?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
@@ -54,11 +53,9 @@ async function clickDropdownItem(page: Page, triggerTestId: string, menuTestId: 
     const menu = page.locator(`[data-testid="${menuTestId}"]`);
     await menu.waitFor({ state: 'visible', timeout: 5000 });
 
-    // Click item
     const item = menu.locator(`[data-testid="${itemTestId}"]`).first();
     await item.click();
 
-    // Đóng menu bằng JS — không trigger focus return
     await page.evaluate(() => {
         document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
     });
@@ -73,10 +70,8 @@ async function createTask(page: Page, title: string, description: string) {
     await page.locator('input[name="name"]').fill(title);
     await page.locator('input[name="description"]').fill(description);
 
-    // Chọn assignee bằng JS dispatch — không trigger Radix focus management
     await clickDropdownItem(page, 'assignees-trigger', 'assignees-menu', 'assignees-menu-item');
 
-    // Chọn type
     await clickDropdownItem(page, 'types-trigger', 'types-menu', 'types-menu-item');
 
     await selectDate(page, 'Start Date', 'first');
