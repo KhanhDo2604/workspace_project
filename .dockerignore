@@ -1,0 +1,14 @@
+node_modules
+npm-debug.log
+**/node_modules
+dist
+**/dist
+.turbo
+**/.turbo
+.env
+**/.env
+*.log
+.git
+tests
+**/tests
+serviceAccountKey.json

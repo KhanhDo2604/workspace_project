@@ -1,5 +1,5 @@
 //mock models
-jest.mock("../../src/Models/user.model", () => {
+jest.mock("../../src/Models/user.model.ts", () => {
   const MockUserModel = jest.fn().mockImplementation(() => ({
     save: jest.fn(),
   }));
@@ -7,7 +7,7 @@ jest.mock("../../src/Models/user.model", () => {
   return { __esModule: true, default: MockUserModel };
 });
 
-jest.mock("../../src/Models/setting.model", () => {
+jest.mock("../../src/Models/setting.model.ts", () => {
   const MockSettingModel = jest.fn().mockImplementation(() => ({
     save: jest.fn(),
   }));
