@@ -13,11 +13,8 @@ export const initializeSocket = (server: any) => {
   io.on("connection", (socket) => {
     socket.on("joint_project", (projectId) => {
       socket.join(projectId);
-      console.log(`Socket ${socket.id} joined project ${projectId}`);
     });
-    socket.on("disconnect", () => {
-      console.log(`Socket ${socket.id} disconnected`);
-    });
+    socket.on("disconnect", () => {});
   });
   return io;
 };

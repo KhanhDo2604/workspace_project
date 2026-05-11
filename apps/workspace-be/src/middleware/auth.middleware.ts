@@ -1,6 +1,7 @@
 export const authMiddleware = async (req: any, res: any, next: any) => {
   try {
     const authHeader = req.headers["authorization"];
+
     if (!authHeader) {
       return res.status(401).json({ message: "No token provided" });
     }
@@ -17,10 +18,10 @@ export const authMiddleware = async (req: any, res: any, next: any) => {
     }
 
     const keycloakUser = await response.json();
-
     req.user = keycloakUser;
     next();
   } catch (err) {
+    console.error("Auth error:", err);
     res.status(401).json({ message: "Unauthorized" });
   }
 };

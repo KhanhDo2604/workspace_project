@@ -23,7 +23,11 @@ function ChatSection() {
 
     // Connect to the WebSocket server on component mount
     useEffect(() => {
-        const newSocket = io(import.meta.env.VITE_WEBSOCKET_URL, { autoConnect: true });
+        const newSocket = io('/', {
+            path: '/socket.io',
+            autoConnect: true,
+            transports: ['websocket'],
+        });
         setSocket(newSocket);
 
         return () => {

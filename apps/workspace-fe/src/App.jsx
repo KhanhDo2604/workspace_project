@@ -7,9 +7,9 @@ import Keycloak from 'keycloak-js';
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const keycloak = new Keycloak({
-    url: 'http://localhost:8080',
-    realm: 'myrealm',
-    clientId: 'workspace',
+    url: import.meta.env.VITE_KEYCLOAK_URL,
+    realm: import.meta.env.VITE_KEYCLOAK_REALM,
+    clientId: import.meta.env.VITE_KEYCLOAK_CLIENT_ID,
 });
 
 function App() {
@@ -19,7 +19,7 @@ function App() {
             initOptions={{
                 checkLoginIframe: false,
                 pkceMethod: 'S256',
-                onLoad: 'check-sso',
+                onLoad: 'login-required',
             }}
         >
             <Router>

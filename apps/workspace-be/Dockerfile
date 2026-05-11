@@ -1,17 +1,20 @@
 
 #BUILD
-FROM node:22-alpine as builder
+FROM node:22-alpine AS builder
 
 WORKDIR /app
 
 COPY package.json package-lock.json ./
-RUN npm ci
+COPY apps/workspace-be/package.json ./apps/workspace-be/
+
+RUN npm ci --workspace=apps/workspace-be
 
 # copy source
-COPY tsconfig.json ./
-COPY src/ ./src/
+COPY apps/workspace-be/tsconfig.json ./apps/workspace-be/
+COPY apps/workspace-be/src/ ./apps/workspace-be/src/
 
-RUN npm run builder
+WORKDIR /app/apps/workspace-be
+RUN npm run build
 
 #RUNNER
 FROM node:22-alpine AS runner
@@ -20,13 +23,16 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 
-COPY COPY package.json package-lock.json ./
+COPY package.json package-lock.json ./
+COPY apps/workspace-be/package.json ./apps/workspace-be/
 
 #  only install production deps
-RUN npm ci --omit=dev
+RUN npm ci --workspace=apps/workspace-be --omit=dev
 
-COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/apps/workspace-be/dist ./apps/workspace-be/dist
 
-EXPOSE 3000
+WORKDIR /app/apps/workspace-be
+
+EXPOSE 3500
 
 CMD [ "node", "dist/index.js" ]

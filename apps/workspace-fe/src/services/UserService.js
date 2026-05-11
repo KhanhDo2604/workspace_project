@@ -45,7 +45,7 @@ export const getAllUsersTaskService = async (userId) => {
  */
 export const changeUserInfoService = async (userId, newName) => {
     try {
-        const { data } = await http.put(`api/user/change_name/${userId}`, { newName: newName });
+        const { data } = await http.put(`/api/user/change_name/${userId}`, { newName: newName });
         return data;
     } catch (error) {
         console.error('Error changing user information:', error);
@@ -66,7 +66,7 @@ export const updateUserAvatarService = async (userId, file) => {
         formData.append('userId', userId);
         formData.append('file', file);
 
-        const { data } = await http.post('api/user/change-avatar', formData, {
+        const { data } = await http.post('/api/user/change-avatar', formData, {
             headers: { 'Content-Type': 'multipart/form-data' },
         });
 

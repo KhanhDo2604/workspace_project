@@ -1,12 +1,15 @@
 services:
   frontend: 
     build: 
-      context: apps/workspace-fe
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: apps/workspace-fe/Dockerfile
       args:
         VITE_BACKEND_URL: ${VITE_BACKEND_URL}
         VITE_WEBSOCKET_URL: ${VITE_WEBSOCKET_URL}
         VITE_ICE_SERVERS_URL: ${VITE_ICE_SERVERS_URL}
+        VITE_KEYCLOAK_URL: ${VITE_KEYCLOAK_URL}
+        VITE_KEYCLOAK_REALM: ${VITE_KEYCLOAK_REALM}
+        VITE_KEYCLOAK_CLIENT_ID: ${VITE_KEYCLOAK_CLIENT_ID}
     ports:
       - "80:80"
     depends_on:
@@ -14,10 +17,13 @@ services:
 
   backend:
     build: 
-      context: apps/workspace-be
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: apps/workspace-be/Dockerfile
     ports:
       - "3500:3500"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+      - "localhost:host-gateway"
     environment:
       - PORT=3500
       - MONGODB_URI=${MONGODB_URI}
@@ -29,34 +35,34 @@ services:
       - FIREBASE_CLIENT_EMAIL=${FIREBASE_CLIENT_EMAIL}
       - FIREBASE_PRIVATE_KEY=${FIREBASE_PRIVATE_KEY}
       - FIREBASE_STORAGE_BUCKET=${FIREBASE_STORAGE_BUCKET}
-    depends_on:
-      - keycloak
+    # depends_on:
+    #   - keycloak
 
-  keycloak:
-    image: quay.io/keycloak/keycloak:24.0
-    ports:
-      -"8080:8080"
-    environment:
-      - KEYCLOAK_ADMIN=${KEYCLOAK_ADMIN}
-      - KEYCLOAK_ADMIN_PASSWORD=${KEYCLOAK_ADMIN_PASSWORD}
-      - KC_DB=postgres
-      - KC_DB_URL=jdbc:postgresql://keycloak-db:5432/keycloak
-      - KC_DB_USERNAME=${KC_DB_USERNAME}
-      - KC_DB_PASSWORD=${KC_DB_PASSWORD}
-      - KC_HOSTNAME=${KEYCLOAK_URL}
-      - KC_HTTP_ENABLED=true
+#   keycloak:
+#     image: quay.io/keycloak/keycloak:24.0
+#     ports:
+#       - "8080:8080"
+#     environment:
+#       - KEYCLOAK_ADMIN=${KEYCLOAK_ADMIN}
+#       - KEYCLOAK_ADMIN_PASSWORD=${KEYCLOAK_ADMIN_PASSWORD}
+#       - KC_DB=postgres
+#       - KC_DB_URL=jdbc:postgresql://keycloak-db:5432/keycloak
+#       - KC_DB_USERNAME=${KC_DB_USERNAME}
+#       - KC_DB_PASSWORD=${KC_DB_PASSWORD}
+#       - KC_HOSTNAME=${KEYCLOAK_URL}
+#       - KC_HTTP_ENABLED=true
 
-    command: start-dev
-    depends_on:
-      - keycloak-db
-  keycloak-db:
-    image: postgres:15-alpine
-    environment:
-      - POSTGRES_DB=keycloak
-      - POSTGRES_USER=keycloak
-      - POSTGRES_PASSWORD=keycloak
-    volumes:
-      - keycloak_data:/var/lib/postgresql/data
+#     command: start-dev
+#     depends_on:
+#       - keycloak-db
+#   keycloak-db:
+#     image: postgres:15-alpine
+#     environment:
+#       - POSTGRES_DB=keycloak
+#       - POSTGRES_USER=keycloak
+#       - POSTGRES_PASSWORD=keycloak
+#     volumes:
+#       - keycloak_data:/var/lib/postgresql/data
 
-volumes:
-  keycloak_data:
+# volumes:
+#   keycloak_data:

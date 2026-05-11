@@ -7,7 +7,7 @@ import { keycloak } from '../App';
 
 export const syncUserService = async (token) => {
     const { data } = await http.post(
-        'api/auth/sync-user',
+        '/api/auth/sync-user',
         {},
         {
             headers: {

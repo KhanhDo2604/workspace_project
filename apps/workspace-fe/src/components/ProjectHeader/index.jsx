@@ -52,7 +52,11 @@ function ProjectHeader({ teamName, teamDescription, teamMembers }) {
      * Disconnects the socket automatically when the component unmounts.
      */
     useEffect(() => {
-        const socket = io(import.meta.env.VITE_WEBSOCKET_URL, { transports: ['websocket'] });
+        const socket = io('/', {
+            path: '/socket.io',
+            transports: ['websocket'],
+        });
+
         setSocket(socket);
 
         // Join the project room on the WebSocket server
@@ -60,12 +64,12 @@ function ProjectHeader({ teamName, teamDescription, teamMembers }) {
 
         // Listen for meeting updates from the backend
         socket.on('meeting_state_update', (state) => {
-            console.log('📡 Meeting state updated:', state);
+            console.log('Meeting state updated:', state);
             setMeetingRoom(state);
         });
 
         socket.on('meeting_started', (data) => {
-            console.log('📡 Meeting started:', data);
+            console.log('Meeting started:', data);
             dispatch(meetingActions.addActiveMeeting(data));
         });
 

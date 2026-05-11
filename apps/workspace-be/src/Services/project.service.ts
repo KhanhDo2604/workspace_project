@@ -53,7 +53,6 @@ function cleanupRoomIfEmpty(roomId: string) {
     roomPeers.delete(roomId);
     roomUsers.delete(roomId);
     whiteboardSnapshots.delete(roomId);
-    console.log(`🧹 Cleaned up empty room ${roomId}`);
   }
 }
 
@@ -65,11 +64,8 @@ export function registerWhiteboardHandlers(io: Server) {
   const nsp = io.of("/whiteboard");
 
   nsp.on("connection", (socket: Socket) => {
-    console.log("🟢 Whiteboard client connected:", socket.id);
-
     socket.on("join-whiteboard", (roomId: string) => {
       socket.join(roomId);
-      console.log(`📄 ${socket.id} joined whiteboard ${roomId}`);
 
       const last = whiteboards.get(roomId);
       if (last) socket.emit("canvas-data", last);
@@ -79,18 +75,12 @@ export function registerWhiteboardHandlers(io: Server) {
       const roomId = Array.from(socket.rooms).find((r) => r !== socket.id);
       if (!roomId) return;
       whiteboards.set(roomId, data);
-      console.log(
-        "🖌️ Received drawing-data from",
-        socket.id,
-        "→ broadcast to",
-        roomId,
-      );
 
       socket.to(roomId).emit("canvas-data", data);
     });
 
     socket.on("disconnect", () => {
-      console.log("🔴 Whiteboard disconnected:", socket.id);
+      console.log("Whiteboard disconnected");
     });
   });
 }
@@ -100,19 +90,14 @@ export function registerWhiteboardHandlers(io: Server) {
  */
 export function registerMeetingHandlers(io: Server) {
   io.on("connection", (socket: Socket) => {
-    console.log("🔌 Meeting socket connected:", socket.id);
-
     socket.on("canvasImage", ({ data }: { data: string }) => {
       const roomId = socket.data.user?.roomId as string | undefined;
       if (!roomId) {
-        console.warn("⚠️ canvasImage received before join-room:", socket.id);
         return;
       }
 
       whiteboardSnapshots.set(roomId, data);
       socket.to(roomId).emit("canvasImage", { data });
-
-      console.log(`🧾 canvasImage from ${socket.id} in room ${roomId}`);
     });
 
     socket.on(
@@ -135,8 +120,6 @@ export function registerMeetingHandlers(io: Server) {
 
         socket.data.user = { peerId, userName, roomId, avatar };
         socket.join(roomId);
-
-        console.log(`👥 ${userName} (${peerId}) joined room ${roomId}`);
 
         const otherUsers = Array.from(roomUsers.get(roomId)!.entries())
           .filter(([pid]) => pid !== peerId)
@@ -199,8 +182,6 @@ export function registerMeetingHandlers(io: Server) {
             socket.to(rId).emit("user-disconnected", { peerId });
             cleanupRoomIfEmpty(rId);
           }
-
-          console.log(`❌ ${peerId} left meeting room ${roomId}`);
         });
       },
     );
@@ -212,11 +193,8 @@ export function registerMeetingHandlers(io: Server) {
  */
 export const instantiateMeetingState = (io: Server) => {
   io.on("connection", (socket) => {
-    console.log("✅ New socket connected");
-
     socket.on("join_project", (projectId) => {
       socket.join(projectId);
-      console.log(`👥 User joined project ${projectId}`);
 
       socket.emit("meeting_state_update", meetingStates[projectId] || false);
     });
@@ -230,7 +208,7 @@ export const instantiateMeetingState = (io: Server) => {
       );
     });
 
-    socket.on("disconnect", () => console.log("❌ Socket disconnected"));
+    socket.on("disconnect", () => console.log("Socket disconnected"));
   });
 };
 

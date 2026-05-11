@@ -35,7 +35,7 @@ function MeetingPage() {
     const pcRef = useRef({});
     const navigate = useNavigate();
 
-    const server = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3500';
+    // const server = import.meta.env.VITE_BACKEND_URL;
 
     // Reset whiteboard mode when entering a meeting
     useEffect(() => {
@@ -77,7 +77,10 @@ function MeetingPage() {
             ]);
 
             // SOCKET CONNECTION SETUP
-            const socket = io(server);
+            const socket = io('/', {
+                path: '/socket.io',
+                transports: ['websocket'],
+            });
             socketRef.current = socket;
 
             socket.on('connect', () => {
@@ -203,9 +206,8 @@ function MeetingPage() {
         Object.entries(pcRef.current).forEach(([peerId, pc]) => {
             try {
                 pc.close();
-                console.log(`🔌 Closed PeerConnection with ${peerId}`);
             } catch {
-                console.log(`❌ Failed to close PeerConnection with ${peerId}`);
+                console.log(`Failed to close PeerConnection with ${peerId}`);
             }
         });
         pcRef.current = {};

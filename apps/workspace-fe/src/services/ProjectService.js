@@ -17,14 +17,12 @@ import TaskModel from '../model/TaskModel';
  */
 export const createProjectService = async (title, description, userId, color) => {
     try {
-        const { data } = await http.post('api/project/create', {
+        const { data } = await http.post('/api/project/create', {
             title: title,
             description: description,
             userId: userId,
             color: color,
         });
-
-        console.log(data.project);
 
         return ProjectModel.fromObject(data.project);
     } catch (error) {
@@ -43,7 +41,7 @@ export const createProjectService = async (title, description, userId, color) =>
  */
 export const updateProjectService = async (projectId, title, description, participants) => {
     try {
-        const { data } = await http.put(`api/project/update/${projectId}`, {
+        const { data } = await http.put(`/api/project/update/${projectId}`, {
             title: title,
             description: description,
             participants: participants,
@@ -62,7 +60,7 @@ export const updateProjectService = async (projectId, title, description, partic
  */
 export const deleteProjectService = async (projectId) => {
     try {
-        const { data } = await http.delete(`api/project/delete/${projectId}`);
+        const { data } = await http.delete(`/api/project/delete/${projectId}`);
         return data;
     } catch (error) {
         console.error('Error deleting project:', error);
@@ -77,7 +75,7 @@ export const deleteProjectService = async (projectId) => {
  */
 export const getAllProjectsService = async (userId) => {
     try {
-        const { data } = await http.get(`api/project/user/${userId}`);
+        const { data } = await http.get(`/api/project/user/${userId}`);
         return data;
     } catch (error) {
         console.error('Error fetching projects:', error);
@@ -92,7 +90,7 @@ export const getAllProjectsService = async (userId) => {
  */
 export const getChatMessagesService = async (projectId) => {
     try {
-        const { data } = await http.get(`api/project/get-chat/${projectId}`);
+        const { data } = await http.get(`/api/project/get-chat/${projectId}`);
 
         return data.chat.map((msg) => ChatModel.fromObject(msg)).sort((a, b) => a.createdAt - b.createdAt);
     } catch (error) {
@@ -109,7 +107,7 @@ export const getChatMessagesService = async (projectId) => {
  */
 export const addMemberToProjectService = async (projectId, email) => {
     try {
-        const { data } = await http.put('api/project/add-member', {
+        const { data } = await http.put('/api/project/add-member', {
             projectId: projectId,
             email: email,
         });
@@ -128,7 +126,7 @@ export const addMemberToProjectService = async (projectId, email) => {
  */
 export const removeMemberFromProjectService = async (projectId, memberId) => {
     try {
-        const { data } = await http.put('api/project/remove-member', {
+        const { data } = await http.put('/api/project/remove-member', {
             projectId: projectId,
             memberId: memberId,
         });
@@ -152,10 +150,8 @@ export const removeMemberFromProjectService = async (projectId, memberId) => {
  */
 export const createTaskService = async (project, title, description, assignedTo, types, startDay, dueDay) => {
     try {
-        console.log(assignedTo);
-
         const getUserIds = assignedTo.map((user) => user._id);
-        const { data } = await http.post('api/project/create-task/' + project, {
+        const { data } = await http.post('/api/project/create-task/' + project, {
             title: title,
             description: description,
             userIds: getUserIds,
@@ -184,7 +180,7 @@ export const createTaskService = async (project, title, description, assignedTo,
  */
 export const updateTaskService = async (taskId, title, description, userIds, types, startDay, dueDay) => {
     try {
-        const { data } = await http.put(`api/project/update-task/${taskId}`, {
+        const { data } = await http.put(`/api/project/update-task/${taskId}`, {
             title: title,
             description: description,
             userIds: userIds,
@@ -208,7 +204,7 @@ export const updateTaskService = async (taskId, title, description, userIds, typ
  */
 export const updateTaskStatusService = async (taskId, status) => {
     try {
-        const { data } = await http.put(`api/project/update-status/${taskId}`, {
+        const { data } = await http.put(`/api/project/update-status/${taskId}`, {
             status: status,
         });
         return data;
@@ -226,7 +222,7 @@ export const updateTaskStatusService = async (taskId, status) => {
  */
 export const deleteTaskService = async (taskId) => {
     try {
-        const { data } = await http.delete(`api/project/delete-task/${taskId}`);
+        const { data } = await http.delete(`/api/project/delete-task/${taskId}`);
         return data;
     } catch (error) {
         console.error('Error deleting task:', error);
@@ -242,7 +238,7 @@ export const deleteTaskService = async (taskId) => {
  */
 export const getProjectTasksService = async (projectId) => {
     try {
-        const { data } = await http.get(`api/project/get-task/${projectId}`);
+        const { data } = await http.get(`/api/project/get-task/${projectId}`);
 
         return data;
     } catch (error) {

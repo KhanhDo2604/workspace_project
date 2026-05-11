@@ -20,7 +20,7 @@ import {
   registerWhiteboardHandlers,
 } from "./Services/project.service.js";
 
-dotenv.config(); // Load environment variables from .env file
+// dotenv.config(); // Load environment variables from .env file
 
 const app = express();
 const port = process.env.PORT;
@@ -33,6 +33,7 @@ const port = process.env.PORT;
 const allowedOrigins: string[] = [
   process.env.CLIENT_URL || "",
   "http://localhost:5173",
+  "http://localhost",
 ];
 
 /**

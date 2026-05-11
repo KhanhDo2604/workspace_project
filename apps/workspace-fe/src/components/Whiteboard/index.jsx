@@ -34,7 +34,8 @@ function Whiteboard({ roomId }) {
     useEffect(() => {
         if (!roomId) return;
 
-        const socket = io(import.meta.env.VITE_WEBSOCKET_URL + '/whiteboard', {
+        const socket = io('/whiteboard ', {
+            path: '/socket.io',
             transports: ['websocket'],
         });
         socketRef.current = socket;
