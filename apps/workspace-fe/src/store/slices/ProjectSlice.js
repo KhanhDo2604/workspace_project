@@ -393,7 +393,23 @@ const projectSlice = createSlice({
             })
             .addCase(createTask.fulfilled, (state, action) => {
                 state.loading = false;
-                state.tasks.push(action.payload);
+                const task = action.payload.task;
+                if (task) {
+                    state.tasks.push(
+                        new TaskModel(
+                            task._id,
+                            task.title,
+                            task.description,
+                            task.startDay,
+                            task.dueDay,
+                            task.userIds,
+                            task.status,
+                            task.types,
+                            task.subTasks || [],
+                            task.project,
+                        ),
+                    );
+                }
                 state.message = 'Task created successfully';
             })
             .addCase(createTask.rejected, (state, action) => {

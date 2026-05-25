@@ -64,12 +64,12 @@ function ProjectHeader({ teamName, teamDescription, teamMembers }) {
 
         // Listen for meeting updates from the backend
         socket.on('meeting_state_update', (state) => {
-            console.log('Meeting state updated:', state);
+            // console.log('Meeting state updated:', state);
             setMeetingRoom(state);
         });
 
         socket.on('meeting_started', (data) => {
-            console.log('Meeting started:', data);
+            // console.log('Meeting started:', data);
             dispatch(meetingActions.addActiveMeeting(data));
         });
 

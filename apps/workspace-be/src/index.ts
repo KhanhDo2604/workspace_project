@@ -19,22 +19,34 @@ import {
   registerMeetingHandlers,
   registerWhiteboardHandlers,
 } from "./Services/project.service.js";
+import rateLimit from "express-rate-limit";
+import helmet from "helmet";
+import mongoSanitizer from "express-mongo-sanitize";
 
 // dotenv.config(); // Load environment variables from .env file
 
 const app = express();
 const port = process.env.PORT;
 
-/**
- * Define allowed origins for CORS policy.
- * Includes both production client URL (from environment variables)
- * and local development URL.
- */
-const allowedOrigins: string[] = [
-  process.env.CLIENT_URL || "",
-  "http://localhost:5173",
-  "http://localhost",
-];
+app.set("trust proxy", 1);
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { message: "Too many requests, please try again later" },
+});
+
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { message: "Too many login attempts, please try again later" },
+});
+
+const allowedOrigins: string[] = [process.env.CLIENT_URL || "http://localhost"];
 
 /**
  * Immediately invoked async function to connect to MongoDB.
@@ -64,16 +76,36 @@ const corsOptions: CorsOptions = {
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   credentials: true,
 };
-
-// Apply CORS middleware globally
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        connectSrc: [
+          "'self'",
+          process.env.KEYCLOAK_URL || "",
+          process.env.CLIENT_URL || "",
+          "ws:",
+          "wss:",
+        ],
+        scriptSrc: ["'self'", "'unsafe-inline'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        imgSrc: ["'self'", "data:", "https:"],
+        frameSrc: ["'self'", process.env.KEYCLOAK_URL || ""],
+      },
+    },
+    crossOriginEmbedderPolicy: false,
+    crossOriginResourcePolicy: { policy: "cross-origin" },
+  }),
+);
 app.use(cors(corsOptions));
 app.options("*", cors(corsOptions));
-
-// Enable JSON parsing for request bodies
+app.use(limiter);
 app.use(express.json());
+app.use(mongoSanitizer());
 
 // Register REST API routes
-app.use("/api/auth", authRouter);
+app.use("/api/auth", authLimiter, authRouter);
 app.use("/api/chat", chatRouter);
 app.use("/api/user", userRouter);
 app.use("/api/project", projectRouter);

@@ -15,8 +15,22 @@ export default async function connection(): Promise<mongoose.Mongoose> {
   try {
     // Attempt to connect to the MongoDB database
     const database = await mongoose.connect(DB_URL as string, {
-      autoIndex: true, // Automatically build indexes for defined schemas
+      serverSelectionTimeoutMS: 5000,
+      socketTimeoutMS: 45000,
+
+      //Connection pool
+      maxPoolSize: 10,
+      minPoolSize: 2,
     });
+
+    mongoose.connection.on("error", (err) => {
+      console.error("MongoDB connection error:", err);
+    });
+
+    mongoose.connection.on("disconnected", () => {
+      console.warn("MongoDB disconnected — attempting reconnect...");
+    });
+
     return database;
   } catch (error) {
     console.error("Error connecting to MongoDB:", error);
