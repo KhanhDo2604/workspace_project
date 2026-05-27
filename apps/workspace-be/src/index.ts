@@ -46,7 +46,10 @@ const authLimiter = rateLimit({
   message: { message: "Too many login attempts, please try again later" },
 });
 
-const allowedOrigins: string[] = [process.env.CLIENT_URL || "http://localhost"];
+const allowedOrigins: string[] = [
+  process.env.CLIENT_URL || "http://localhost",
+  "https://workspace-fe.happysea-04483485.australiaeast.azurecontainerapps.io",
+];
 
 /**
  * Immediately invoked async function to connect to MongoDB.
@@ -76,6 +79,7 @@ const corsOptions: CorsOptions = {
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   credentials: true,
 };
+
 app.use(
   helmet({
     contentSecurityPolicy: {
