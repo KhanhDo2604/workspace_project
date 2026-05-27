@@ -4,6 +4,9 @@ A real-time collaborative workspace application that enables teams to manage pro
 
 🌐 **Live Demo:** [https://workspace-fe.happysea-04483485.australiaeast.azurecontainerapps.io](https://workspace-fe.happysea-04483485.australiaeast.azurecontainerapps.io)
 
+> ⚠️ This project is still actively under development and new features/improvements are continuously being added.  
+> Initial loading time may be slower than expected because the application is hosted on lower-tier Azure subscriptions and services.
+
 ---
 
 ## ✨ Features
