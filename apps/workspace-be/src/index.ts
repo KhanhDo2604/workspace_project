@@ -23,7 +23,7 @@ import rateLimit from "express-rate-limit";
 import helmet from "helmet";
 import mongoSanitizer from "express-mongo-sanitize";
 
-// dotenv.config(); // Load environment variables from .env file
+dotenv.config(); // Load environment variables from .env file
 
 const app = express();
 const port = process.env.PORT;
@@ -49,6 +49,7 @@ const authLimiter = rateLimit({
 const allowedOrigins: string[] = [
   process.env.CLIENT_URL || "http://localhost",
   "https://workspace-fe.happysea-04483485.australiaeast.azurecontainerapps.io",
+  "http://localhost:5173",
 ];
 
 /**

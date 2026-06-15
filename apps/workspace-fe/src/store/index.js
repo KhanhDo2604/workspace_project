@@ -9,25 +9,29 @@ import calendarReducer from './slices/CalendarSlice';
 import authReducer from './slices/AuthSlice';
 import projectReducer from './slices/ProjectSlice';
 import userReducer from './slices/UserSlice';
+import { combineReducers } from 'redux';
 
 const persistConfig = {
     key: 'auth',
     storage,
-    whitelist: ['auth'],
+    whitelist: ['auth', 'project', 'sideBar'],
+    blacklist: ['dialog', 'meeting', 'calendar'],
 };
 
-const persistedAuthReducer = persistReducer(persistConfig, authReducer);
+const rootReducer = combineReducers({
+    dialog: dialogReducer,
+    meeting: meetingReducer,
+    sideBar: sideBarReducer,
+    calendar: calendarReducer,
+    auth: authReducer,
+    project: projectReducer,
+    user: userReducer,
+});
+
+const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 const store = configureStore({
-    reducer: {
-        dialog: dialogReducer,
-        meeting: meetingReducer,
-        sideBar: sideBarReducer,
-        calendar: calendarReducer,
-        auth: persistedAuthReducer,
-        project: projectReducer,
-        user: userReducer,
-    },
+    reducer: persistedReducer,
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({
             serializableCheck: false,
